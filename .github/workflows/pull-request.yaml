@@ -33,6 +33,7 @@ jobs:
       id-token: write
       packages: write
       pull-requests: write
+      security-events: write
     secrets: inherit
     strategy:
       matrix:
