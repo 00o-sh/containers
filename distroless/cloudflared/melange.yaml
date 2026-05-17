@@ -1,0 +1,60 @@
+package:
+  name: cloudflared
+  version: 2026.5.0 # renovate: datasource=github-releases depName=cloudflare/cloudflared
+  epoch: 0
+  description: Cloudflare Tunnel client
+  copyright:
+    - license: Apache-2.0
+
+environment:
+  contents:
+    repositories:
+      - https://packages.wolfi.dev/os
+    keyring:
+      - https://packages.wolfi.dev/os/wolfi-signing.rsa.pub
+    packages:
+      - build-base
+      - busybox
+      - ca-certificates-bundle
+      - git
+      - go-1.26
+
+pipeline:
+  - uses: git-checkout
+    with:
+      repository: https://github.com/cloudflare/cloudflared
+      tag: ${{package.version}}
+
+  - name: Build cloudflared
+    runs: |
+      export CGO_ENABLED=0
+      export GOFLAGS="-trimpath -buildvcs=false"
+      VERSION="${{package.version}}"
+      BUILD_TIME="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+      go build \
+        -ldflags "-s -w \
+          -X 'github.com/cloudflare/cloudflared/cmd/cloudflared/updater.BuiltForPackageManager=apk' \
+          -X 'main.Version=${VERSION}' \
+          -X 'main.BuildTime=${BUILD_TIME}'" \
+        -o cloudflared \
+        ./cmd/cloudflared
+      install -D -m 0755 cloudflared "${{targets.destdir}}/usr/bin/cloudflared"
+
+test:
+  environment:
+    contents:
+      repositories:
+        - https://packages.wolfi.dev/os
+      keyring:
+        - https://packages.wolfi.dev/os/wolfi-signing.rsa.pub
+      packages:
+        - busybox
+        - ${{package.name}}=${{package.full-version}}
+  pipeline:
+    - name: cloudflared package smoke
+      runs: |
+        set -eu
+        test -x /usr/bin/cloudflared
+        /usr/bin/cloudflared --version
+        /usr/bin/cloudflared --help >/dev/null
+        /usr/bin/cloudflared tunnel --help >/dev/null

@@ -1,0 +1,283 @@
+---
+# yaml-language-server: $schema=https://json.schemastore.org/github-workflow.json
+name: Distroless Build
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - distroless/**
+      - .github/workflows/distroless-build.yaml
+  pull_request:
+    paths:
+      - distroless/**
+      - .github/workflows/distroless-build.yaml
+  schedule:
+    # Daily rebuild to pull fresh Wolfi CVE patches.
+    - cron: "0 2 * * *"
+  workflow_dispatch:
+    inputs:
+      image:
+        type: string
+        description: Image name under distroless/ (blank = all)
+        required: false
+
+concurrency:
+  group: distroless-build-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+  packages: write
+  id-token: write
+
+env:
+  REGISTRY_NAMESPACE: ghcr.io/${{ github.repository_owner }}
+  MELANGE_VERSION: v0.50.6 # renovate: datasource=github-releases depName=chainguard-dev/melange
+  # Renovate will pin a digest (`@sha256:...`) on first run via pinDigests.
+  APKO_IMAGE: ghcr.io/wolfi-dev/sdk:latest # renovate: datasource=docker depName=ghcr.io/wolfi-dev/sdk
+
+jobs:
+  discover:
+    name: Discover Images
+    runs-on: ubuntu-latest
+    outputs:
+      images: ${{ steps.set.outputs.images }}
+      any: ${{ steps.set.outputs.any }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
+
+      - name: Resolve image list
+        id: set
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ -n "${{ inputs.image }}" ]; then
+            images_json=$(jq -nc --arg i "${{ inputs.image }}" '[$i]')
+          else
+            images_json=$(find distroless -maxdepth 2 -name apko.yaml -printf '%h\n' \
+              | sed 's|^distroless/||' \
+              | sort -u \
+              | jq -R -s -c 'split("\n") | map(select(length > 0))')
+          fi
+          echo "images=$images_json" >> "$GITHUB_OUTPUT"
+          if [ "$images_json" = "[]" ]; then
+            echo "any=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "any=true" >> "$GITHUB_OUTPUT"
+          fi
+          echo "Discovered: $images_json"
+
+  build:
+    name: Build (${{ matrix.image }} / ${{ matrix.arch }})
+    needs: discover
+    if: ${{ needs.discover.outputs.any == 'true' }}
+    runs-on: ${{ matrix.arch == 'aarch64' && 'ubuntu-24.04-arm' || 'ubuntu-latest' }}
+    strategy:
+      fail-fast: false
+      matrix:
+        image: ${{ fromJson(needs.discover.outputs.images) }}
+        arch: [x86_64, aarch64]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
+
+      - name: Install melange
+        uses: chainguard-dev/actions/setup-melange@c69a264ec2a5934c3186c618f368fc1c86f16cff # v1.6.19
+        with:
+          version: ${{ env.MELANGE_VERSION }}
+
+      - name: Generate ephemeral signing key
+        run: melange keygen melange.rsa
+
+      - name: melange build
+        run: |
+          melange build "distroless/${{ matrix.image }}/melange.yaml" \
+            --arch "${{ matrix.arch }}" \
+            --signing-key melange.rsa \
+            --out-dir packages
+
+      - name: melange test
+        # Test runs in a sandbox where extra tools (busybox, etc.) are allowed.
+        # The final apko image stays bare.
+        run: |
+          melange test "distroless/${{ matrix.image }}/melange.yaml" \
+            --arch "${{ matrix.arch }}" \
+            --keyring-append melange.rsa.pub \
+            --source-dir packages
+
+      - name: apko build
+        uses: chainguard-images/actions/apko-build@2e909a637eb363caeccbe3946fa157abb4a2aa4d # v1.0.27
+        with:
+          apko-image: ${{ env.APKO_IMAGE }}
+          config: distroless/${{ matrix.image }}/apko.yaml
+          tag: ${{ env.REGISTRY_NAMESPACE }}/${{ matrix.image }}:verify-${{ matrix.arch }}
+          archs: ${{ matrix.arch }}
+          keyring-append: ${{ github.workspace }}/melange.rsa.pub
+          repository-append: ${{ github.workspace }}/packages
+
+      - name: Image structure assertions
+        shell: bash
+        run: |
+          set -euo pipefail
+          IMG="${{ env.REGISTRY_NAMESPACE }}/${{ matrix.image }}:verify-${{ matrix.arch }}"
+
+          echo "::group::Load image into docker"
+          docker load -i output.tar
+          echo "::endgroup::"
+
+          echo "::group::Must run as non-root"
+          user=$(docker inspect "$IMG" --format='{{.Config.User}}')
+          if [ -z "$user" ] || [ "$user" = "0" ] || [ "$user" = "root" ]; then
+            echo "::error::Image user is '$user' (expected non-root)"
+            exit 1
+          fi
+          echo "user=$user OK"
+          echo "::endgroup::"
+
+          echo "::group::Must not ship a shell"
+          if tar tf output.tar | grep -E '(^|/)(bin|usr/bin|usr/local/bin)/(sh|bash|ash|busybox|dash)$'; then
+            echo "::error::Shell binary present in final image"
+            exit 1
+          fi
+          echo "no shell OK"
+          echo "::endgroup::"
+
+          echo "::group::Entrypoint must exist"
+          entrypoint=$(docker inspect "$IMG" --format='{{json .Config.Entrypoint}}')
+          echo "entrypoint=$entrypoint"
+          if [ "$entrypoint" = "null" ] || [ "$entrypoint" = "[]" ]; then
+            echo "::error::No entrypoint set"
+            exit 1
+          fi
+          echo "::endgroup::"
+
+      - name: Boot smoke (${{ matrix.image }})
+        # Per-image smoke. Override entrypoint to invoke the binary with a
+        # benign arg (--version) so we don't try to run the real service.
+        shell: bash
+        run: |
+          set -euo pipefail
+          IMG="${{ env.REGISTRY_NAMESPACE }}/${{ matrix.image }}:verify-${{ matrix.arch }}"
+          case "${{ matrix.image }}" in
+            cloudflared)
+              # binfmt makes aarch64 runnable under qemu on amd64 hosts; matrix
+              # arch already matches runner arch so this is a native exec.
+              timeout 15s docker run --rm \
+                --entrypoint /usr/bin/cloudflared "$IMG" --version
+              ;;
+            *)
+              echo "::warning::No boot-smoke recipe for ${{ matrix.image }}; skipping"
+              ;;
+          esac
+
+      - name: Compute Grype cache key
+        id: grype-key
+        shell: bash
+        run: echo "key=grype-db-$(date -u +'%Y-%m-%d')" >> "$GITHUB_OUTPUT"
+
+      - name: Restore Grype DB cache
+        id: grype-cache
+        uses: actions/cache/restore@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
+        with:
+          key: ${{ steps.grype-key.outputs.key }}
+          path: ~/.cache/grype/db
+
+      - name: Grype scan (fail on HIGH+)
+        uses: anchore/scan-action@e1165082ffb1fe366ebaf02d8526e7c4989ea9d2 # v7.4.0
+        with:
+          image: ${{ env.REGISTRY_NAMESPACE }}/${{ matrix.image }}:verify-${{ matrix.arch }}
+          fail-build: true
+          severity-cutoff: high
+          only-fixed: true
+          output-format: table
+
+      - name: Log in to GHCR
+        if: github.event_name != 'pull_request'
+        uses: docker/login-action@4907a6ddec9925e35a0a9e82d7399ccc52663121 # v4.1.0
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Push arch-specific image
+        if: github.event_name != 'pull_request'
+        shell: bash
+        run: |
+          set -euo pipefail
+          IMG="${{ env.REGISTRY_NAMESPACE }}/${{ matrix.image }}:verify-${{ matrix.arch }}"
+          docker push "$IMG"
+
+      - name: Upload SBOM
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: sbom-${{ matrix.image }}-${{ matrix.arch }}
+          path: sbom-*.spdx.json
+          if-no-files-found: warn
+          retention-days: 7
+
+  manifest:
+    name: Publish Multi-Arch Manifest (${{ matrix.image }})
+    needs:
+      - discover
+      - build
+    if: ${{ github.event_name != 'pull_request' && needs.discover.outputs.any == 'true' }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        image: ${{ fromJson(needs.discover.outputs.images) }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
+
+      - name: Resolve version
+        id: ver
+        shell: bash
+        run: |
+          set -euo pipefail
+          v=$(yq -r '.package.version' "distroless/${{ matrix.image }}/melange.yaml")
+          echo "version=$v" >> "$GITHUB_OUTPUT"
+
+      - name: Log in to GHCR
+        uses: docker/login-action@4907a6ddec9925e35a0a9e82d7399ccc52663121 # v4.1.0
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Create + push manifest
+        shell: bash
+        run: |
+          set -euo pipefail
+          NS="${{ env.REGISTRY_NAMESPACE }}/${{ matrix.image }}"
+          VER="${{ steps.ver.outputs.version }}"
+          for tag in "$VER" rolling; do
+            docker buildx imagetools create \
+              --tag "$NS:$tag" \
+              "$NS:verify-x86_64" \
+              "$NS:verify-aarch64"
+          done
+
+      - name: Install cosign
+        uses: sigstore/cosign-installer@6f9f17788090df1f26f669e9d70d6ae9567deba6 # v4.1.2
+
+      - name: Cosign keyless sign
+        shell: bash
+        env:
+          COSIGN_EXPERIMENTAL: "true"
+        run: |
+          set -euo pipefail
+          NS="${{ env.REGISTRY_NAMESPACE }}/${{ matrix.image }}"
+          VER="${{ steps.ver.outputs.version }}"
+          for tag in "$VER" rolling; do
+            cosign sign --yes "$NS:$tag"
+          done
