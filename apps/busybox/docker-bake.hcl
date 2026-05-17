@@ -14,7 +14,9 @@ variable "SOURCE" {
 }
 
 variable "FLAVOR" {
-  default = "busybox"
+  // busybox will only ever ship one flavor by design, so we publish
+  // as the bare app name rather than busybox-busybox.
+  default = "none"
 }
 
 group "default" {
