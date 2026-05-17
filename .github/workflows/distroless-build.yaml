@@ -377,6 +377,41 @@ jobs:
           echo "version=$upstream" >> "$GITHUB_OUTPUT"
           echo "Resolved: $raw → $upstream"
 
+      - name: Detect semver shape
+        # Most upstream versions are semver-shaped (e.g. 2026.5.0) but a
+        # few (busybox 1.37.0, jackett 0.24.1870) may have unusual
+        # patterns. metadata-action's semver type requires a valid
+        # semver — fall back to type=raw if the version doesn't parse.
+        id: semver
+        shell: bash
+        run: |
+          v="${{ steps.ver.outputs.version }}"
+          if [[ "$v" =~ ^[0-9]+\.[0-9]+\.[0-9]+([.-].*)?$ ]]; then
+            echo "valid=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "valid=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Build image metadata (tag set)
+        # Mirrors app-builder.yaml's tag scheme so distroless images
+        # follow the repo's semantic-versioning mission (README §Tag
+        # Immutability + Mission Statement). Generates :<version>,
+        # :<major>.<minor>, :<major>, :rolling for releases; :sandbox
+        # for PRs. flavor: latest=false because users pin by digest.
+        uses: docker/metadata-action@030e881283bb7a6894de51c315a6bfe6a94e05cf # v6.0.0
+        id: meta
+        with:
+          flavor: latest=false
+          images: |
+            ${{ env.REGISTRY_NAMESPACE }}/${{ matrix.image }}-distroless
+          tags: |
+            type=semver,pattern={{version}},value=${{ steps.ver.outputs.version }},enable=${{ steps.semver.outputs.valid == 'true' && github.event_name != 'pull_request' }}
+            type=semver,pattern={{major}}.{{minor}},value=${{ steps.ver.outputs.version }},enable=${{ steps.semver.outputs.valid == 'true' && github.event_name != 'pull_request' }}
+            type=semver,pattern={{major}},value=${{ steps.ver.outputs.version }},enable=${{ steps.semver.outputs.valid == 'true' && github.event_name != 'pull_request' }}
+            type=raw,value=${{ steps.ver.outputs.version }},enable=${{ steps.semver.outputs.valid != 'true' && github.event_name != 'pull_request' }}
+            type=raw,value=rolling,enable=${{ github.event_name != 'pull_request' }}
+            type=raw,value=sandbox,enable=${{ github.event_name == 'pull_request' }}
+
       - name: Log in to GHCR
         uses: docker/login-action@4907a6ddec9925e35a0a9e82d7399ccc52663121 # v4.1.0
         with:
@@ -387,48 +422,41 @@ jobs:
       - name: Create + push manifest
         id: manifest
         shell: bash
-        # Tag scheme:
-        #   - on PR        → :sandbox (single tag, last-push-wins across concurrent PRs)
-        #   - on push/main → :<version> + :rolling
-        # Same arch sources combined either way; the digest is what's
-        # attested/signed.
+        # Iterate the tag list produced by metadata-action so every
+        # tag (full semver, major.minor, major, rolling) points at the
+        # same multi-arch digest.
         run: |
           set -euo pipefail
           NS="${{ env.REGISTRY_NAMESPACE }}/${{ matrix.image }}-distroless"
-          VER="${{ steps.ver.outputs.version }}"
-          if [ "${{ github.event_name }}" = "pull_request" ]; then
-            tags=(sandbox)
-          else
-            tags=("$VER" rolling)
-          fi
-          for tag in "${tags[@]}"; do
-            docker buildx imagetools create \
-              --tag "$NS:$tag" \
-              "$NS:verify-x86_64" \
-              "$NS:verify-aarch64"
-          done
-          # Resolve the manifest digest so attestation can target by digest.
-          primary_tag="${tags[0]}"
-          digest=$(docker buildx imagetools inspect "$NS:$primary_tag" \
+          tag_args=()
+          while IFS= read -r ref; do
+            [ -z "$ref" ] && continue
+            tag_args+=(--tag "$ref")
+          done <<< "${{ steps.meta.outputs.tags }}"
+          docker buildx imagetools create "${tag_args[@]}" \
+            "$NS:verify-x86_64" \
+            "$NS:verify-aarch64"
+          # Use the first (primary) tag to resolve the digest — they
+          # all point at the same manifest list.
+          primary_ref="$(printf '%s\n' "${{ steps.meta.outputs.tags }}" | head -1)"
+          digest=$(docker buildx imagetools inspect "$primary_ref" \
             --format '{{ json .Manifest }}' | jq -r '.digest')
           echo "namespace=$NS" >> "$GITHUB_OUTPUT"
           echo "digest=$digest" >> "$GITHUB_OUTPUT"
-          echo "primary_tag=$primary_tag" >> "$GITHUB_OUTPUT"
+          echo "primary_ref=$primary_ref" >> "$GITHUB_OUTPUT"
           {
             echo "## ${{ matrix.image }}-distroless published"
             echo
+            echo "**Digest:** \`$digest\`"
+            echo
+            echo "**Tags pushed:**"
+            echo
+            echo '```'
+            printf '%s\n' "${{ steps.meta.outputs.tags }}"
+            echo '```'
+            echo
             if [ "${{ github.event_name }}" = "pull_request" ]; then
-              echo "**Sandbox image** — pullable for PR validation:"
-              echo
-              echo "    $NS:sandbox@$digest"
-            else
-              echo "Immutable reference:"
-              echo
-              echo "    $NS:$VER@$digest"
-              echo
-              echo "Rolling:"
-              echo
-              echo "    $NS:rolling@$digest"
+              echo "Pullable as \`$NS:sandbox@$digest\`."
             fi
           } >> "$GITHUB_STEP_SUMMARY"
 
@@ -450,7 +478,21 @@ jobs:
           gh attestation verify --repo ${{ github.repository }} \
             "oci://${{ steps.manifest.outputs.namespace }}@${{ steps.manifest.outputs.digest }}"
 
-      - name: Post sticky PR comment with sandbox pull ref
+      - name: Compute image size diff vs :rolling
+        # Distroless's primary value-add over Alpine/Ubuntu is image
+        # footprint, so we surface a size delta on every PR. Baseline
+        # is the current :rolling tag; comparator is :sandbox (this
+        # PR's build). First-ever PR has no :rolling — continue-on-error
+        # lets the comment fall back to "no baseline yet" gracefully.
+        if: github.event_name == 'pull_request'
+        id: size_diff
+        continue-on-error: true
+        uses: ./.github/actions/app-size-diff
+        with:
+          from-app: ${{ steps.manifest.outputs.namespace }}:rolling
+          to-app: ${{ steps.manifest.outputs.namespace }}:sandbox
+
+      - name: Post sticky PR comment with sandbox pull ref + size diff
         if: github.event_name == 'pull_request'
         uses: marocchino/sticky-pull-request-comment@0ea0beb66eb9baf113663a64ec522f60e49231c0 # v3.0.4
         with:
@@ -471,4 +513,12 @@ jobs:
               oci://${{ steps.manifest.outputs.namespace }}@${{ steps.manifest.outputs.digest }}
             ```
 
-            On merge this digest will be re-tagged as `:${{ steps.ver.outputs.version }}` and `:rolling`.
+            On merge this digest will be re-tagged with the full semver tag set generated by `docker/metadata-action`:
+
+            ```
+            ${{ steps.meta.outputs.tags }}
+            ```
+
+            #### Size diff vs `:rolling`
+
+            ${{ steps.size_diff.outputs.size-diff-markdown || '_No baseline yet — first build of this image. Subsequent PRs will compare against `:rolling`._' }}
