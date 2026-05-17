@@ -265,13 +265,33 @@ jobs:
         with:
           persist-credentials: false
 
-      - name: Resolve version
+      - name: Download SBOM (x86_64)
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          name: sbom-${{ matrix.image }}-x86_64
+
+      - name: Resolve image version from SBOM
         id: ver
         shell: bash
+        # Read the upstream-app version from the apko-emitted SBOM. Works
+        # whether the apk came from Wolfi directly or from a local melange
+        # build; the SBOM is the single source of truth for what's actually
+        # in the image.
         run: |
           set -euo pipefail
-          v=$(yq -r '.package.version' "distroless/${{ matrix.image }}/melange.yaml")
-          echo "version=$v" >> "$GITHUB_OUTPUT"
+          raw=$(jq -r --arg name "${{ matrix.image }}" \
+            '.packages[] | select(.name == $name) | .versionInfo' \
+            sbom-x86_64.spdx.json | head -1)
+          if [ -z "$raw" ] || [ "$raw" = "null" ]; then
+            echo "::error::Could not find package '${{ matrix.image }}' in SBOM"
+            exit 1
+          fi
+          # Strip apk -rN release suffix to produce a semver-shaped tag
+          # (e.g. "2026.5.0-r1" → "2026.5.0").
+          upstream=${raw%-r[0-9]*}
+          echo "raw=$raw" >> "$GITHUB_OUTPUT"
+          echo "version=$upstream" >> "$GITHUB_OUTPUT"
+          echo "Resolved: $raw → $upstream"
 
       - name: Log in to GHCR
         uses: docker/login-action@4907a6ddec9925e35a0a9e82d7399ccc52663121 # v4.1.0
