@@ -133,7 +133,7 @@ jobs:
         with:
           apko-image: ${{ env.APKO_IMAGE }}
           config: distroless/${{ matrix.image }}/apko.yaml
-          tag: ${{ env.REGISTRY_NAMESPACE }}/${{ matrix.image }}:verify-${{ matrix.arch }}
+          tag: ${{ env.REGISTRY_NAMESPACE }}/${{ matrix.image }}-distroless:verify-${{ matrix.arch }}
           archs: ${{ matrix.arch }}
           keyring-append: ${{ steps.melange.outputs.present == 'true' && format('{0}/melange.rsa.pub', github.workspace) || '' }}
           repository-append: ${{ steps.melange.outputs.present == 'true' && format('{0}/packages', github.workspace) || '' }}
@@ -142,7 +142,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          IMG="${{ env.REGISTRY_NAMESPACE }}/${{ matrix.image }}:verify-${{ matrix.arch }}"
+          IMG="${{ env.REGISTRY_NAMESPACE }}/${{ matrix.image }}-distroless:verify-${{ matrix.arch }}"
 
           echo "::group::Load image into docker"
           docker load -i output.tar
@@ -189,7 +189,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          IMG="${{ env.REGISTRY_NAMESPACE }}/${{ matrix.image }}:verify-${{ matrix.arch }}"
+          IMG="${{ env.REGISTRY_NAMESPACE }}/${{ matrix.image }}-distroless:verify-${{ matrix.arch }}"
           case "${{ matrix.image }}" in
             cloudflared)
               # binfmt makes aarch64 runnable under qemu on amd64 hosts; matrix
@@ -217,7 +217,7 @@ jobs:
       - name: Grype scan (fail on HIGH+)
         uses: anchore/scan-action@e1165082ffb1fe366ebaf02d8526e7c4989ea9d2 # v7.4.0
         with:
-          image: ${{ env.REGISTRY_NAMESPACE }}/${{ matrix.image }}:verify-${{ matrix.arch }}
+          image: ${{ env.REGISTRY_NAMESPACE }}/${{ matrix.image }}-distroless:verify-${{ matrix.arch }}
           fail-build: true
           severity-cutoff: high
           only-fixed: true
@@ -236,7 +236,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          IMG="${{ env.REGISTRY_NAMESPACE }}/${{ matrix.image }}:verify-${{ matrix.arch }}"
+          IMG="${{ env.REGISTRY_NAMESPACE }}/${{ matrix.image }}-distroless:verify-${{ matrix.arch }}"
           docker push "$IMG"
 
       - name: Upload SBOM
@@ -301,10 +301,11 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Create + push manifest
+        id: manifest
         shell: bash
         run: |
           set -euo pipefail
-          NS="${{ env.REGISTRY_NAMESPACE }}/${{ matrix.image }}"
+          NS="${{ env.REGISTRY_NAMESPACE }}/${{ matrix.image }}-distroless"
           VER="${{ steps.ver.outputs.version }}"
           for tag in "$VER" rolling; do
             docker buildx imagetools create \
@@ -312,18 +313,33 @@ jobs:
               "$NS:verify-x86_64" \
               "$NS:verify-aarch64"
           done
+          # Resolve the manifest digest so cosign can sign by digest
+          # (deterministic, no tag-vs-digest race, no cosign warning).
+          # Both :$VER and :rolling point at this same digest.
+          digest=$(docker buildx imagetools inspect "$NS:$VER" \
+            --format '{{ json .Manifest }}' | jq -r '.digest')
+          echo "namespace=$NS" >> "$GITHUB_OUTPUT"
+          echo "digest=$digest" >> "$GITHUB_OUTPUT"
+          echo "ref=$NS@$digest" >> "$GITHUB_OUTPUT"
+          {
+            echo "## ${{ matrix.image }}-distroless published"
+            echo
+            echo "Immutable reference:"
+            echo
+            echo "    $NS:$VER@$digest"
+            echo
+            echo "Rolling:"
+            echo
+            echo "    $NS:rolling@$digest"
+          } >> "$GITHUB_STEP_SUMMARY"
 
       - name: Install cosign
         uses: sigstore/cosign-installer@6f9f17788090df1f26f669e9d70d6ae9567deba6 # v4.1.2
 
-      - name: Cosign keyless sign
+      - name: Cosign keyless sign (by digest)
         shell: bash
         env:
           COSIGN_EXPERIMENTAL: "true"
         run: |
           set -euo pipefail
-          NS="${{ env.REGISTRY_NAMESPACE }}/${{ matrix.image }}"
-          VER="${{ steps.ver.outputs.version }}"
-          for tag in "$VER" rolling; do
-            cosign sign --yes "$NS:$tag"
-          done
+          cosign sign --yes "${{ steps.manifest.outputs.ref }}"
