@@ -22,6 +22,19 @@
       datasourceTemplate: "{{#if datasource}}{{{datasource}}}{{else}}github-releases{{/if}}",
       versioningTemplate: "{{#if versioning}}{{{versioning}}}{{else}}semver{{/if}}",
     },
+    {
+      customType: "regex",
+      description: "Process trailing renovate annotations in melange/apko YAML and workflow env",
+      managerFilePatterns: [
+        "/(^|/)(melange|apko)\\.yaml$/",
+        "/^\\.github/workflows/.*\\.ya?ml$/",
+      ],
+      matchStrings: [
+        ".+?:\\s+\"?(?<currentValue>[^\"\\s#]+)\"?\\s+#\\s*renovate:\\s+datasource=(?<datasource>\\S+)\\s+depName=(?<depName>\\S+)(\\s+versioning=(?<versioning>\\S+))?",
+      ],
+      datasourceTemplate: "{{#if datasource}}{{{datasource}}}{{else}}github-releases{{/if}}",
+      versioningTemplate: "{{#if versioning}}{{{versioning}}}{{else}}semver{{/if}}",
+    },
   ],
   customDatasources: {
     qbittorrent: {
@@ -53,6 +66,22 @@
     },
   },
   packageRules: [
+    {
+      description: [
+        "Group distroless toolchain updates across managers (mise + workflow env)",
+      ],
+      matchPackageNames: [
+        "chainguard-dev/melange",
+        "chainguard-dev/apko",
+        "sigstore/cosign",
+        "anchore/grype",
+      ],
+      groupName: "{{depName}}",
+      groupSlug: "{{depName}}",
+      commitMessageTopic: "{{depName}}",
+      semanticCommitType: "chore",
+      semanticCommitScope: "distroless",
+    },
     {
       description: ["Release Rules for App Updates"],
       addLabels: ["app/{{parentDir}}"],

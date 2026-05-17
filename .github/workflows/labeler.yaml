@@ -2,9 +2,11 @@
 # yaml-language-server: $schema=https://json.schemastore.org/github-workflow.json
 name: Labeler
 
+# Temporarily disabled in this fork: requires BOT_APP_ID / BOT_APP_PRIVATE_KEY
+# secrets that aren't configured here. Re-enable by restoring the
+# `pull_request_target:` trigger.
 on:
-  # zizmor: ignore[dangerous-triggers]
-  pull_request_target:
+  workflow_dispatch:
 
 permissions:
   contents: read
