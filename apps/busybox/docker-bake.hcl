@@ -13,6 +13,10 @@ variable "SOURCE" {
   default = "https://www.busybox.net"
 }
 
+variable "FLAVOR" {
+  default = "busybox"
+}
+
 group "default" {
   targets = ["image-local"]
 }

@@ -13,6 +13,10 @@ variable "SOURCE" {
   default = "https://github.com/actions/runner"
 }
 
+variable "FLAVOR" {
+  default = "ubuntu"
+}
+
 group "default" {
   targets = ["image-local"]
 }

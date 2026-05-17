@@ -13,6 +13,10 @@ variable "SOURCE" {
   default = "https://github.com/plexinc/pms-docker"
 }
 
+variable "FLAVOR" {
+  default = "ubuntu"
+}
+
 group "default" {
   targets = ["image-local"]
 }
