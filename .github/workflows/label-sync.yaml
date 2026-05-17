@@ -2,9 +2,10 @@
 # yaml-language-server: $schema=https://json.schemastore.org/github-workflow.json
 name: Label Sync
 
+# Temporarily disabled in this fork: requires BOT_APP_ID / BOT_APP_PRIVATE_KEY
+# secrets that aren't configured here. Re-enable by restoring the
+# `schedule:` trigger.
 on:
-  schedule:
-    - cron: 30 1 * * *
   workflow_dispatch:
 
 permissions:

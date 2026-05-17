@@ -129,6 +129,15 @@ jobs:
 
           echo "::group::Load image into docker"
           docker load -i output.tar
+          # apko's single-arch build appends `-<docker_arch>` to the tag on
+          # load (x86_64→amd64, aarch64→arm64). Re-tag to the clean name so
+          # downstream steps can reference IMG without arch-suffix gymnastics.
+          case "${{ matrix.arch }}" in
+            x86_64)  loaded_suffix=amd64 ;;
+            aarch64) loaded_suffix=arm64 ;;
+            *) echo "::error::Unknown arch ${{ matrix.arch }}"; exit 1 ;;
+          esac
+          docker tag "${IMG}-${loaded_suffix}" "${IMG}"
           echo "::endgroup::"
 
           echo "::group::Must run as non-root"
