@@ -13,6 +13,10 @@ variable "SOURCE" {
   default = "https://github.com/esphome/esphome"
 }
 
+variable "FLAVOR" {
+  default = "debian"
+}
+
 group "default" {
   targets = ["image-local"]
 }

@@ -18,6 +18,12 @@ outputs:
   version:
     description: Version
     value: ${{ steps.options.outputs.version }}
+  flavor:
+    description: Build flavor (alpine, ubuntu, debian, ...). Defaults to "alpine" when FLAVOR is not set in docker-bake.hcl. The sentinel value "none" means no flavor suffix is applied to the published image name (used for single-flavor apps like busybox).
+    value: ${{ steps.options.outputs.flavor }}
+  image_name:
+    description: Published image name relative to the registry namespace — `<app>-<flavor>` for normal apps, bare `<app>` when FLAVOR is "none".
+    value: ${{ steps.options.outputs.image_name }}
 
 runs:
   using: composite
@@ -39,7 +45,24 @@ runs:
             docker buildx bake --list type=variables,format=json --progress=quiet \
                 | jq --raw-output '.[] | select(.name == "VERSION") | .value' \
         )
+        # Flavor controls the published image-name suffix
+        # (<app>-<flavor>). Default to "alpine" so the ~30 alpine-based
+        # apps need no per-app change; non-alpine apps declare FLAVOR
+        # explicitly in their docker-bake.hcl. The sentinel "none"
+        # means no suffix at all — used for apps that will only ever
+        # ship one flavor (e.g. busybox).
+        FLAVOR=$(\
+            docker buildx bake --list type=variables,format=json --progress=quiet \
+                | jq --raw-output '[.[] | select(.name == "FLAVOR")][0].value // "alpine"' \
+        )
+        if [ "$FLAVOR" = "none" ] || [ -z "$FLAVOR" ]; then
+          IMAGE_NAME="${{ inputs.app }}"
+        else
+          IMAGE_NAME="${{ inputs.app }}-${FLAVOR}"
+        fi
 
         echo "platforms=${PLATFORMS}" >> $GITHUB_OUTPUT
         echo "source=${SOURCE}" >> $GITHUB_OUTPUT
         echo "version=${VERSION}" >> $GITHUB_OUTPUT
+        echo "flavor=${FLAVOR}" >> $GITHUB_OUTPUT
+        echo "image_name=${IMAGE_NAME}" >> $GITHUB_OUTPUT

@@ -17,6 +17,10 @@ variable "SOURCE" {
   default = "https://github.com/MediaBrowser/Emby.Releases"
 }
 
+variable "FLAVOR" {
+  default = "ubuntu"
+}
+
 target "image" {
   inherits = ["docker-metadata-action"]
   args = {
