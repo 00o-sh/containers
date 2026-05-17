@@ -30,6 +30,8 @@ permissions:
   contents: read
   packages: write
   id-token: write
+  security-events: write
+  pull-requests: write
 
 env:
   REGISTRY_NAMESPACE: ghcr.io/${{ github.repository_owner }}
@@ -215,13 +217,93 @@ jobs:
           path: ~/.cache/grype/db
 
       - name: Grype scan (fail on HIGH+)
+        id: grype
         uses: anchore/scan-action@e1165082ffb1fe366ebaf02d8526e7c4989ea9d2 # v7.4.0
         with:
           image: ${{ env.REGISTRY_NAMESPACE }}/${{ matrix.image }}-distroless:verify-${{ matrix.arch }}
           fail-build: true
           severity-cutoff: high
           only-fixed: true
-          output-format: table
+          output-format: sarif
+
+      - name: Upload Grype SARIF to Security tab
+        if: always() && steps.grype.outputs.sarif != ''
+        uses: github/codeql-action/upload-sarif@68bde559dea0fdcac2102bfdf6230c5f70eb485e # v4.35.4
+        with:
+          sarif_file: ${{ steps.grype.outputs.sarif }}
+          category: grype-${{ matrix.image }}-distroless-${{ matrix.arch }}
+
+      - name: Trivy scan (second opinion, fail on HIGH+)
+        id: trivy
+        uses: aquasecurity/trivy-action@a9c7b0f06e461e9d4b4d1711f154ee024b8d7ab8 # v0.36.0
+        with:
+          image-ref: ${{ env.REGISTRY_NAMESPACE }}/${{ matrix.image }}-distroless:verify-${{ matrix.arch }}
+          format: sarif
+          output: trivy-${{ matrix.arch }}.sarif
+          severity: CRITICAL,HIGH
+          ignore-unfixed: true
+          exit-code: "1"
+          hide-progress: true
+
+      - name: Upload Trivy SARIF to Security tab
+        if: always() && hashFiles(format('trivy-{0}.sarif', matrix.arch)) != ''
+        uses: github/codeql-action/upload-sarif@68bde559dea0fdcac2102bfdf6230c5f70eb485e # v4.35.4
+        with:
+          sarif_file: trivy-${{ matrix.arch }}.sarif
+          category: trivy-${{ matrix.image }}-distroless-${{ matrix.arch }}
+
+      - name: Render CVE scan summary
+        # Aggregate both scanners' findings into a per-image summary.
+        # Only render once per image (from x86_64) — package set is
+        # identical across arches in apko-built images, so the aarch64
+        # SARIFs are redundant for human display (still uploaded to
+        # Security tab with distinct categories).
+        if: always() && matrix.arch == 'x86_64'
+        id: cve_summary
+        shell: bash
+        run: |
+          set +e
+          count_sarif() {
+            local f="$1"
+            [ -f "$f" ] || { echo 0; return; }
+            jq '[.runs[].results // []] | flatten | length' "$f" 2>/dev/null || echo 0
+          }
+          grype_count=$(count_sarif "${{ steps.grype.outputs.sarif }}")
+          trivy_count=$(count_sarif "trivy-${{ matrix.arch }}.sarif")
+          repo_url="${{ github.server_url }}/${{ github.repository }}"
+
+          {
+            echo "### CVE scan — \`${{ matrix.image }}-distroless\`"
+            echo
+            echo "| Scanner | HIGH+ fixable |"
+            echo "|---|---|"
+            echo "| Grype | $grype_count |"
+            echo "| Trivy | $trivy_count |"
+            echo
+            echo "Full findings: [Security tab]($repo_url/security/code-scanning?query=is%3Aopen+ref%3Arefs%2Fheads%2F${{ github.head_ref || github.ref_name }})"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+          {
+            echo "grype=$grype_count"
+            echo "trivy=$trivy_count"
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Post sticky PR comment with CVE summary
+        if: always() && github.event_name == 'pull_request' && matrix.arch == 'x86_64'
+        uses: marocchino/sticky-pull-request-comment@0ea0beb66eb9baf113663a64ec522f60e49231c0 # v3.0.4
+        with:
+          header: distroless-cve-scan-${{ matrix.image }}
+          message: |
+            ### CVE scan — `${{ matrix.image }}-distroless`
+
+            | Scanner | HIGH+ fixable |
+            |---|---|
+            | Grype | ${{ steps.cve_summary.outputs.grype }} |
+            | Trivy | ${{ steps.cve_summary.outputs.trivy }} |
+
+            Both scanners gate on `CRITICAL,HIGH` + `--only-fixed`. Build fails if either reports >0.
+
+            Full findings live in the [Security tab](${{ github.server_url }}/${{ github.repository }}/security/code-scanning) under categories `grype-${{ matrix.image }}-distroless-*` and `trivy-${{ matrix.image }}-distroless-*`.
 
       - name: Log in to GHCR
         if: github.event_name != 'pull_request'
