@@ -50,18 +50,28 @@ After #14 merge, two upload-sarif call sites in `vulnerability-scan.yaml` were b
 
 ### 7. Renovate Cloud enablement on the fork
 
-**Status:** `forkProcessing: "enabled"` added to `.renovaterc.json5` (this PR). The Mend-hosted Renovate App is already installed but had been silently skipping the repo because forks are excluded by default.
+**Status:** `forkProcessing: "enabled"` added to `.renovaterc.json5` (this PR). The Mend-hosted Renovate App is already installed but had been silently skipping the repo because Renovate's platform-level default for forks is `disabled` and neither the home-operations preset nor the local config previously overrode it.
 
-**Expected behavior after merge:**
+**Verified via the upstream preset (gh api repos/home-operations/renovate-config):** `default.json` does not set `forkProcessing`; `autoMerge.json5` doesn't either. So the disabled-fork behavior is the platform default kicking in, not the preset disabling it.
 
-- Renovate creates the "Dependency Dashboard" issue on its first successful run (visible signal that it's working — its absence is what diagnosed the problem).
-- A wave of 20–40 PRs lands as the backlog clears: base-image bumps (`Alpine 3.23.X`), action SHA bumps (codeql, etc.), tool version bumps in `.mise.toml` and `docker-bake.hcl` annotations.
-- `docker-bake.hcl` updates **auto-merge** per the existing `packageRules` (PR-time CVE gate at CRITICAL still gates each merge — anything with CRITICAL+fixable is blocked).
-- Tool / workflow / preset bumps in non-bake files require manual review.
+**Dashboard title:** the preset names the dashboard `Renovate Dashboard 🤖` (not the default "Dependency Dashboard"). Search for that exact title to find it after the first successful run. As of merge time, **zero issues** exist on the fork — confirming Renovate has never run.
+
+**Auto-merge surface (wider than initially framed):**
+
+| Source | What auto-merges |
+|---|---|
+| Upstream `autoMerge.json5` | All `github-actions` minor/patch/digest (3-day delay) |
+| Upstream `autoMerge.json5` | Trusted GH Actions publishers (`actions/`, `anchore/`, `docker/`, `renovatebot/`, `sigstore/`) — minor/patch/digest, **1-min delay** |
+| Upstream `autoMerge.json5` | All `mise` tool minor/patch bumps |
+| Local `.renovaterc.json5` | `docker-bake.hcl` changes (apps `VERSION` bumps) |
+
+`ignoreTests: true` on the upstream rules means CI gates don't block those merges — fine for workflow-file bumps (no image rebuild involved) but worth knowing. `docker-bake.hcl` bumps DO go through CI (`ignoreTests: false` locally), so the CVE gate still applies.
+
+**Expected first-day behavior after merge:** Dependency dashboard issue appears, then 40–80+ PRs over a few hours (more than the earlier 20–40 estimate — wider auto-merge surface). Most land without your involvement.
 
 **If it still doesn't work after this merges:**
 
-- Check Mend dashboard at app.mend.io/renovate for the run log; look for "this is a fork, skipping" (means `forkProcessing` didn't take effect) or preset resolution errors (the `github>home-operations/renovate-config` preset may have been moved or made private).
+- Check Mend dashboard at app.mend.io/renovate for the run log; look for `"this is a fork, skipping"` (means `forkProcessing` didn't take effect) or preset resolution errors.
 - Force-run from the Mend UI to skip the scheduled-cycle wait.
 - The `renovate.yaml` workflow in this repo is still disabled (thread #2) and is *not* the runner — don't confuse the two paths.
 
