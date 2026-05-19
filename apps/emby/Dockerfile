@@ -19,14 +19,23 @@ RUN \
         catatonit \
         curl \
         jq \
-        liblttng-ust1t64 \
-        libicu74 \
-        libssl3t64 \
         nano \
         tzdata \
     && \
     curl -fsSL -o /tmp/emby.deb \
         "https://github.com/MediaBrowser/Emby.Releases/releases/download/${VERSION}/emby-server-deb_${VERSION}_${TARGETARCH}.deb" \
+    && \
+    # Install whatever emby's .deb declares as Depends. We use `dpkg-deb -xv`
+    # below to extract (skipping postinst), so apt isn't resolving these for
+    # us automatically. Doing it here auto-tracks new deps across emby
+    # releases — the static list approach in #27 caught 4.9.3.0 but not
+    # 4.9.5.0 because upstream added more runtime libs. Strip version
+    # constraints in parens and pick the first alternative for `pkg1 | pkg2`.
+    apt-get install -y --no-install-recommends --no-install-suggests \
+        $(dpkg-deb -f /tmp/emby.deb Depends \
+            | tr ',' '\n' \
+            | sed -e 's/([^)]*)//g' -e 's/|.*$//' \
+            | xargs) \
     && \
     mkdir -p /app/bin /tmp/emby \
     && dpkg-deb -xv /tmp/emby.deb /tmp/emby/ \
