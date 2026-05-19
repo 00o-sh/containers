@@ -6,16 +6,15 @@ run = "gofmt -s -w {staged_files}"
 glob = ["*.go"]
 stage_fixed = true
 
-[pre-commit.commands.format-just]
-run = """
-for file in {staged_files}; do
-    just --justfile "$file" --fmt --unstable
-done
-"""
-glob = ["*.just", ".justfile"]
-stage_fixed = true
-
 [pre-commit.commands.format-yaml]
 run = "yamlfmt {staged_files}"
-glob = ["*.yaml"]
+glob = ["*.yml", "*.yaml"]
 stage_fixed = true
+
+[pre-commit.commands.shellcheck]
+glob = "*.sh"
+run = "shellcheck {staged_files}"
+
+[pre-commit.commands.zizmor]
+glob = [".github/workflows/*.yaml", ".github/actions/**/action.yaml"]
+run = "zizmor --offline {staged_files}"

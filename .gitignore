@@ -1,3 +1,5 @@
 .cache
+.claude/*
+!.claude/STATE.md
 .private
 docker-bake.json

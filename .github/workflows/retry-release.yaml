@@ -2,7 +2,7 @@
 # yaml-language-server: $schema=https://json.schemastore.org/github-workflow.json
 name: Retry Release
 
-# Temporarily disabled in this fork: requires BOT_APP_ID / BOT_APP_PRIVATE_KEY
+# Temporarily disabled in this fork: requires BOT_CLIENT_ID / BOT_APP_PRIVATE_KEY
 # secrets that aren't configured here. Re-enable by restoring the `schedule:`
 # trigger once the bot app is provisioned. Tracked in .claude/STATE.md.
 on:
@@ -48,7 +48,7 @@ jobs:
         uses: actions/create-github-app-token@bcd2ba49218906704ab6c1aa796996da409d3eb1 # v3.2.0
         id: app-token
         with:
-          app-id: ${{ secrets.BOT_APP_ID }}
+          client-id: ${{ secrets.BOT_CLIENT_ID }}
           private-key: ${{ secrets.BOT_APP_PRIVATE_KEY }}
 
       - name: Install Cosign

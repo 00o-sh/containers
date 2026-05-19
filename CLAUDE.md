@@ -15,14 +15,16 @@ Of the published images, only `cloudflared-distroless` is currently consumed dow
 
 ## Common commands
 
-Tooling is pinned in `.mise.toml` (apko, melange, grype, cosign, just, yq, gh, go). `mise install` to provision; `lefthook install` to wire pre-commit hooks (gofmt, just --fmt, yamlfmt).
+Tooling is pinned in `.mise.toml` (apko, melange, grype, cosign, yq, gh, go, node, shellcheck, zizmor). `mise install` provisions everything and runs `lefthook install` via the postinstall hook (pre-commit: gofmt, yamlfmt).
+
+Tasks live in `.mise.toml` (the upstream `.justfile` was removed in the 2026-05-18 sync — `just` is no longer in the toolchain):
 
 ```sh
 # Build + test a single app locally (uses docker buildx bake → loads image → runs Go test)
-just local-build <app>
+mise run local-build <app>
 
 # Trigger the remote release workflow for an app (gh CLI)
-just remote-build <app> [release=true|false]
+mise run remote-build <app> [release]
 
 # Run a single app's container tests against a pre-built image
 TEST_IMAGE=<image-ref> go test -v ./apps/<app>/...
@@ -95,7 +97,7 @@ Each app's `container_test.go` is a thin caller. The `TEST_IMAGE` env var overri
 
 ## CI safety details worth knowing
 
-- **Bot-app fallback**: `app-builder.yaml`'s test/announce paths check for `BOT_APP_ID`; forks (this one included) lack it and fall back to `github.token`. Don't add a hard dependency on `BOT_APP_*` secrets.
+- **Bot-app fallback**: `app-builder.yaml`'s test/announce paths check for `BOT_APP_ID` (the secret upstream's detection step keys off — note that upstream renamed the *consuming* step to `client-id: BOT_CLIENT_ID`, but the detection guard still looks for `BOT_APP_ID`, so on a fork with only `BOT_CLIENT_ID` provisioned the fallback always engages). This fork doesn't provision either, so all paths fall back to `github.token`. Don't add a hard dependency on `BOT_*` secrets.
 - **Vulnerability scan tolerates missing images**: `vulnerability-scan.yaml` uses `continue-on-error` + `steps.scan.outcome == 'success'` to guard the SARIF upload, so newly renamed or never-published images don't break the daily run.
 - **Renovate-only versioning**: never edit `VERSION` defaults in `docker-bake.hcl` or pinned action SHAs by hand without a Renovate-shaped comment (`// renovate: datasource=...`). The `// renovate: datasource=docker depName=ghcr.io/wolfi-dev/sdk` style is what keeps the pipeline current.
 - **Image structure assertions are load-bearing**: the distroless workflow re-tags loaded images from `<img>-amd64`/`<img>-arm64` back to the clean name; don't simplify that step.

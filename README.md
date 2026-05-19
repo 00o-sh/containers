@@ -156,14 +156,6 @@ Containers in this repository may be deprecated for the following reasons:
 
 **Note**: Deprecated containers will be announced with a release and remain available in the registry for 6 months before removal.
 
-## Maintaining a Fork
-
-Forking this repository is straightforward. Keep the following in mind:
-
-1. **Renovate Bot**: Set up a GitHub Bot for Renovate by following the instructions [here](https://github.com/renovatebot/github-action).
-2. **Renovate Configuration**: Configuration files are located in the [`.github`](https://github.com/home-operations/.github) and [renovate-config](https://github.com/home-operations/renovate-config) repositories.
-3. **Lowercase Naming**: Ensure your GitHub username/organization and repository names are entirely lowercase to comply with GHCR requirements. Rename them or update workflows as needed.
-
 ## Credits
 
 This repository draws inspiration and ideas from the home-ops community, [hotio.dev](https://hotio.dev/), and [linuxserver.io](https://www.linuxserver.io/) contributors.

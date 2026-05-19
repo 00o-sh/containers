@@ -2,59 +2,72 @@
 
 Live working log. Future Claude: **read this first**, then update it as you go (mark items resolved, add new threads, prune stale ones). If this file contradicts the repo, trust the repo and fix the file.
 
-**Last updated:** 2026-05-18 (session: CVE gate softening shipped on top of bot-app trigger bypass)
+**Last updated:** 2026-05-18 (session: upstream sync #14 — license / justfile→mise / BOT_CLIENT_ID rename absorbed)
 
 ---
 
 ## Current branch
 
-`fix/apps-cve-gate-critical` — this PR. Stacked on `fix/bot-app-trigger-bypass` (PR #12). Merge order: #12 first, then this one.
+`main`. PR #12 (bot-app trigger bypass) and #13 (apps CVE gate softened to CRITICAL) both merged. PR #14 (`Pull From origin`) being landed now via local merge resolution + push to fork's main.
 
 ## Open threads
 
-### 1. Apps CVE gate raised to CRITICAL (resolved in this PR; visibility tradeoff to monitor)
+### 1. CVE gate softened to CRITICAL on apps/ (resolved in #13)
 
-**Shipped (2026-05-18):** apps/ track gated on `CRITICAL + --only-fixed`. Distroless track unchanged (still `HIGH+` + `--only-fixed`). Edit lives in `.github/workflows/app-builder.yaml` — see the inline comments on the Grype and Trivy steps for rationale.
+`app-builder.yaml`: apps/ track gated on `CRITICAL + --only-fixed`. Distroless track unchanged (still `HIGH+` + `--only-fixed`). Inline comments on the Grype and Trivy steps document the rationale.
 
-**Why this is OK for the apps/ track:** only `cloudflared-distroless` is consumed by the cluster. The ~10 HIGH findings (Run `26003929109`: `cni-plugins`, `actions-runner`, `bazarr`, `deluge`, `emby`, `esphome`, `home-assistant`, `lidarr`, `nzbhydra2`, `opentofu-runner`, …) come from upstream Alpine patch cadence on a dormant fleet. A strict gate held releases hostage to upstream timing without protecting anything the operator actually runs.
+**Tradeoff still in effect:** HIGH findings no longer land in apps/ SARIF, so they drop off the Security tab and the sticky PR comment for these images. Distroless still surfaces everything HIGH+. If you want HIGH surfaced for apps/ as report-only (no fail-build), add a second non-failing Grype invocation.
 
-**Tradeoff to know:** with `severity-cutoff: critical`, HIGH findings no longer land in SARIF for apps/, so they drop off the Security tab and PR sticky comment for these images. If you want HIGH still surfaced as visibility-only (no fail-build), add a second non-failing Grype invocation — not done now to keep the diff small. Distroless still surfaces everything HIGH+.
+**Long-term fix:** restore Renovate (thread #2) so base-image bumps land organically; migrate dormant `apps/` images to `distroless/`.
 
-**Follow-ups (not in this PR):**
+### 2. Bot-app workflows: auto-triggers stripped (resolved in #12; secret renamed in #14)
 
-- Restore Renovate (see thread #2) so base-image bumps land organically — that's the actual path to clearing the CRITICAL+HIGH backlog over time.
-- Migrate dormant `apps/` images to `distroless/` per the standing migration plan. Each migrated image then gates strict.
+**Status:** auto-triggers disabled in #12. Workflows still callable via `workflow_dispatch`:
 
-### 2. Bot-app workflows: auto-triggers stripped (this PR), re-enable when BOT_APP_ID is provisioned
+- `stale.yaml` — `schedule:` stripped.
+- `retry-release.yaml` — `schedule:` stripped.
+- `renovate.yaml` — `push:` stripped. **Side effect: no Renovate runs fire for this fork** — base-image / package bumps stop arriving organically. Directly relevant to thread #1.
+- `labeler.yaml`, `label-sync.yaml` — already neutered upstream pre-#12.
+- `deprecate-app.yaml` — `workflow_dispatch` only; left as-is.
 
-**Status:** auto-triggers disabled in this PR. Affected files:
+**Important rename absorbed via #14:** upstream renamed the GitHub-App secret from `BOT_APP_ID` (numeric app-id) to `BOT_CLIENT_ID` (the client-id GitHub now prefers — `app-id` is deprecated). The `BOT_APP_PRIVATE_KEY` secret name is unchanged. **Re-enable instructions:** provision `BOT_CLIENT_ID` + `BOT_APP_PRIVATE_KEY` and restore the `schedule:` / `push:` blocks (search for "Temporarily disabled in this fork" in the three workflows above).
 
-- `stale.yaml` — stripped `schedule: 30 1 * * *`. Still callable via `workflow_dispatch`.
-- `retry-release.yaml` — stripped `schedule: 30 1 * * *`. Still callable via `workflow_dispatch`.
-- `renovate.yaml` — stripped `push: branches: main` trigger. **Side effect: Renovate no longer fires for this fork**, so base-image / package bumps stop arriving organically. Relevant to thread #1 — Renovate is normally how Alpine patches land.
-- `labeler.yaml`, `label-sync.yaml` — already neutered upstream of this PR (`workflow_dispatch` only with the same comment pattern). No changes.
-- `deprecate-app.yaml` — `workflow_dispatch` only already. Will error if the operator manually invokes it; left as-is so the error surfaces at the time of intent.
+**Subtle upstream bug to know about:** `app-builder.yaml`'s `Detect bot-app secret` step still keys off `BOT_APP_ID`, even though the consuming `Generate Token` step uses `client-id: BOT_CLIENT_ID`. On a fork with only `BOT_CLIENT_ID` provisioned, the detection always says "not configured" and the `github.token` fallback always fires. Harmless on this fork (no bot app anyway), but the detection step needs to be updated to check `BOT_CLIENT_ID` if you ever want the bot-app code path to engage. Upstream issue worth filing.
 
-**Re-enable when `BOT_APP_ID` + `BOT_APP_PRIVATE_KEY` are configured:** restore the `schedule:` / `push:` blocks in each file (search for "Temporarily disabled in this fork"). The same pattern is already used as a sentinel in `labeler.yaml`/`label-sync.yaml`, so the diff is mechanical.
+### 3. Tooling migration: `.justfile` removed; tasks in `mise`
 
-`app-builder.yaml` is **not** affected — it already has the `Detect bot-app secret` fallback pattern and works on the fork with `github.token`. Don't touch it.
+Absorbed via #14. The `.justfile` is gone; equivalent tasks live in `.mise.toml` under `[tasks.local-build]`, `[tasks.remote-build]`, `[tasks.generate-label-config]`. New invocation: `mise run local-build <app>` (was `just local-build <app>`).
 
-### 3. Local branch hygiene
+CLAUDE.md updated to match. `just` is dropped from `.mise.toml`'s `[tools]` (no longer needed).
 
-10 merged feature branches sit locally (all squash-merged on origin):
-`chore/mise-dev-tools`, `feat/apps-cve-scan`, `feat/apps-flavor-suffix`, `feat/distroless-cloudflared-pilot`, `feat/distroless-cve-visibility`, `feat/distroless-image-suffix-and-cosign-digest`, `feat/distroless-sandbox-and-attest`, `feat/vuln-scan-distroless`, `fix/distroless-version-from-sbom`, `fix/vuln-scan-tolerate-missing`.
+### 4. License: MIT → Apache 2.0
 
-Plus `fix/vuln-scan-outcome-guard` (the previous working branch, squashed-merged as #11). Confirm before deleting any (the operator may use them as historical reference points).
+Absorbed via #14. Devin Buhl committed `chore: update LICENSE` upstream on 2026-05-18; the repo is now Apache 2.0. Functionally equivalent permissive license to MIT plus an explicit patent grant + attribution-preservation requirement. **Not Bitnami**, no commercial restrictions. No downstream impact for this fork's distribution model.
+
+### 5. Stale codeql-action SHAs in non-conflicting workflows
+
+After #14 merge, two upload-sarif call sites in `vulnerability-scan.yaml` were bumped to `v4.35.5` (one resolved via conflict, one bumped for in-file consistency). The remaining sites — `app-builder.yaml` (2x) and `distroless-build.yaml` (2x) — are still pinned to `v4.35.4`. Renovate would normally catch these but is paused for the fork (thread #2). Bump them in a small follow-up PR or wait until Renovate is restored.
+
+### 6. Local branch hygiene
+
+11 merged feature branches sit locally (all squash-merged on origin):
+`chore/mise-dev-tools`, `feat/apps-cve-scan`, `feat/apps-flavor-suffix`, `feat/distroless-cloudflared-pilot`, `feat/distroless-cve-visibility`, `feat/distroless-image-suffix-and-cosign-digest`, `feat/distroless-sandbox-and-attest`, `feat/vuln-scan-distroless`, `fix/distroless-version-from-sbom`, `fix/vuln-scan-tolerate-missing`, `fix/vuln-scan-outcome-guard`, plus `fix/bot-app-trigger-bypass` and `fix/apps-cve-gate-critical` (this session's PRs, now merged).
+
+Confirm before deleting any (the operator may use them as historical reference points).
 
 ## Recently closed (last 7 days)
 
-- #1–#11 — full distroless pilot landed: cloudflared via Wolfi+apko, naming convention `<app>-<flavor>` / `<image>-distroless`, sandbox PR tags, attestation, dual scanner CVE gate, sticky comments, daily Wolfi rebuild + daily vuln scan, two scan-resilience fixes (#10, #11).
+- **#14** — upstream sync absorbed (this session). License → Apache 2.0; `.justfile` → `mise` tasks; `BOT_APP_ID` → `BOT_CLIENT_ID`; codeql-action bumped to v4.35.5 in vulnerability-scan; structural deletions (CODE_OF_CONDUCT.md, CONTRIBUTING.md, SECURITY.md). Two conflicts resolved: `.mise.toml` (union of toolchains) and `.github/workflows/vulnerability-scan.yaml` (kept #11's `if:` guard + upstream's SHA bump).
+- **#13** — apps/ CVE gate softened to CRITICAL.
+- **#12** — bot-app workflow auto-triggers stripped on the fork.
+- **#1–#11** — full distroless pilot landed (see PR history).
 
 ## Don't forget
 
 - **Only `cloudflared-distroless` is consumed downstream.** Frame PR risk on `apps/` accordingly — those images are dormant.
 - **Renovate-style version pins**: never edit `VERSION` defaults in `docker-bake.hcl` without the `// renovate: datasource=...` comment.
-- **`BOT_APP_ID` won't be added to this fork (for now)** — design fixes around `github.token` fallback, not around acquiring the secret.
+- **`BOT_CLIENT_ID` won't be added to this fork (for now)** — design fixes around `github.token` fallback, not around acquiring the secret. The bot-app code paths in upstream workflows all gracefully degrade.
+- **Tools**: prefer `mise run <task>` over assuming `just` is on PATH — `.justfile` is gone.
 
 ---
 
