@@ -71,6 +71,27 @@
   },
   packageRules: [
     {
+      // Repology.org returns intermittent ETIMEDOUT (e.g. Mend run on
+      // 2026-05-19 aborted on a `deluge` lookup) and Renovate's
+      // external-host-error behavior is hardcoded to abort the entire
+      // repository run — taking down PR creation for every other
+      // package that cycle. The repology datasource itself has no
+      // tunable timeout/retry/mirror knobs (docs.renovatebot.com/
+      // modules/datasource/repology/), so the practical fix is to
+      // opt out of repology lookups entirely on this fork.
+      //
+      // Scope: only 3 apps inherited the upstream `datasource=repology`
+      // annotation (apps/deluge, apps/transmission, apps/irqbalance,
+      // each pinning their Alpine apk version). Those three lose
+      // version-bump tracking from this datasource. None are consumed
+      // downstream — acceptable per the fork's dormant-apps policy.
+      // Migrate them to `datasource=github-releases` (or a custom
+      // datasource) if/when they need ongoing tracking.
+      description: ["Disable repology datasource — flake source, no tunable resilience"],
+      matchDatasources: ["repology"],
+      enabled: false,
+    },
+    {
       description: [
         "Group distroless toolchain updates across managers (mise + workflow env)",
       ],

@@ -2,13 +2,13 @@
 
 Live working log. Future Claude: **read this first**, then update it as you go (mark items resolved, add new threads, prune stale ones). If this file contradicts the repo, trust the repo and fix the file.
 
-**Last updated:** 2026-05-19 (session: distroless catalog work — kopia melange pilot, second distroless image)
+**Last updated:** 2026-05-19 (session: kopia melange pilot — second distroless image, first from-source recipe)
 
 ---
 
 ## Current branch
 
-`feat/distroless-kopia-pilot`. Renovate Cloud is now working (forkProcessing landed in #15) and already auto-merged 4 housekeeping bumps + PR #18 (melange env). PR #17 (repology skip) closed as unneeded. PR #19 (next Renovate-authored) waiting for CI.
+`feat/distroless-kopia-pilot`. PRs #22 (CVE bundle bypass) and #25 (repology disable) both merged. Kopia melange pilot still open as PR #21 — needed two fixes: build env repos (afbd39a) and test env repos (9206dc4). Currently rebased on top of #22 + #25.
 
 ## Open threads
 
@@ -65,7 +65,69 @@ After #14 merge, two upload-sarif call sites in `vulnerability-scan.yaml` were b
 - Force-run from the Mend UI to skip the scheduled-cycle wait.
 - The `renovate.yaml` workflow in this repo is still disabled (thread #2) and is *not* the runner — don't confuse the two paths.
 
-### 8. Distroless catalog expansion — kopia pilot (this PR)
+### 8. Bundled-vendor CVE policy: `.grype.yaml` + `.trivyignore.yaml` (this PR, expanded scope)
+
+**Motivation:** Started from PR #19 (emby bump blocked by ffmpeg `CVE-2026-40962`). User then asked to extend bypasses to cover the rest of the Security tab's CRITICAL+fixable advisories in one pass. Survey identified **24 unique CRITICAL CVE clusters** across the apps/ fleet, all upstream-vendored or upstream-only-controlled.
+
+**Categorization (all upstream-vendored / upstream-only-controlled):**
+
+| Cluster | Example CVEs | Affected apps | Fix path |
+|---|---|---|---|
+| Bundled ffmpeg | `CVE-2026-40962` | emby + 6 Alpine | emby re-bundle / Alpine 3.23.x patch |
+| Alpine python | `CVE-2026-6100`, `CVE-2026-7210` | 15+ Alpine apps | Alpine 3.23.x patch |
+| Go stdlib in upstream binaries | `CVE-2025-22871`, `CVE-2025-68121`, `CVE-2026-27143` | webhook, smartctl-exporter, cni-plugins, tqm, postgres-init, home-assistant, stash, actions-runner | Upstream re-release with newer Go |
+| theme-park nginx/php stack | `CVE-2025-48174` (libavif), `CVE-2025-49794`/`-49796` (libxml2), `CVE-2026-31789` (openssl), `CVE-2026-42945` (nginx) | theme-park | Upstream theme-park rebuild |
+| Debian 13 base | `CVE-2026-5450` (libc), `CVE-2026-33845`/`-42010` (libgnutls) | esphome-debian | Debian security update |
+| nzbhydra2 Java fat JAR | `GHSA-83qj-6fr2-vhqg`, `GHSA-95jq-rwvf-vjx4` (tomcat), `GHSA-c4q5-6c82-3qpw`, `GHSA-mf92-479x-3373` (spring-security-web) | nzbhydra2 | Upstream JAR rebuild |
+| pyload-ng + bazarr Python | `GHSA-3f7w-p8vr-4v5f`, `GHSA-8w3f-4r8f-pf53` (pyload-ng), `GHSA-9298-4cf8-g4wj` (waitress), `GHSA-vqfr-h8mv-ghfj` (h11) | pyload-ng, bazarr | Upstream pip-pin update |
+| Go embedded deps | `GHSA-v778-237x-gjrc` (golang.org/x/crypto), `GHSA-p77j-4mvh-x3m3` (grpc) | home-assistant, actions-runner, opentofu-runner | Upstream re-release |
+
+**Fix shape:**
+
+- `.grype.yaml` and `.trivyignore.yaml` at repo root, with 24 ignore entries each, organized in section blocks by root cause. All entries time-bounded to **2026-08-19** (~90 days from 2026-05-19).
+- Wired into all 5 Grype call sites via `config:` input and both Trivy call sites via `trivyignores:` input. PR-time + daily scan both honor the ignores.
+- Trivy enforces `expired_at` natively — after the date, the gate re-fails and forces re-evaluation. Grype doesn't enforce expiry, but the rationale comments document re-eval dates manually.
+
+**Operational impact:**
+
+- **Apps/ PR-time gate now clean** for all known CRITICAL+fixable CVEs. Future Renovate PRs should pass CI as long as they don't introduce NEW critical CVEs.
+- **Security tab noise drops** by 24 clusters worth of alerts after the next daily-scan run picks up the config change.
+- **No suppression of HIGH/MEDIUM/LOW** — those remain as informational signal in the Security tab. They never blocked builds (gate is critical-only post-#13).
+
+**What this does NOT do:**
+
+- Doesn't ignore future NEW CVEs. As Renovate bumps land and introduce different CVEs, the gate fires normally.
+- Doesn't change gate thresholds (apps/ still CRITICAL+fixable; distroless/ still HIGH+).
+- Doesn't suppress on `distroless/` images — the file is loaded there too for symmetry, but distroless shouldn't carry most of these vendored CVEs anyway.
+
+**Re-evaluation hooks (by 2026-08-19):**
+
+1. Trivy auto-fails on expiry — that's the forcing function. Run the gate intentionally; review what's still blocking.
+2. Check upstreams for re-bundle/re-release:
+   - Alpine 3.23.x for python + ffmpeg patches
+   - Debian 13 for libc + libgnutls patches
+   - emby, theme-park, nzbhydra2, pyload-ng, bazarr, webhook, smartctl-exporter, cni-plugins, tqm, home-assistant, opentofu-runner, actions-runner releases
+3. Any image migrating from `apps/` to `distroless/` drops out of its row entirely (the kopia precedent).
+
+### 9. Repology datasource disabled (this PR — reversal of the #17 close)
+
+**Reversal context:** Originally proposed in #17, closed by user as "don't think we need to skip repology" after the first Mend run succeeded enough to produce 4 auto-merges on 2026-05-19. Recurrent flakes since then prompted re-evaluation. Reading the [datasource docs](https://docs.renovatebot.com/modules/datasource/repology/) confirmed the datasource has no tunable knobs (no timeout, no retry, no mirror) — Renovate's external-host-error behavior is hardcoded to abort the entire repo run. Practical fix: opt out.
+
+**Scope of breakage on opt-out:** only 3 apps inherited upstream's `datasource=repology` annotation:
+
+| App | depName | Effect of disable |
+|---|---|---|
+| `apps/deluge` | `alpine_3_23/deluge` | VERSION pin stops auto-updating |
+| `apps/transmission` | `alpine_edge/transmission-daemon` | VERSION pin stops auto-updating |
+| `apps/irqbalance` | `alpine_3_23/irqbalance` | VERSION pin stops auto-updating |
+
+All three are dormant on the operator's cluster (only `cloudflared-distroless` consumed). Acceptable per standing policy.
+
+**Future cleanup option:** migrate each from `datasource=repology` to `datasource=github-releases` (or a custom datasource) if these apps ever need ongoing tracking. Not worth the engineering effort while they're dormant.
+
+**Implementation:** new `packageRule` at the top of `packageRules:` in `.renovaterc.json5` with `matchDatasources: ["repology"], enabled: false`. Carries the rationale + the docs link as inline comments so future-you understands why on a casual read.
+
+### 10. Distroless catalog expansion — kopia pilot (this PR)
 
 **Why kopia next:** survey of all 37 `apps/` against Wolfi's package set turned up exactly one apko-only candidate (`cni-plugins`), and its `rsync`-to-host runtime semantics fight distroless (no shell for glob expansion; would need an explicit-list `cmd:` or a melange overlay just to relocate files). The user's "easy" bucket — Go-static services — gives a cleaner first melange recipe, and kopia is the largest Go-static service in `apps/`.
 
@@ -77,7 +139,7 @@ After #14 merge, two upload-sarif call sites in `vulnerability-scan.yaml` were b
 
 **Boot smoke** added to `distroless-build.yaml`: `kopia --version`. Same shape as cloudflared's smoke arm.
 
-**Why this is the right first melange recipe:** Go-static is the cleanest possible recipe shape. If we can't make kopia work, the rest of the "easy" bucket migration is in trouble. If we can, the pattern transfers directly to webhook, smartctl-exporter, autobrr, qui, garage, tuppr, mysqld-exporter, k8s-gateway, prompp, kanidm, forgejo.
+**Pattern lesson for future melange recipes:** every recipe in this repo needs `repositories:` + `keyring:` declared in BOTH `environment.contents:` (build env) AND `test.environment.contents:` (test env). Wolfi's CI infrastructure provides them implicitly for in-tree recipes; ours have to spell them out twice. Two CI cycles burned learning this — bake the convention into CLAUDE.md as a footnote when kopia merges.
 
 **Known limitations (acceptable for v1):**
 

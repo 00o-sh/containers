@@ -1,0 +1,94 @@
+# Grype scan configuration. Consumed by anchore/scan-action via the
+# `config:` input across the workflows in .github/workflows/.
+#
+# Ignore policy: time-bounded suppressions for CRITICAL+fixable CVEs
+# that originate in upstream-vendored or upstream-only-controlled
+# packages — i.e., we can't patch them from this build pipeline.
+# Each entry carries an `# expires:` note and a brief rationale in
+# the surrounding section header.
+#
+# Scope:
+# - This file is loaded by both the PR-time apps/ scan (gates merges)
+#   and the daily nightly scan (Security tab surface). Entries here
+#   suppress the CVE in both contexts.
+# - Distroless track also loads this file for symmetry but shouldn't
+#   carry most of these (distroless images don't bundle ffmpeg, don't
+#   depend on Alpine's python apk, etc.).
+#
+# Maintenance:
+# - Grype itself doesn't enforce `expires:` — entries are revisited
+#   manually when they approach the date. Trivy's mirror file
+#   (.trivyignore.yaml) DOES enforce via `expired_at`, so the gate
+#   will re-fail on Trivy alone after expiry, forcing review.
+# - When the underlying upstream ships a patched release OR the
+#   affected app migrates to `distroless/`, the entry can be removed.
+
+ignore:
+  # ─── Bundled ffmpeg (CVE-2026-40962) ────────────────────────────
+  # emby bundles ffmpeg in its upstream .deb; Alpine 3.23's ffmpeg
+  # apk (8.0.1-r1) awaits an upstream patch. Affects emby + 6 Alpine
+  # apps that depend on Alpine's ffmpeg (bazarr, home-assistant,
+  # lidarr, octoprint, pyload-ng, stash). The CVE ID matches all
+  # 8 component-lib variants (libavcodec, libavfilter, …).
+  - vulnerability: CVE-2026-40962  # expires: 2026-08-19
+
+  # ─── Alpine 3.23 python apk (CVE-2026-6100, CVE-2026-7210) ──────
+  # Two CVEs in Alpine's `python` apk at 3.14.5-r0. Affects 15+
+  # Alpine-based apps that include python. Will be patched when
+  # Alpine 3.23.x ships an updated python apk. Renovate is
+  # constrained to Alpine 3.23.x by the existing packageRule, so
+  # we get the fix when Alpine ships it — not before.
+  - vulnerability: CVE-2026-6100   # expires: 2026-08-19
+  - vulnerability: CVE-2026-7210   # expires: 2026-08-19
+
+  # ─── Go stdlib in upstream prebuilt binaries ────────────────────
+  # Affects ~8 apps whose upstream ships a binary compiled with an
+  # older Go toolchain (webhook, smartctl-exporter, cni-plugins,
+  # tqm, postgres-init, home-assistant, stash, actions-runner).
+  # We extract these binaries via `curl … | tar xzf`; we don't
+  # recompile, so we can't pick up the patched Go stdlib until the
+  # upstream re-releases with a newer Go.
+  - vulnerability: CVE-2025-22871  # expires: 2026-08-19
+  - vulnerability: CVE-2025-68121  # expires: 2026-08-19
+  - vulnerability: CVE-2026-27143  # expires: 2026-08-19
+
+  # ─── theme-park bundled nginx/php stack ─────────────────────────
+  # theme-park ships its own nginx + PHP build via the upstream
+  # docker image; library CVEs are inside that vendored stack.
+  # All scoped to apps/theme-park's upstream base.
+  - vulnerability: CVE-2025-48174  # libavif — expires: 2026-08-19
+  - vulnerability: CVE-2025-49794  # libxml2 — expires: 2026-08-19
+  - vulnerability: CVE-2025-49796  # libxml2 — expires: 2026-08-19
+  - vulnerability: CVE-2026-31789  # libssl3/libcrypto3 — expires: 2026-08-19
+  - vulnerability: CVE-2026-42945  # nginx — expires: 2026-08-19
+
+  # ─── esphome-debian (Debian 13 base) ────────────────────────────
+  # esphome is the only Debian-based app. These CVEs are in Debian
+  # 13's libc + libgnutls packages awaiting Debian security
+  # updates. We get them when Debian ships them.
+  - vulnerability: CVE-2026-33845  # libgnutls30t64 — expires: 2026-08-19
+  - vulnerability: CVE-2026-42010  # libgnutls30t64 — expires: 2026-08-19
+  - vulnerability: CVE-2026-5450   # libc6/libc-bin — expires: 2026-08-19
+
+  # ─── nzbhydra2 bundled Java libs ────────────────────────────────
+  # nzbhydra2 ships an upstream-built fat JAR with bundled tomcat
+  # and spring-security-web. Cannot be patched without rebuilding
+  # the JAR, which only the upstream can do.
+  - vulnerability: GHSA-83qj-6fr2-vhqg  # tomcat-embed-core — expires: 2026-08-19
+  - vulnerability: GHSA-95jq-rwvf-vjx4  # tomcat-embed-core — expires: 2026-08-19
+  - vulnerability: GHSA-c4q5-6c82-3qpw  # spring-security-web — expires: 2026-08-19
+  - vulnerability: GHSA-mf92-479x-3373  # spring-security-web — expires: 2026-08-19
+
+  # ─── pyload-ng + bazarr bundled Python libs ─────────────────────
+  # Both pip-install their dependency tree; vulnerable packages
+  # (pyload-ng itself, waitress, h11) are pinned by upstream.
+  - vulnerability: GHSA-3f7w-p8vr-4v5f  # pyload-ng (own pkg) — expires: 2026-08-19
+  - vulnerability: GHSA-8w3f-4r8f-pf53  # pyload-ng (own pkg) — expires: 2026-08-19
+  - vulnerability: GHSA-9298-4cf8-g4wj  # waitress (bazarr) — expires: 2026-08-19
+  - vulnerability: GHSA-vqfr-h8mv-ghfj  # h11 (bazarr) — expires: 2026-08-19
+
+  # ─── Go binary embedded deps (golang.org/x/crypto, grpc) ────────
+  # Same shape as Go stdlib above: upstream binary statically links
+  # an older version of these modules.
+  - vulnerability: GHSA-v778-237x-gjrc  # golang.org/x/crypto (home-assistant) — expires: 2026-08-19
+  - vulnerability: GHSA-p77j-4mvh-x3m3  # google.golang.org/grpc (actions-runner, opentofu-runner) — expires: 2026-08-19

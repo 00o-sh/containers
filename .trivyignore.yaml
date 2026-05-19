@@ -1,0 +1,98 @@
+# Trivy ignore policy. Consumed by aquasecurity/trivy-action via the
+# `trivyignores:` input across the workflows in .github/workflows/.
+#
+# Mirrors .grype.yaml so the apps/ gate behaves consistently across
+# both scanners. Trivy honors `expired_at` natively (after the date,
+# the ignore is dropped and the CVE re-fails the gate).
+#
+# See .grype.yaml for the full rationale and grouping. Entries here
+# are the minimum needed to keep the gate in sync.
+
+vulnerabilities:
+  # Bundled ffmpeg (CVE-2026-40962)
+  - id: CVE-2026-40962
+    statement: "Bundled ffmpeg in upstream-vendored apps (emby) and Alpine 3.23 apk awaiting patch. See .grype.yaml."
+    expired_at: 2026-08-19
+
+  # Alpine 3.23 python apk
+  - id: CVE-2026-6100
+    statement: "Alpine 3.23 python apk awaiting upstream patch. Affects 15+ Alpine-based apps. See .grype.yaml."
+    expired_at: 2026-08-19
+  - id: CVE-2026-7210
+    statement: "Alpine 3.23 python apk awaiting upstream patch. Affects 15+ Alpine-based apps. See .grype.yaml."
+    expired_at: 2026-08-19
+
+  # Go stdlib in upstream prebuilt binaries
+  - id: CVE-2025-22871
+    statement: "Upstream prebuilt binary compiled with old Go toolchain (webhook, smartctl-exporter, etc.). See .grype.yaml."
+    expired_at: 2026-08-19
+  - id: CVE-2025-68121
+    statement: "Upstream prebuilt binary compiled with old Go toolchain. See .grype.yaml."
+    expired_at: 2026-08-19
+  - id: CVE-2026-27143
+    statement: "Upstream prebuilt binary compiled with old Go toolchain. See .grype.yaml."
+    expired_at: 2026-08-19
+
+  # theme-park bundled nginx/php stack
+  - id: CVE-2025-48174
+    statement: "libavif inside theme-park's bundled nginx stack. See .grype.yaml."
+    expired_at: 2026-08-19
+  - id: CVE-2025-49794
+    statement: "libxml2 inside theme-park's bundled nginx stack. See .grype.yaml."
+    expired_at: 2026-08-19
+  - id: CVE-2025-49796
+    statement: "libxml2 inside theme-park's bundled nginx stack. See .grype.yaml."
+    expired_at: 2026-08-19
+  - id: CVE-2026-31789
+    statement: "libssl3/libcrypto3 inside theme-park's bundled nginx stack. See .grype.yaml."
+    expired_at: 2026-08-19
+  - id: CVE-2026-42945
+    statement: "nginx inside theme-park's bundled stack. See .grype.yaml."
+    expired_at: 2026-08-19
+
+  # esphome-debian (Debian 13 base awaits security updates)
+  - id: CVE-2026-33845
+    statement: "Debian 13 libgnutls30t64 awaiting upstream Debian security update. See .grype.yaml."
+    expired_at: 2026-08-19
+  - id: CVE-2026-42010
+    statement: "Debian 13 libgnutls30t64 awaiting upstream Debian security update. See .grype.yaml."
+    expired_at: 2026-08-19
+  - id: CVE-2026-5450
+    statement: "Debian 13 libc6/libc-bin awaiting upstream Debian security update. See .grype.yaml."
+    expired_at: 2026-08-19
+
+  # nzbhydra2 bundled Java libs (upstream fat JAR)
+  - id: GHSA-83qj-6fr2-vhqg
+    statement: "tomcat-embed-core inside nzbhydra2's upstream-built fat JAR. See .grype.yaml."
+    expired_at: 2026-08-19
+  - id: GHSA-95jq-rwvf-vjx4
+    statement: "tomcat-embed-core inside nzbhydra2's upstream-built fat JAR. See .grype.yaml."
+    expired_at: 2026-08-19
+  - id: GHSA-c4q5-6c82-3qpw
+    statement: "spring-security-web inside nzbhydra2's upstream-built fat JAR. See .grype.yaml."
+    expired_at: 2026-08-19
+  - id: GHSA-mf92-479x-3373
+    statement: "spring-security-web inside nzbhydra2's upstream-built fat JAR. See .grype.yaml."
+    expired_at: 2026-08-19
+
+  # pyload-ng + bazarr bundled Python libs
+  - id: GHSA-3f7w-p8vr-4v5f
+    statement: "pyload-ng's own package pinned by upstream. See .grype.yaml."
+    expired_at: 2026-08-19
+  - id: GHSA-8w3f-4r8f-pf53
+    statement: "pyload-ng's own package pinned by upstream. See .grype.yaml."
+    expired_at: 2026-08-19
+  - id: GHSA-9298-4cf8-g4wj
+    statement: "waitress inside bazarr's pip dependency tree. See .grype.yaml."
+    expired_at: 2026-08-19
+  - id: GHSA-vqfr-h8mv-ghfj
+    statement: "h11 inside bazarr's pip dependency tree. See .grype.yaml."
+    expired_at: 2026-08-19
+
+  # Go binary embedded deps
+  - id: GHSA-v778-237x-gjrc
+    statement: "golang.org/x/crypto statically linked into home-assistant's upstream binary. See .grype.yaml."
+    expired_at: 2026-08-19
+  - id: GHSA-p77j-4mvh-x3m3
+    statement: "google.golang.org/grpc statically linked into actions-runner / opentofu-runner upstream binaries. See .grype.yaml."
+    expired_at: 2026-08-19

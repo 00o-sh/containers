@@ -36,7 +36,7 @@ permissions:
 
 env:
   REGISTRY_NAMESPACE: ghcr.io/${{ github.repository_owner }}
-  MELANGE_VERSION: v0.50.6 # renovate: datasource=github-releases depName=chainguard-dev/melange
+  MELANGE_VERSION: v0.50.7 # renovate: datasource=github-releases depName=chainguard-dev/melange
   # Renovate will pin a digest (`@sha256:...`) on first run via pinDigests.
   APKO_IMAGE: ghcr.io/wolfi-dev/sdk:latest # renovate: datasource=docker depName=ghcr.io/wolfi-dev/sdk
 
@@ -230,6 +230,10 @@ jobs:
           severity-cutoff: high
           only-fixed: true
           output-format: sarif
+          # Shared ignore policy with apps/. Distroless images shouldn't
+          # carry the listed CVEs (they don't bundle upstream-vendored
+          # libs), but apply the same config for consistency.
+          config: .grype.yaml
 
       - name: Upload Grype SARIF to Security tab
         if: always() && steps.grype.outputs.sarif != ''
@@ -249,6 +253,7 @@ jobs:
           ignore-unfixed: true
           exit-code: "1"
           hide-progress: true
+          trivyignores: .trivyignore.yaml
 
       - name: Upload Trivy SARIF to Security tab
         if: always() && hashFiles(format('trivy-{0}.sarif', matrix.arch)) != ''
