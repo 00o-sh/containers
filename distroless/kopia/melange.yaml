@@ -51,6 +51,16 @@ pipeline:
   - uses: strip
 
 test:
+  # `melange test` builds a separate sandbox from the build environment,
+  # so it needs its own repository config too — otherwise the test guest
+  # fails with `must provide at least one repository` before any test
+  # pipeline step runs.
+  environment:
+    contents:
+      repositories:
+        - https://packages.wolfi.dev/os
+      keyring:
+        - https://packages.wolfi.dev/os/wolfi-signing.rsa.pub
   pipeline:
     - runs: |
         kopia --version
