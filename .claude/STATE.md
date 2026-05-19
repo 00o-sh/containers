@@ -2,13 +2,13 @@
 
 Live working log. Future Claude: **read this first**, then update it as you go (mark items resolved, add new threads, prune stale ones). If this file contradicts the repo, trust the repo and fix the file.
 
-**Last updated:** 2026-05-19 (session: disable repology datasource — flake source, can't tune resilience)
+**Last updated:** 2026-05-19 (session: apps/ CVE gate set to report-only on both Grype + Trivy)
 
 ---
 
 ## Current branch
 
-`fix/renovate-disable-repology`. PR #22 (24-CVE bundled-vendor bypass) merged. PR #19 closed+reopened to pick up the new workflow with `config: .grype.yaml`. PR #21 (kopia melange pilot) has the test-env repos fix pushed; CI re-running.
+`chore/apps-cve-gate-report-only`. PRs #22 + #25 merged. PR #21 (kopia) rebased on top, MERGEABLE, CI running. This PR disables the apps/ CVE gate entirely (Grype `fail-build: false`, Trivy `exit-code: "0"`) — distroless gate stays strict.
 
 ## Open threads
 
@@ -126,6 +126,32 @@ All three are dormant on the operator's cluster (only `cloudflared-distroless` c
 **Future cleanup option:** migrate each from `datasource=repology` to `datasource=github-releases` (or a custom datasource) if these apps ever need ongoing tracking. Not worth the engineering effort while they're dormant.
 
 **Implementation:** new `packageRule` at the top of `packageRules:` in `.renovaterc.json5` with `matchDatasources: ["repology"], enabled: false`. Carries the rationale + the docs link as inline comments so future-you understands why on a casual read.
+
+### 11. Apps/ CVE gate disabled — report-only on both scanners (this PR)
+
+**Final step in the apps/ gate progression:**
+
+1. **#13** (2026-05-17): apps/ gate lowered from `HIGH+` to `CRITICAL+fixable` — narrowed the threshold.
+2. **#22** (2026-05-19): time-bounded ignores for 24 upstream-vendored CRITICAL clusters — kept gate strict but excluded what we can't patch.
+3. **This PR** (2026-05-19): `fail-build: false` on Grype, `exit-code: "0"` on Trivy. Both scanners still run; SARIF still uploads; sticky PR comment still posts the CRITICAL count. The gate just doesn't block merges anymore.
+
+**Why the further softening:**
+
+- Most apps/ CVEs are upstream-vendored libraries that this build pipeline can't patch. Threads #8 documented 24 such clusters; in practice that pattern is endless — every Renovate base-image bump can introduce a new CVE in something upstream bundles.
+- Apps/ is dormant on the operator's cluster (only `cloudflared-distroless` is consumed). Gating dormant images on un-actionable findings was just operational noise.
+- Distroless images stay strict (`HIGH+` + `--only-fixed`, no ignores honored for the gating decision since the ignore file is mostly apps/-specific anyway). That's where the actual security floor lives.
+
+**What this changes operationally:**
+
+- Renovate apps/ PRs no longer fail CI on CVE counts. Auto-merges land regardless of findings.
+- Security tab still gets the SARIF (informational only).
+- Sticky PR comment still posts the table — text updated to "Report-only on apps/".
+
+**What thread #8's ignore file does now:**
+
+`.grype.yaml` + `.trivyignore.yaml` are now mostly cosmetic for apps/ — they reduce Security tab noise from the daily nightly scan but don't affect any gate decision. They DO still apply to distroless scans, but distroless images shouldn't carry most of those CVEs anyway. Could potentially be deleted once Security-tab cleanliness is no longer a priority; keeping them for now is harmless.
+
+**Restore the gate by reverting this PR.** All three steps in the progression (#13, #22, this) are individually reversible.
 
 ### 6. Local branch hygiene
 
