@@ -53,14 +53,20 @@ pipeline:
 test:
   # `melange test` builds a separate sandbox from the build environment,
   # so it needs its own repository config too — otherwise the test guest
-  # fails with `must provide at least one repository` before any test
-  # pipeline step runs.
+  # fails with `must provide at least one repository`. busybox provides
+  # /bin/sh for executing the `runs:` script — without it the sandbox
+  # fails with `bwrap: execvp /bin/sh: No such file or directory`.
+  # Wolfi's CI provides these implicitly for in-tree recipes; ours has
+  # to spell them out.
   environment:
     contents:
       repositories:
         - https://packages.wolfi.dev/os
       keyring:
         - https://packages.wolfi.dev/os/wolfi-signing.rsa.pub
+      packages:
+        - busybox
+        - ca-certificates-bundle
   pipeline:
     - runs: |
         kopia --version

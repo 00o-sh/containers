@@ -143,9 +143,10 @@ All three are dormant on the operator's cluster (only `cloudflared-distroless` c
 
 1. **Build env needs repos/keyring**: `environment.contents:` must list `repositories:` + `keyring:`. Otherwise: `failed to initialize apk repositories: must provide at least one repository`.
 2. **Test env needs the same**: `test.environment.contents:` is a separate sandbox; needs its own `repositories:` + `keyring:`. Same error mode if missing.
-3. **Workflow needs `--repository-append` for melange test**: the test sandbox can't find the just-built apk in our local `packages/` dir unless the workflow passes `--repository-append "${{ github.workspace }}/packages"` (mirroring apko's pattern). Otherwise: `nothing provides "<package>"`.
+3. **Test env needs `packages:` too** — at minimum `busybox` (for `/bin/sh` to execute the `runs:` script) and `ca-certificates-bundle`. Otherwise: `bwrap: execvp /bin/sh: No such file or directory` followed by `unable to start pod: exit status 1`.
+4. **Workflow needs `--repository-append` for melange test**: the test sandbox can't find the just-built apk in our local `packages/` dir unless the workflow passes `--repository-append "${{ github.workspace }}/packages"` (mirroring apko's pattern). Otherwise: `nothing provides "<package>"`.
 
-Bake all three into CLAUDE.md as a footnote when kopia merges. Wolfi's CI provides these implicitly for in-tree recipes; ours have to spell them out.
+Bake all four into CLAUDE.md as a footnote when kopia merges. Wolfi's CI provides these implicitly for in-tree recipes; ours have to spell them out.
 
 **Known limitations (acceptable for v1):**
 
