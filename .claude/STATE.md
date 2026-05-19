@@ -2,13 +2,13 @@
 
 Live working log. Future Claude: **read this first**, then update it as you go (mark items resolved, add new threads, prune stale ones). If this file contradicts the repo, trust the repo and fix the file.
 
-**Last updated:** 2026-05-18 (session: upstream sync #14 — license / justfile→mise / BOT_CLIENT_ID rename absorbed)
+**Last updated:** 2026-05-19 (session: distroless catalog work — kopia melange pilot, second distroless image)
 
 ---
 
 ## Current branch
 
-`main`. PR #12 (bot-app trigger bypass) and #13 (apps CVE gate softened to CRITICAL) both merged. PR #14 (`Pull From origin`) being landed now via local merge resolution + push to fork's main.
+`feat/distroless-kopia-pilot`. Renovate Cloud is now working (forkProcessing landed in #15) and already auto-merged 4 housekeeping bumps + PR #18 (melange env). PR #17 (repology skip) closed as unneeded. PR #19 (next Renovate-authored) waiting for CI.
 
 ## Open threads
 
@@ -64,6 +64,25 @@ After #14 merge, two upload-sarif call sites in `vulnerability-scan.yaml` were b
 - Check Mend dashboard at app.mend.io/renovate for the run log; look for "this is a fork, skipping" (means `forkProcessing` didn't take effect) or preset resolution errors (the `github>home-operations/renovate-config` preset may have been moved or made private).
 - Force-run from the Mend UI to skip the scheduled-cycle wait.
 - The `renovate.yaml` workflow in this repo is still disabled (thread #2) and is *not* the runner — don't confuse the two paths.
+
+### 8. Distroless catalog expansion — kopia pilot (this PR)
+
+**Why kopia next:** survey of all 37 `apps/` against Wolfi's package set turned up exactly one apko-only candidate (`cni-plugins`), and its `rsync`-to-host runtime semantics fight distroless (no shell for glob expansion; would need an explicit-list `cmd:` or a melange overlay just to relocate files). The user's "easy" bucket — Go-static services — gives a cleaner first melange recipe, and kopia is the largest Go-static service in `apps/`.
+
+**Approach:**
+
+- `distroless/kopia/melange.yaml` — builds the kopia CLI from upstream `github.com/kopia/kopia@v0.23.0` via `go build -tags nohtmlui`. The `nohtmlui` build tag is kopia's own escape hatch (per their Makefile's `install-noui` target) — avoids needing a node toolchain to compile the embedded HTML UI. CLI is fully functional; only the in-browser web UI is unavailable.
+- `distroless/kopia/apko.yaml` — composes the kopia package with `wolfi-baselayout` + `ca-certificates-bundle` + `tzdata`. Same shape as cloudflared.
+- **Operational change vs. `apps/kopia`:** the Alpine image had an `entrypoint.sh` bash script that auto-launched `kopia server start` when `KOPIA_WEB_ENABLED=true`. That convenience can't run in distroless (no shell). The new entrypoint is just `/usr/bin/kopia` — orchestrator (k8s manifest, docker run args) owns the command line. Standard distroless idiom; preserves all the environment-variable defaults the Alpine image set.
+
+**Boot smoke** added to `distroless-build.yaml`: `kopia --version`. Same shape as cloudflared's smoke arm.
+
+**Why this is the right first melange recipe:** Go-static is the cleanest possible recipe shape. If we can't make kopia work, the rest of the "easy" bucket migration is in trouble. If we can, the pattern transfers directly to webhook, smartctl-exporter, autobrr, qui, garage, tuppr, mysqld-exporter, k8s-gateway, prompp, kanidm, forgejo.
+
+**Known limitations (acceptable for v1):**
+
+- No embedded HTML UI. Add later by including `nodejs` + `npm` in the melange `environment.contents.packages`, then `make htmlui` before `go build`. Bigger build, more attack surface — defer until someone actually wants the UI in distroless.
+- Build version info uses `git rev-parse HEAD` inside the build pipeline, which gives the SHA but not kopia's normal `git describe --tags --dirty` style version string. Cosmetic in `kopia --version` output.
 
 ### 6. Local branch hygiene
 

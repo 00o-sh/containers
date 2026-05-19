@@ -200,6 +200,10 @@ jobs:
               timeout 15s docker run --rm \
                 --entrypoint /usr/bin/cloudflared "$IMG" --version
               ;;
+            kopia)
+              timeout 15s docker run --rm \
+                --entrypoint /usr/bin/kopia "$IMG" --version
+              ;;
             *)
               echo "::warning::No boot-smoke recipe for ${{ matrix.image }}; skipping"
               ;;
