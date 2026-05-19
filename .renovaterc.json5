@@ -1,5 +1,9 @@
 {
   $schema: "https://docs.renovatebot.com/renovate-schema.json",
+  // Opt this fork in to Renovate processing. The Mend-hosted Renovate
+  // App skips forks by default (and the upstream preset may also disable
+  // them); the local repo config overrides any inherited preset value.
+  forkProcessing: "enabled",
   extends: ["github>home-operations/renovate-config"],
   customManagers: [
     {

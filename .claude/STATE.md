@@ -26,7 +26,7 @@ Live working log. Future Claude: **read this first**, then update it as you go (
 
 - `stale.yaml` — `schedule:` stripped.
 - `retry-release.yaml` — `schedule:` stripped.
-- `renovate.yaml` — `push:` stripped. **Side effect: no Renovate runs fire for this fork** — base-image / package bumps stop arriving organically. Directly relevant to thread #1.
+- `renovate.yaml` — `push:` stripped. The workflow dispatched Renovate via `home-operations/.github`; with that path closed, Renovate Cloud (Mend-hosted GitHub App) is the active runner. See thread #7 for the `forkProcessing: "enabled"` opt-in that makes Cloud actually process this fork.
 - `labeler.yaml`, `label-sync.yaml` — already neutered upstream pre-#12.
 - `deprecate-app.yaml` — `workflow_dispatch` only; left as-is.
 
@@ -47,6 +47,23 @@ Absorbed via #14. Devin Buhl committed `chore: update LICENSE` upstream on 2026-
 ### 5. Stale codeql-action SHAs in non-conflicting workflows
 
 After #14 merge, two upload-sarif call sites in `vulnerability-scan.yaml` were bumped to `v4.35.5` (one resolved via conflict, one bumped for in-file consistency). The remaining sites — `app-builder.yaml` (2x) and `distroless-build.yaml` (2x) — are still pinned to `v4.35.4`. Renovate would normally catch these but is paused for the fork (thread #2). Bump them in a small follow-up PR or wait until Renovate is restored.
+
+### 7. Renovate Cloud enablement on the fork
+
+**Status:** `forkProcessing: "enabled"` added to `.renovaterc.json5` (this PR). The Mend-hosted Renovate App is already installed but had been silently skipping the repo because forks are excluded by default.
+
+**Expected behavior after merge:**
+
+- Renovate creates the "Dependency Dashboard" issue on its first successful run (visible signal that it's working — its absence is what diagnosed the problem).
+- A wave of 20–40 PRs lands as the backlog clears: base-image bumps (`Alpine 3.23.X`), action SHA bumps (codeql, etc.), tool version bumps in `.mise.toml` and `docker-bake.hcl` annotations.
+- `docker-bake.hcl` updates **auto-merge** per the existing `packageRules` (PR-time CVE gate at CRITICAL still gates each merge — anything with CRITICAL+fixable is blocked).
+- Tool / workflow / preset bumps in non-bake files require manual review.
+
+**If it still doesn't work after this merges:**
+
+- Check Mend dashboard at app.mend.io/renovate for the run log; look for "this is a fork, skipping" (means `forkProcessing` didn't take effect) or preset resolution errors (the `github>home-operations/renovate-config` preset may have been moved or made private).
+- Force-run from the Mend UI to skip the scheduled-cycle wait.
+- The `renovate.yaml` workflow in this repo is still disabled (thread #2) and is *not* the runner — don't confuse the two paths.
 
 ### 6. Local branch hygiene
 
