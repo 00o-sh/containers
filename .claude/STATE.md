@@ -2,13 +2,13 @@
 
 Live working log. Future Claude: **read this first**, then update it as you go (mark items resolved, add new threads, prune stale ones). If this file contradicts the repo, trust the repo and fix the file.
 
-**Last updated:** 2026-05-19 (session: kopia melange pilot — second distroless image, first from-source recipe)
+**Last updated:** 2026-05-19 (session: kopia rebased on top of #26 apps/ gate disable)
 
 ---
 
 ## Current branch
 
-`feat/distroless-kopia-pilot`. PRs #22 (CVE bundle bypass) and #25 (repology disable) both merged. Kopia melange pilot still open as PR #21 — needed two fixes: build env repos (afbd39a) and test env repos (9206dc4). Currently rebased on top of #22 + #25.
+`feat/distroless-kopia-pilot`. PRs #22 (CVE bundle bypass), #25 (repology disable), and #26 (apps/ CVE gate report-only) all merged. Kopia rebased on top — only this branch remains open from the recent work batch.
 
 ## Open threads
 
@@ -145,6 +145,24 @@ All three are dormant on the operator's cluster (only `cloudflared-distroless` c
 
 - No embedded HTML UI. Add later by including `nodejs` + `npm` in the melange `environment.contents.packages`, then `make htmlui` before `go build`. Bigger build, more attack surface — defer until someone actually wants the UI in distroless.
 - Build version info uses `git rev-parse HEAD` inside the build pipeline, which gives the SHA but not kopia's normal `git describe --tags --dirty` style version string. Cosmetic in `kopia --version` output.
+
+### 11. Apps/ CVE gate disabled — report-only on both scanners (resolved in #26)
+
+**Final step in the apps/ gate progression:**
+
+1. **#13** (2026-05-17): apps/ gate lowered from `HIGH+` to `CRITICAL+fixable` — narrowed the threshold.
+2. **#22** (2026-05-19): time-bounded ignores for 24 upstream-vendored CRITICAL clusters — kept gate strict but excluded what we can't patch.
+3. **#26** (2026-05-19): `fail-build: false` on Grype, `exit-code: "0"` on Trivy. Both scanners still run; SARIF still uploads; sticky PR comment still posts the CRITICAL count. The gate just doesn't block merges anymore.
+
+**Why the further softening:**
+
+- Most apps/ CVEs are upstream-vendored libraries that this build pipeline can't patch. Thread #8 documented 24 such clusters; in practice that pattern is endless — every Renovate base-image bump can introduce a new CVE in something upstream bundles.
+- Apps/ is dormant on the operator's cluster (only `cloudflared-distroless` is consumed). Gating dormant images on un-actionable findings was just operational noise.
+- Distroless images stay strict (`HIGH+` + `--only-fixed`). That's where the actual security floor lives.
+
+**What thread #8's ignore file does now:** `.grype.yaml` + `.trivyignore.yaml` are now mostly cosmetic for apps/ — they reduce Security tab noise from the daily nightly scan but don't affect any gate decision. They DO still apply to distroless scans, but distroless images shouldn't carry most of those CVEs anyway. Could potentially be deleted once Security-tab cleanliness is no longer a priority; keeping them for now is harmless.
+
+**Restore the gate by reverting #26.** All three steps in the progression (#13, #22, #26) are individually reversible.
 
 ### 6. Local branch hygiene
 

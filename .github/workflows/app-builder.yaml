@@ -274,22 +274,27 @@ jobs:
           key: ${{ steps.grype-key.outputs.key }}
           path: ~/.cache/grype/db
 
-      - name: Grype scan (fail on CRITICAL fixable)
+      - name: Grype scan (report only)
         # Apps track is legacy/dormant; only cloudflared-distroless is
-        # consumed downstream. Gate raised from HIGH to CRITICAL so
-        # upstream Alpine patch cadence doesn't block releases on this
-        # fork. Distroless gate (distroless-build.yaml) remains HIGH+.
+        # consumed downstream. The CVE gate progression on apps/:
+        # 1. #13: HIGH+ → CRITICAL (still gating)
+        # 2. #22: time-bounded ignores for 24 upstream-vendored clusters
+        # 3. now: report-only — SARIF + sticky comment still surface
+        #    findings, but the gate no longer blocks merges. Most apps/
+        #    CVEs are upstream-vendored and not patchable from this
+        #    pipeline; gating dormant images on them was operational
+        #    noise. Distroless gate (distroless-build.yaml) remains
+        #    strict HIGH+ — that's where the security floor lives.
         id: grype
         uses: anchore/scan-action@e1165082ffb1fe366ebaf02d8526e7c4989ea9d2 # v7.4.0
         with:
           image: ghcr.io/${{ github.repository_owner }}/${{ needs.merge.outputs.image_name }}@${{ needs.merge.outputs.digest }}
-          fail-build: true
+          fail-build: false
           severity-cutoff: critical
           only-fixed: true
           output-format: sarif
-          # .grype.yaml at repo root carries time-bounded ignores for CVEs
-          # we can't patch (e.g. upstream-vendored libraries). Each entry
-          # has a re-evaluation date in a comment.
+          # .grype.yaml ignores still apply; with fail-build=false they
+          # mainly reduce SARIF/Security-tab noise rather than gating.
           config: .grype.yaml
 
       - name: Upload Grype SARIF
@@ -299,9 +304,10 @@ jobs:
           sarif_file: ${{ steps.grype.outputs.sarif }}
           category: grype-${{ needs.merge.outputs.image_name }}
 
-      - name: Trivy scan (second opinion, fail on CRITICAL fixable)
-        # Matches the Grype threshold above — CRITICAL only on the apps/
-        # track. Distroless workflow remains CRITICAL,HIGH.
+      - name: Trivy scan (second opinion, report only)
+        # Matches the Grype mode above — report-only on apps/. Both
+        # scanners surface findings to SARIF and the sticky comment
+        # without blocking merges. Distroless workflow stays gating.
         id: trivy
         uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25 # v0.36.0
         with:
@@ -310,10 +316,8 @@ jobs:
           output: trivy.sarif
           severity: CRITICAL
           ignore-unfixed: true
-          exit-code: "1"
+          exit-code: "0"
           hide-progress: true
-          # .trivyignore.yaml mirrors .grype.yaml suppressions so both
-          # scanners gate identically. Trivy honors `expired_at` natively.
           trivyignores: .trivyignore.yaml
 
       - name: Upload Trivy SARIF
@@ -354,7 +358,7 @@ jobs:
             | Grype | ${{ steps.cve_summary.outputs.grype }} |
             | Trivy | ${{ steps.cve_summary.outputs.trivy }} |
 
-            Both scanners gate on `CRITICAL` + `--only-fixed`. Build fails if either reports >0. HIGH-severity findings are no longer surfaced here for `apps/` images — see `.claude/STATE.md` for the rationale. Distroless images keep the strict HIGH+ gate.
+            **Report-only on `apps/`** — both scanners surface findings without blocking the merge. Most apps/ CVEs are in upstream-vendored libraries that can't be patched from this build pipeline, and only `cloudflared-distroless` is consumed downstream so dormant-image CVEs aren't operationally urgent. Distroless images keep the strict HIGH+ gate. See `.claude/STATE.md` for the full progression and rationale.
 
             Full findings: [Security tab](${{ github.server_url }}/${{ github.repository }}/security/code-scanning) under categories `grype-${{ needs.merge.outputs.image_name }}` / `trivy-${{ needs.merge.outputs.image_name }}`.
 
