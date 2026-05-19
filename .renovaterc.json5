@@ -150,5 +150,20 @@
       matchPackageNames: ["/amazoncorretto/"],
       allowedVersions: "/17-alpine3\\.22/",
     },
+    {
+      // Repology.org times out intermittently (Mend run on 2026-05-18 aborted
+      // with `external-host-error` on a deluge lookup, taking the entire
+      // repository run with it). Renovate aborts on the first datasource
+      // host error rather than producing partial results, so a single
+      // repology blip means no PRs that cycle.
+      //
+      // We pin Alpine base images via the `docker` datasource (FROM line),
+      // not individual apk packages, so repology adds essentially zero
+      // value for this fork while introducing reliability flakes. Disable
+      // it.
+      description: ["Skip repology lookups — they cause spurious external-host-error aborts"],
+      matchDatasources: ["repology"],
+      enabled: false,
+    },
   ],
 }

@@ -2,13 +2,13 @@
 
 Live working log. Future Claude: **read this first**, then update it as you go (mark items resolved, add new threads, prune stale ones). If this file contradicts the repo, trust the repo and fix the file.
 
-**Last updated:** 2026-05-18 (session: upstream sync #14 — license / justfile→mise / BOT_CLIENT_ID rename absorbed)
+**Last updated:** 2026-05-19 (session: Renovate first-run aborted on repology timeout → disable repology datasource)
 
 ---
 
 ## Current branch
 
-`main`. PR #12 (bot-app trigger bypass) and #13 (apps CVE gate softened to CRITICAL) both merged. PR #14 (`Pull From origin`) being landed now via local merge resolution + push to fork's main.
+`fix/renovate-skip-repology` — PR #16. PRs #12, #13, #14, #15 all merged. PR #15 successfully enabled `forkProcessing`, but the first Mend run aborted on a repology.org timeout before any PRs were created.
 
 ## Open threads
 
@@ -26,7 +26,7 @@ Live working log. Future Claude: **read this first**, then update it as you go (
 
 - `stale.yaml` — `schedule:` stripped.
 - `retry-release.yaml` — `schedule:` stripped.
-- `renovate.yaml` — `push:` stripped. The workflow dispatched Renovate via `home-operations/.github`; with that path closed, Renovate Cloud (Mend-hosted GitHub App) is the active runner. See thread #7 for the `forkProcessing: "enabled"` opt-in that makes Cloud actually process this fork.
+- `renovate.yaml` — `push:` stripped. The workflow dispatched Renovate via `home-operations/.github`; with that path closed, Renovate Cloud (Mend-hosted GitHub App) is the active runner. See thread #6 for the `forkProcessing: "enabled"` opt-in (#15) and the repology disable (#16) that makes Cloud actually process this fork.
 - `labeler.yaml`, `label-sync.yaml` — already neutered upstream pre-#12.
 - `deprecate-app.yaml` — `workflow_dispatch` only; left as-is.
 
@@ -48,33 +48,33 @@ Absorbed via #14. Devin Buhl committed `chore: update LICENSE` upstream on 2026-
 
 After #14 merge, two upload-sarif call sites in `vulnerability-scan.yaml` were bumped to `v4.35.5` (one resolved via conflict, one bumped for in-file consistency). The remaining sites — `app-builder.yaml` (2x) and `distroless-build.yaml` (2x) — are still pinned to `v4.35.4`. Renovate would normally catch these but is paused for the fork (thread #2). Bump them in a small follow-up PR or wait until Renovate is restored.
 
-### 7. Renovate Cloud enablement on the fork
+### 6. Renovate Cloud enablement on the fork
 
-**Status:** `forkProcessing: "enabled"` added to `.renovaterc.json5` (this PR). The Mend-hosted Renovate App is already installed but had been silently skipping the repo because forks are excluded by default.
+**Status:** `forkProcessing` opt-in landed in #15 (working — Mend logs from 2026-05-19 02:15Z confirm `"Enabling forkProcessing while in non-autodiscover mode"` + successful preset resolution + 334 deps extracted across 97 package files). But the first run **aborted before producing PRs** with `external-host-error` because repology.org timed out on a `deluge` Alpine package lookup.
 
-**Expected behavior after merge:**
+**Why repology was being queried:** Renovate's Dockerfile manager queries repology to map `apk add <pkg>` references to upstream versions. Behavior enabled by `config:recommended` → defaults, not anything we opted into locally.
 
-- Renovate creates the "Dependency Dashboard" issue on its first successful run (visible signal that it's working — its absence is what diagnosed the problem).
-- A wave of 20–40 PRs lands as the backlog clears: base-image bumps (`Alpine 3.23.X`), action SHA bumps (codeql, etc.), tool version bumps in `.mise.toml` and `docker-bake.hcl` annotations.
-- `docker-bake.hcl` updates **auto-merge** per the existing `packageRules` (PR-time CVE gate at CRITICAL still gates each merge — anything with CRITICAL+fixable is blocked).
-- Tool / workflow / preset bumps in non-bake files require manual review.
+**Fix (this PR #16):** add a `packageRule` with `matchDatasources: ["repology"]` + `enabled: false`. Base-image bumps (the only thing that matters for this fork) come from the `docker` datasource on `FROM` lines, not repology, so disabling repology has effectively zero impact while removing the flake source.
 
-**If it still doesn't work after this merges:**
+**Expected behavior after this merges:**
 
-- Check Mend dashboard at app.mend.io/renovate for the run log; look for "this is a fork, skipping" (means `forkProcessing` didn't take effect) or preset resolution errors (the `github>home-operations/renovate-config` preset may have been moved or made private).
-- Force-run from the Mend UI to skip the scheduled-cycle wait.
-- The `renovate.yaml` workflow in this repo is still disabled (thread #2) and is *not* the runner — don't confuse the two paths.
+- Force-run from Mend → `Renovate Dashboard 🤖` issue appears.
+- First-day wave of 40–80+ auto-merging PRs per the table in #15 (GH Actions, mise tools, docker-bake.hcl version bumps).
+- CVE gate (CRITICAL on apps/, HIGH+ on distroless) still gates `docker-bake.hcl` auto-merges.
 
-### 6. Local branch hygiene
+**Long-term tradeoff to note:** lose Alpine apk package version suggestions. For this fork (only `cloudflared-distroless` consumed; `apps/` dormant), this is acceptable. Revisit if/when more images are consumed downstream.
 
-11 merged feature branches sit locally (all squash-merged on origin):
-`chore/mise-dev-tools`, `feat/apps-cve-scan`, `feat/apps-flavor-suffix`, `feat/distroless-cloudflared-pilot`, `feat/distroless-cve-visibility`, `feat/distroless-image-suffix-and-cosign-digest`, `feat/distroless-sandbox-and-attest`, `feat/vuln-scan-distroless`, `fix/distroless-version-from-sbom`, `fix/vuln-scan-tolerate-missing`, `fix/vuln-scan-outcome-guard`, plus `fix/bot-app-trigger-bypass` and `fix/apps-cve-gate-critical` (this session's PRs, now merged).
+### 7. Local branch hygiene
+
+13+ merged feature branches sit locally (all squash-merged on origin):
+`chore/mise-dev-tools`, `feat/apps-cve-scan`, `feat/apps-flavor-suffix`, `feat/distroless-cloudflared-pilot`, `feat/distroless-cve-visibility`, `feat/distroless-image-suffix-and-cosign-digest`, `feat/distroless-sandbox-and-attest`, `feat/vuln-scan-distroless`, `fix/distroless-version-from-sbom`, `fix/vuln-scan-tolerate-missing`, `fix/vuln-scan-outcome-guard`, `fix/bot-app-trigger-bypass`, `fix/apps-cve-gate-critical`, `feat/renovate-fork-processing` (PR #15).
 
 Confirm before deleting any (the operator may use them as historical reference points).
 
 ## Recently closed (last 7 days)
 
-- **#14** — upstream sync absorbed (this session). License → Apache 2.0; `.justfile` → `mise` tasks; `BOT_APP_ID` → `BOT_CLIENT_ID`; codeql-action bumped to v4.35.5 in vulnerability-scan; structural deletions (CODE_OF_CONDUCT.md, CONTRIBUTING.md, SECURITY.md). Two conflicts resolved: `.mise.toml` (union of toolchains) and `.github/workflows/vulnerability-scan.yaml` (kept #11's `if:` guard + upstream's SHA bump).
+- **#15** — `forkProcessing: "enabled"` in `.renovaterc.json5`. Renovate Cloud now processes this fork (confirmed via Mend run log 2026-05-19 02:15Z). First run aborted on a repology.org timeout though — fixed in #16.
+- **#14** — upstream sync absorbed. License → Apache 2.0; `.justfile` → `mise` tasks; `BOT_APP_ID` → `BOT_CLIENT_ID`; codeql-action bumped to v4.35.5 in vulnerability-scan; structural deletions (CODE_OF_CONDUCT.md, CONTRIBUTING.md, SECURITY.md). Two conflicts resolved: `.mise.toml` (union of toolchains) and `.github/workflows/vulnerability-scan.yaml` (kept #11's `if:` guard + upstream's SHA bump).
 - **#13** — apps/ CVE gate softened to CRITICAL.
 - **#12** — bot-app workflow auto-triggers stripped on the fork.
 - **#1–#11** — full distroless pilot landed (see PR history).
