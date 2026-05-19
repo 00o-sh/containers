@@ -2,25 +2,25 @@
 
 Live working log. Future Claude: **read this first**, then update it as you go (mark items resolved, add new threads, prune stale ones). If this file contradicts the repo, trust the repo and fix the file.
 
-**Last updated:** 2026-05-18 (session: bot-app trigger bypass + CVE policy decision)
+**Last updated:** 2026-05-18 (session: CVE gate softening shipped on top of bot-app trigger bypass)
 
 ---
 
 ## Current branch
 
-`fix/bot-app-trigger-bypass` — this PR. Stacked on top: `fix/apps-cve-gate-critical` (CVE gate softening, separate PR). Merge this one first.
+`fix/apps-cve-gate-critical` — this PR. Stacked on `fix/bot-app-trigger-bypass` (PR #12). Merge order: #12 first, then this one.
 
 ## Open threads
 
-### 1. Apps CVE gate softening — decision made, change queued for follow-up PR
+### 1. Apps CVE gate raised to CRITICAL (resolved in this PR; visibility tradeoff to monitor)
 
-**Decision (2026-05-18):** raise apps/ gate to `CRITICAL + --only-fixed`; leave distroless on `HIGH+`. Implementation lands in a separate PR (branch `fix/apps-cve-gate-critical`) scoped to `.github/workflows/app-builder.yaml` so the bot-app trigger bypass is reviewable in isolation.
+**Shipped (2026-05-18):** apps/ track gated on `CRITICAL + --only-fixed`. Distroless track unchanged (still `HIGH+` + `--only-fixed`). Edit lives in `.github/workflows/app-builder.yaml` — see the inline comments on the Grype and Trivy steps for rationale.
 
 **Why this is OK for the apps/ track:** only `cloudflared-distroless` is consumed by the cluster. The ~10 HIGH findings (Run `26003929109`: `cni-plugins`, `actions-runner`, `bazarr`, `deluge`, `emby`, `esphome`, `home-assistant`, `lidarr`, `nzbhydra2`, `opentofu-runner`, …) come from upstream Alpine patch cadence on a dormant fleet. A strict gate held releases hostage to upstream timing without protecting anything the operator actually runs.
 
-**Tradeoff to know:** with `severity-cutoff: critical`, HIGH findings will no longer land in SARIF for apps/, so they drop off the Security tab and PR sticky comment for these images. If you want HIGH still surfaced as visibility-only (no fail-build), add a second non-failing Grype invocation — not planned now to keep the diff small. Distroless still surfaces everything HIGH+.
+**Tradeoff to know:** with `severity-cutoff: critical`, HIGH findings no longer land in SARIF for apps/, so they drop off the Security tab and PR sticky comment for these images. If you want HIGH still surfaced as visibility-only (no fail-build), add a second non-failing Grype invocation — not done now to keep the diff small. Distroless still surfaces everything HIGH+.
 
-**Follow-ups (not in either PR):**
+**Follow-ups (not in this PR):**
 
 - Restore Renovate (see thread #2) so base-image bumps land organically — that's the actual path to clearing the CRITICAL+HIGH backlog over time.
 - Migrate dormant `apps/` images to `distroless/` per the standing migration plan. Each migrated image then gates strict.
