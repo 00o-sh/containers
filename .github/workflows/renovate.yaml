@@ -2,13 +2,14 @@
 # yaml-language-server: $schema=https://json.schemastore.org/github-workflow.json
 name: Renovate
 
+# Temporarily disabled in this fork: dispatches Renovate via the
+# home-operations/.github org runner, which requires BOT_APP_ID /
+# BOT_APP_PRIVATE_KEY secrets that aren't configured here. While
+# disabled, no Renovate runs fire for this fork — base-image and
+# package bumps stop arriving organically. Re-enable by restoring the
+# `push:` trigger (or by wiring a self-hosted Renovate path).
+# Tracked in .claude/STATE.md.
 on:
-  push:
-    branches:
-      - main
-    paths:
-      - .renovaterc.json5
-      - .renovate/**.json5
   workflow_dispatch:
 
 jobs:

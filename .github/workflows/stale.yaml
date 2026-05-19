@@ -2,9 +2,10 @@
 # yaml-language-server: $schema=https://json.schemastore.org/github-workflow.json
 name: Stale
 
+# Temporarily disabled in this fork: requires BOT_APP_ID / BOT_APP_PRIVATE_KEY
+# secrets that aren't configured here. Re-enable by restoring the `schedule:`
+# trigger once the bot app is provisioned. Tracked in .claude/STATE.md.
 on:
-  schedule:
-    - cron: 30 1 * * *
   workflow_dispatch:
 
 permissions:
