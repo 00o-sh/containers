@@ -2,7 +2,7 @@
 
 Live working log. Future Claude: **read this first**, then update it as you go (mark items resolved, add new threads, prune stale ones). If this file contradicts the repo, trust the repo and fix the file.
 
-**Last updated:** 2026-05-19 (session: bypass CVE-2026-40962 ffmpeg in apps/ CVE gate for emby PR #19 unblock)
+**Last updated:** 2026-05-19 (session: extended bundled-vendor CVE bypass to 24 CRITICAL clusters)
 
 ---
 
@@ -65,31 +65,49 @@ After #14 merge, two upload-sarif call sites in `vulnerability-scan.yaml` were b
 - Force-run from the Mend UI to skip the scheduled-cycle wait.
 - The `renovate.yaml` workflow in this repo is still disabled (thread #2) and is *not* the runner — don't confuse the two paths.
 
-### 8. Bundled-vendor CVE policy: `.grype.yaml` + `.trivyignore.yaml` (this PR)
+### 8. Bundled-vendor CVE policy: `.grype.yaml` + `.trivyignore.yaml` (this PR, expanded scope)
 
-**Motivation:** PR #19 (Renovate-authored emby version bump 4.9.3.0 → 4.9.5.0) failed the apps/ CVE gate even after #13's softening to CRITICAL-only. Investigation showed 34 instances on emby-ubuntu all stem from a single CVE — `CVE-2026-40962` (ffmpeg) — counted across emby's bundled ffmpeg binary + 7 shared libs (libavcodec, libavfilter, libavformat, libavutil, libavdevice, libswresample, libswscale). Same CVE also fires daily on stash, pyload-ng, octoprint via the Alpine 3.23 `ffmpeg` apk.
+**Motivation:** Started from PR #19 (emby bump blocked by ffmpeg `CVE-2026-40962`). User then asked to extend bypasses to cover the rest of the Security tab's CRITICAL+fixable advisories in one pass. Survey identified **24 unique CRITICAL CVE clusters** across the apps/ fleet, all upstream-vendored or upstream-only-controlled.
 
-**Why we can't patch:**
+**Categorization (all upstream-vendored / upstream-only-controlled):**
 
-- emby is closed-source. The Dockerfile extracts emby's upstream `.deb` (`dpkg-deb -xv`) which bundles ffmpeg statically; only MediaBrowser can re-bundle.
-- Alpine apk ffmpeg is awaiting an upstream Alpine 3.23.x update. Renovate is constrained to 3.23.x by the `Allowed Alpine Version` packageRule, so we get the fix when Alpine ships it — not before.
+| Cluster | Example CVEs | Affected apps | Fix path |
+|---|---|---|---|
+| Bundled ffmpeg | `CVE-2026-40962` | emby + 6 Alpine | emby re-bundle / Alpine 3.23.x patch |
+| Alpine python | `CVE-2026-6100`, `CVE-2026-7210` | 15+ Alpine apps | Alpine 3.23.x patch |
+| Go stdlib in upstream binaries | `CVE-2025-22871`, `CVE-2025-68121`, `CVE-2026-27143` | webhook, smartctl-exporter, cni-plugins, tqm, postgres-init, home-assistant, stash, actions-runner | Upstream re-release with newer Go |
+| theme-park nginx/php stack | `CVE-2025-48174` (libavif), `CVE-2025-49794`/`-49796` (libxml2), `CVE-2026-31789` (openssl), `CVE-2026-42945` (nginx) | theme-park | Upstream theme-park rebuild |
+| Debian 13 base | `CVE-2026-5450` (libc), `CVE-2026-33845`/`-42010` (libgnutls) | esphome-debian | Debian security update |
+| nzbhydra2 Java fat JAR | `GHSA-83qj-6fr2-vhqg`, `GHSA-95jq-rwvf-vjx4` (tomcat), `GHSA-c4q5-6c82-3qpw`, `GHSA-mf92-479x-3373` (spring-security-web) | nzbhydra2 | Upstream JAR rebuild |
+| pyload-ng + bazarr Python | `GHSA-3f7w-p8vr-4v5f`, `GHSA-8w3f-4r8f-pf53` (pyload-ng), `GHSA-9298-4cf8-g4wj` (waitress), `GHSA-vqfr-h8mv-ghfj` (h11) | pyload-ng, bazarr | Upstream pip-pin update |
+| Go embedded deps | `GHSA-v778-237x-gjrc` (golang.org/x/crypto), `GHSA-p77j-4mvh-x3m3` (grpc) | home-assistant, actions-runner, opentofu-runner | Upstream re-release |
 
 **Fix shape:**
 
-- `.grype.yaml` at repo root with one `ignore:` entry for `CVE-2026-40962`. Wired into all five Grype call sites via the `config:` input (one each in app-builder.yaml and distroless-build.yaml; three in vulnerability-scan.yaml).
-- `.trivyignore.yaml` with the equivalent entry, including `expired_at: 2026-08-19` (Trivy honors this natively). Wired via `trivyignores:` input on both Trivy call sites.
-- Both files carry a clear rationale block and a re-evaluation date.
+- `.grype.yaml` and `.trivyignore.yaml` at repo root, with 24 ignore entries each, organized in section blocks by root cause. All entries time-bounded to **2026-08-19** (~90 days from 2026-05-19).
+- Wired into all 5 Grype call sites via `config:` input and both Trivy call sites via `trivyignores:` input. PR-time + daily scan both honor the ignores.
+- Trivy enforces `expired_at` natively — after the date, the gate re-fails and forces re-evaluation. Grype doesn't enforce expiry, but the rationale comments document re-eval dates manually.
 
-**Re-evaluation triggers (~90 days from 2026-05-19):**
+**Operational impact:**
 
-- Trivy will automatically re-fail the gate on `expired_at: 2026-08-19`.
-- Grype doesn't enforce expiry, so the file's documented `Re-evaluate by` date is a manual reminder.
-- The right hooks to re-check before then: (1) check emby release notes for a re-bundle, (2) check Alpine 3.23.x changelog for an ffmpeg patch, (3) any image migrating to `distroless/` drops out of this concern entirely.
+- **Apps/ PR-time gate now clean** for all known CRITICAL+fixable CVEs. Future Renovate PRs should pass CI as long as they don't introduce NEW critical CVEs.
+- **Security tab noise drops** by 24 clusters worth of alerts after the next daily-scan run picks up the config change.
+- **No suppression of HIGH/MEDIUM/LOW** — those remain as informational signal in the Security tab. They never blocked builds (gate is critical-only post-#13).
 
 **What this does NOT do:**
 
-- Doesn't blanket-suppress other CVEs. New CVEs still gate normally.
-- Doesn't suppress on `distroless/` images either (they shouldn't carry ffmpeg-bundling apps anyway, but the same ignore applies for consistency).
+- Doesn't ignore future NEW CVEs. As Renovate bumps land and introduce different CVEs, the gate fires normally.
+- Doesn't change gate thresholds (apps/ still CRITICAL+fixable; distroless/ still HIGH+).
+- Doesn't suppress on `distroless/` images — the file is loaded there too for symmetry, but distroless shouldn't carry most of these vendored CVEs anyway.
+
+**Re-evaluation hooks (by 2026-08-19):**
+
+1. Trivy auto-fails on expiry — that's the forcing function. Run the gate intentionally; review what's still blocking.
+2. Check upstreams for re-bundle/re-release:
+   - Alpine 3.23.x for python + ffmpeg patches
+   - Debian 13 for libc + libgnutls patches
+   - emby, theme-park, nzbhydra2, pyload-ng, bazarr, webhook, smartctl-exporter, cni-plugins, tqm, home-assistant, opentofu-runner, actions-runner releases
+3. Any image migrating from `apps/` to `distroless/` drops out of its row entirely (the kopia precedent).
 
 ### 6. Local branch hygiene
 
