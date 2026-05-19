@@ -226,6 +226,10 @@ jobs:
           severity-cutoff: high
           only-fixed: true
           output-format: sarif
+          # Shared ignore policy with apps/. Distroless images shouldn't
+          # carry the listed CVEs (they don't bundle upstream-vendored
+          # libs), but apply the same config for consistency.
+          config: .grype.yaml
 
       - name: Upload Grype SARIF to Security tab
         if: always() && steps.grype.outputs.sarif != ''
@@ -245,6 +249,7 @@ jobs:
           ignore-unfixed: true
           exit-code: "1"
           hide-progress: true
+          trivyignores: .trivyignore.yaml
 
       - name: Upload Trivy SARIF to Security tab
         if: always() && hashFiles(format('trivy-{0}.sarif', matrix.arch)) != ''

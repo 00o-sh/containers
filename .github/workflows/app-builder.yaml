@@ -287,6 +287,10 @@ jobs:
           severity-cutoff: critical
           only-fixed: true
           output-format: sarif
+          # .grype.yaml at repo root carries time-bounded ignores for CVEs
+          # we can't patch (e.g. upstream-vendored libraries). Each entry
+          # has a re-evaluation date in a comment.
+          config: .grype.yaml
 
       - name: Upload Grype SARIF
         if: always() && steps.grype.outputs.sarif != ''
@@ -308,6 +312,9 @@ jobs:
           ignore-unfixed: true
           exit-code: "1"
           hide-progress: true
+          # .trivyignore.yaml mirrors .grype.yaml suppressions so both
+          # scanners gate identically. Trivy honors `expired_at` natively.
+          trivyignores: .trivyignore.yaml
 
       - name: Upload Trivy SARIF
         if: always() && hashFiles('trivy.sarif') != ''

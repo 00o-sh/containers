@@ -2,7 +2,7 @@
 
 Live working log. Future Claude: **read this first**, then update it as you go (mark items resolved, add new threads, prune stale ones). If this file contradicts the repo, trust the repo and fix the file.
 
-**Last updated:** 2026-05-18 (session: upstream sync #14 — license / justfile→mise / BOT_CLIENT_ID rename absorbed)
+**Last updated:** 2026-05-19 (session: bypass CVE-2026-40962 ffmpeg in apps/ CVE gate for emby PR #19 unblock)
 
 ---
 
@@ -64,6 +64,32 @@ After #14 merge, two upload-sarif call sites in `vulnerability-scan.yaml` were b
 - Check Mend dashboard at app.mend.io/renovate for the run log; look for "this is a fork, skipping" (means `forkProcessing` didn't take effect) or preset resolution errors (the `github>home-operations/renovate-config` preset may have been moved or made private).
 - Force-run from the Mend UI to skip the scheduled-cycle wait.
 - The `renovate.yaml` workflow in this repo is still disabled (thread #2) and is *not* the runner — don't confuse the two paths.
+
+### 8. Bundled-vendor CVE policy: `.grype.yaml` + `.trivyignore.yaml` (this PR)
+
+**Motivation:** PR #19 (Renovate-authored emby version bump 4.9.3.0 → 4.9.5.0) failed the apps/ CVE gate even after #13's softening to CRITICAL-only. Investigation showed 34 instances on emby-ubuntu all stem from a single CVE — `CVE-2026-40962` (ffmpeg) — counted across emby's bundled ffmpeg binary + 7 shared libs (libavcodec, libavfilter, libavformat, libavutil, libavdevice, libswresample, libswscale). Same CVE also fires daily on stash, pyload-ng, octoprint via the Alpine 3.23 `ffmpeg` apk.
+
+**Why we can't patch:**
+
+- emby is closed-source. The Dockerfile extracts emby's upstream `.deb` (`dpkg-deb -xv`) which bundles ffmpeg statically; only MediaBrowser can re-bundle.
+- Alpine apk ffmpeg is awaiting an upstream Alpine 3.23.x update. Renovate is constrained to 3.23.x by the `Allowed Alpine Version` packageRule, so we get the fix when Alpine ships it — not before.
+
+**Fix shape:**
+
+- `.grype.yaml` at repo root with one `ignore:` entry for `CVE-2026-40962`. Wired into all five Grype call sites via the `config:` input (one each in app-builder.yaml and distroless-build.yaml; three in vulnerability-scan.yaml).
+- `.trivyignore.yaml` with the equivalent entry, including `expired_at: 2026-08-19` (Trivy honors this natively). Wired via `trivyignores:` input on both Trivy call sites.
+- Both files carry a clear rationale block and a re-evaluation date.
+
+**Re-evaluation triggers (~90 days from 2026-05-19):**
+
+- Trivy will automatically re-fail the gate on `expired_at: 2026-08-19`.
+- Grype doesn't enforce expiry, so the file's documented `Re-evaluate by` date is a manual reminder.
+- The right hooks to re-check before then: (1) check emby release notes for a re-bundle, (2) check Alpine 3.23.x changelog for an ffmpeg patch, (3) any image migrating to `distroless/` drops out of this concern entirely.
+
+**What this does NOT do:**
+
+- Doesn't blanket-suppress other CVEs. New CVEs still gate normally.
+- Doesn't suppress on `distroless/` images either (they shouldn't carry ffmpeg-bundling apps anyway, but the same ignore applies for consistency).
 
 ### 6. Local branch hygiene
 

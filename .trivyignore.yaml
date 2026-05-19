@@ -1,0 +1,13 @@
+# Trivy ignore policy. Consumed by aquasecurity/trivy-action via the
+# `trivyignores:` input across the workflows in .github/workflows/.
+#
+# Mirrors .grype.yaml so the apps/ gate behaves consistently across
+# both scanners. Trivy honors `expired_at` natively (after the date,
+# the ignore is dropped and the CVE re-fails the gate).
+
+vulnerabilities:
+  # CVE-2026-40962 — ffmpeg. See .grype.yaml for the full rationale.
+  # Affects emby (vendored .deb), stash/pyload-ng/octoprint (Alpine apk).
+  - id: CVE-2026-40962
+    statement: "Bundled ffmpeg in upstream-vendored apps (emby) and unpatched Alpine 3.23 apk (stash, pyload-ng, octoprint). Awaiting upstream re-bundle / Alpine patch. Tracked in .claude/STATE.md."
+    expired_at: 2026-08-19

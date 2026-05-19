@@ -1,0 +1,24 @@
+# Grype scan configuration. Consumed by anchore/scan-action via the
+# `config:` input across the workflows in .github/workflows/.
+#
+# Ignore policy: time-bounded suppressions for CVEs we can't patch
+# in the build pipeline. Each entry must carry a `# expires:` note
+# and a brief rationale — Grype itself doesn't enforce expiry, so
+# entries are revisited manually when they approach the date.
+#
+# Re-evaluate this file:
+# - On any CRITICAL+fixable suppression older than 90 days
+# - When the underlying upstream ships a patched release
+# - When `apps/<affected>` migrates to `distroless/`
+
+ignore:
+  # CVE-2026-40962 — ffmpeg. Affects multiple apps that bundle or
+  # depend on vulnerable ffmpeg versions we don't control:
+  # - apps/emby: bundles its own ffmpeg inside the upstream .deb;
+  #   only MediaBrowser can re-bundle. Blocks PR #19.
+  # - apps/stash, apps/pyload-ng, apps/octoprint: depend on Alpine
+  #   3.23's ffmpeg apk (currently 8.0.1-r1); awaits an Alpine
+  #   3.23.x update with a patched ffmpeg.
+  # Re-evaluate by: 2026-08-19 (90 days). Check emby release notes
+  # for a re-bundle and Alpine 3.23.x changelog for an ffmpeg patch.
+  - vulnerability: CVE-2026-40962
