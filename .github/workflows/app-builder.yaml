@@ -299,7 +299,7 @@ jobs:
         # Matches the Grype threshold above — CRITICAL only on the apps/
         # track. Distroless workflow remains CRITICAL,HIGH.
         id: trivy
-        uses: aquasecurity/trivy-action@a9c7b0f06e461e9d4b4d1711f154ee024b8d7ab8 # v0.36.0
+        uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25 # v0.36.0
         with:
           image-ref: ghcr.io/${{ github.repository_owner }}/${{ needs.merge.outputs.image_name }}@${{ needs.merge.outputs.digest }}
           format: sarif
