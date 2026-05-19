@@ -8,6 +8,14 @@ package:
 
 environment:
   contents:
+    # When running `melange build` locally / in this workflow, the apk
+    # repository set isn't inherited from Wolfi's CI infrastructure —
+    # we have to spell it out per recipe. Mirror the apko.yaml's repo
+    # + keyring so the build environment can resolve packages.
+    repositories:
+      - https://packages.wolfi.dev/os
+    keyring:
+      - https://packages.wolfi.dev/os/wolfi-signing.rsa.pub
     packages:
       - build-base
       - busybox
