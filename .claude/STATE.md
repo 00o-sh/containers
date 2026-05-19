@@ -139,7 +139,13 @@ All three are dormant on the operator's cluster (only `cloudflared-distroless` c
 
 **Boot smoke** added to `distroless-build.yaml`: `kopia --version`. Same shape as cloudflared's smoke arm.
 
-**Pattern lesson for future melange recipes:** every recipe in this repo needs `repositories:` + `keyring:` declared in BOTH `environment.contents:` (build env) AND `test.environment.contents:` (test env). Wolfi's CI infrastructure provides them implicitly for in-tree recipes; ours have to spell them out twice. Two CI cycles burned learning this — bake the convention into CLAUDE.md as a footnote when kopia merges.
+**Pattern lessons for future melange recipes** (each burned a CI cycle to discover):
+
+1. **Build env needs repos/keyring**: `environment.contents:` must list `repositories:` + `keyring:`. Otherwise: `failed to initialize apk repositories: must provide at least one repository`.
+2. **Test env needs the same**: `test.environment.contents:` is a separate sandbox; needs its own `repositories:` + `keyring:`. Same error mode if missing.
+3. **Workflow needs `--repository-append` for melange test**: the test sandbox can't find the just-built apk in our local `packages/` dir unless the workflow passes `--repository-append "${{ github.workspace }}/packages"` (mirroring apko's pattern). Otherwise: `nothing provides "<package>"`.
+
+Bake all three into CLAUDE.md as a footnote when kopia merges. Wolfi's CI provides these implicitly for in-tree recipes; ours have to spell them out.
 
 **Known limitations (acceptable for v1):**
 
