@@ -19,6 +19,9 @@ RUN \
         catatonit \
         curl \
         jq \
+        liblttng-ust1t64 \
+        libicu74 \
+        libssl3t64 \
         nano \
         tzdata \
     && \
