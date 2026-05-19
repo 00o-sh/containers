@@ -2,13 +2,13 @@
 
 Live working log. Future Claude: **read this first**, then update it as you go (mark items resolved, add new threads, prune stale ones). If this file contradicts the repo, trust the repo and fix the file.
 
-**Last updated:** 2026-05-19 (session: extended bundled-vendor CVE bypass to 24 CRITICAL clusters)
+**Last updated:** 2026-05-19 (session: disable repology datasource — flake source, can't tune resilience)
 
 ---
 
 ## Current branch
 
-`main`. PR #12 (bot-app trigger bypass) and #13 (apps CVE gate softened to CRITICAL) both merged. PR #14 (`Pull From origin`) being landed now via local merge resolution + push to fork's main.
+`fix/renovate-disable-repology`. PR #22 (24-CVE bundled-vendor bypass) merged. PR #19 closed+reopened to pick up the new workflow with `config: .grype.yaml`. PR #21 (kopia melange pilot) has the test-env repos fix pushed; CI re-running.
 
 ## Open threads
 
@@ -108,6 +108,24 @@ After #14 merge, two upload-sarif call sites in `vulnerability-scan.yaml` were b
    - Debian 13 for libc + libgnutls patches
    - emby, theme-park, nzbhydra2, pyload-ng, bazarr, webhook, smartctl-exporter, cni-plugins, tqm, home-assistant, opentofu-runner, actions-runner releases
 3. Any image migrating from `apps/` to `distroless/` drops out of its row entirely (the kopia precedent).
+
+### 9. Repology datasource disabled (this PR — reversal of the #17 close)
+
+**Reversal context:** Originally proposed in #17, closed by user as "don't think we need to skip repology" after the first Mend run succeeded enough to produce 4 auto-merges on 2026-05-19. Recurrent flakes since then prompted re-evaluation. Reading the [datasource docs](https://docs.renovatebot.com/modules/datasource/repology/) confirmed the datasource has no tunable knobs (no timeout, no retry, no mirror) — Renovate's external-host-error behavior is hardcoded to abort the entire repo run. Practical fix: opt out.
+
+**Scope of breakage on opt-out:** only 3 apps inherited upstream's `datasource=repology` annotation:
+
+| App | depName | Effect of disable |
+|---|---|---|
+| `apps/deluge` | `alpine_3_23/deluge` | VERSION pin stops auto-updating |
+| `apps/transmission` | `alpine_edge/transmission-daemon` | VERSION pin stops auto-updating |
+| `apps/irqbalance` | `alpine_3_23/irqbalance` | VERSION pin stops auto-updating |
+
+All three are dormant on the operator's cluster (only `cloudflared-distroless` consumed). Acceptable per standing policy.
+
+**Future cleanup option:** migrate each from `datasource=repology` to `datasource=github-releases` (or a custom datasource) if these apps ever need ongoing tracking. Not worth the engineering effort while they're dormant.
+
+**Implementation:** new `packageRule` at the top of `packageRules:` in `.renovaterc.json5` with `matchDatasources: ["repology"], enabled: false`. Carries the rationale + the docs link as inline comments so future-you understands why on a casual read.
 
 ### 6. Local branch hygiene
 
