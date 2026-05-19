@@ -1,0 +1,58 @@
+package:
+  name: tqm
+  version: "1.19.0"
+  epoch: 0
+  description: Torrent Queue Manager — opinionated bulk media-server torrent helper.
+  copyright:
+    - license: GPL-3.0-or-later
+
+environment:
+  contents:
+    # See STATE.md thread #10 for the full pattern: build + test envs
+    # each need their own repositories+keyring (Wolfi's CI provides them
+    # implicitly for in-tree recipes; ours has to spell them out).
+    repositories:
+      - https://packages.wolfi.dev/os
+    keyring:
+      - https://packages.wolfi.dev/os/wolfi-signing.rsa.pub
+    packages:
+      - build-base
+      - busybox
+      - ca-certificates-bundle
+      - git
+      - go-1.24
+
+pipeline:
+  - uses: git-checkout
+    with:
+      repository: https://github.com/autobrr/tqm
+      tag: v${{package.version}}
+      expected-commit: 02a7ee996cc9e6dc1fff4550ab3541424a01512a
+
+  - runs: |
+      mkdir -p "${{targets.destdir}}/usr/bin"
+      LDFLAGS="-s -w \
+        -X main.Version=${{package.version}} \
+        -X main.GitCommit=$(git rev-parse HEAD) \
+        -X main.Timestamp=$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+      CGO_ENABLED=0 go build \
+        -trimpath \
+        -ldflags "$LDFLAGS" \
+        -o "${{targets.destdir}}/usr/bin/tqm" \
+        .
+
+  - uses: strip
+
+test:
+  environment:
+    contents:
+      repositories:
+        - https://packages.wolfi.dev/os
+      keyring:
+        - https://packages.wolfi.dev/os/wolfi-signing.rsa.pub
+      packages:
+        - busybox
+        - ca-certificates-bundle
+  pipeline:
+    - runs: |
+        tqm --version

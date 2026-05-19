@@ -2,7 +2,7 @@
 
 Live working log. Future Claude: **read this first**, then update it as you go (mark items resolved, add new threads, prune stale ones). If this file contradicts the repo, trust the repo and fix the file.
 
-**Last updated:** 2026-05-19 (session: apps/ CVE gate set to report-only on both Grype + Trivy)
+**Last updated:** 2026-05-19 (session: tqm distroless pilot — third image, user redirected to media-stack focus)
 
 ---
 
