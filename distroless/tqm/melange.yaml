@@ -27,19 +27,27 @@ pipeline:
     with:
       repository: https://github.com/autobrr/tqm
       tag: v${{package.version}}
-      expected-commit: 02a7ee996cc9e6dc1fff4550ab3541424a01512a
+      # Note: this is the commit SHA the tag points at, NOT the tag
+      # object's own SHA. Annotated tags have a separate object SHA;
+      # git-checkout warned about this when we used the tag-object hash
+      # in the first push. Use `git rev-list -n1 <tag>` to find this.
+      expected-commit: d451f169959ab81ce143f9e0e9c4e5abb6856699
 
   - runs: |
+      # Main package lives at cmd/tqm (root has no .go files — it's a
+      # library + cmd/ cobra subcommands + cmd/tqm/main.go).
+      # ldflag targets follow tqm's .goreleaser.yml convention:
+      # github.com/autobrr/tqm/pkg/runtime.{Version,GitCommit,Timestamp}.
       mkdir -p "${{targets.destdir}}/usr/bin"
       LDFLAGS="-s -w \
-        -X main.Version=${{package.version}} \
-        -X main.GitCommit=$(git rev-parse HEAD) \
-        -X main.Timestamp=$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+        -X github.com/autobrr/tqm/pkg/runtime.Version=${{package.version}} \
+        -X github.com/autobrr/tqm/pkg/runtime.GitCommit=$(git rev-parse --short HEAD) \
+        -X github.com/autobrr/tqm/pkg/runtime.Timestamp=$(date -u +%Y-%m-%dT%H:%M:%SZ)"
       CGO_ENABLED=0 go build \
         -trimpath \
         -ldflags "$LDFLAGS" \
         -o "${{targets.destdir}}/usr/bin/tqm" \
-        .
+        ./cmd/tqm
 
   - uses: strip
 
