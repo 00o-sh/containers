@@ -1,0 +1,49 @@
+contents:
+  repositories:
+    - https://packages.wolfi.dev/os
+  keyring:
+    - https://packages.wolfi.dev/os/wolfi-signing.rsa.pub
+  packages:
+    - wolfi-baselayout
+    - ca-certificates-bundle
+    - tzdata
+    - kopia
+
+accounts:
+  groups:
+    - groupname: nonroot
+      gid: 65532
+  users:
+    - username: nonroot
+      uid: 65532
+      gid: 65532
+  run-as: "65532"
+
+# No `cmd:` — the distroless image exposes the kopia binary as the
+# entrypoint and lets the orchestrator (k8s manifest, docker run args)
+# specify the subcommand. This is intentionally different from
+# apps/kopia/entrypoint.sh, which auto-launched `kopia server start`
+# when KOPIA_WEB_ENABLED=true. That shell-script convenience can't run
+# in distroless (no shell) — orchestrator now owns the command line.
+entrypoint:
+  command: /usr/bin/kopia
+
+environment:
+  LANG: C.UTF-8
+  # Preserve the operational defaults the Alpine image set as ENVs.
+  # These are all overridable at runtime and don't require a shell.
+  KOPIA_CHECK_FOR_UPDATES: "false"
+  KOPIA_CONFIG_PATH: /config/repository.config
+  KOPIA_CACHE_DIRECTORY: /config/cache
+  KOPIA_LOG_DIR: /config/logs
+  KOPIA_PERSIST_CREDENTIALS_ON_CONNECT: "false"
+
+archs:
+  - x86_64
+  - aarch64
+
+annotations:
+  org.opencontainers.image.source: https://github.com/00o-sh/containers
+  org.opencontainers.image.url: https://github.com/kopia/kopia
+  org.opencontainers.image.licenses: Apache-2.0
+  org.opencontainers.image.description: Kopia backup CLI (distroless / Wolfi; CLI only — embedded HTML UI not bundled)

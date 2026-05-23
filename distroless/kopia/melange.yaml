@@ -1,0 +1,72 @@
+package:
+  name: kopia
+  version: "0.23.0"
+  epoch: 0
+  description: Cross-platform backup tool — fast incremental backups, client-side end-to-end encryption, compression, and dedup.
+  copyright:
+    - license: Apache-2.0
+
+environment:
+  contents:
+    # When running `melange build` locally / in this workflow, the apk
+    # repository set isn't inherited from Wolfi's CI infrastructure —
+    # we have to spell it out per recipe. Mirror the apko.yaml's repo
+    # + keyring so the build environment can resolve packages.
+    repositories:
+      - https://packages.wolfi.dev/os
+    keyring:
+      - https://packages.wolfi.dev/os/wolfi-signing.rsa.pub
+    packages:
+      - build-base
+      - busybox
+      - ca-certificates-bundle
+      - git
+      - go-1.25
+
+pipeline:
+  - uses: git-checkout
+    with:
+      repository: https://github.com/kopia/kopia
+      tag: v${{package.version}}
+      expected-commit: dd5b7ba9ce6c5f4f5c324fc24608e06fc12be5af
+
+  - runs: |
+      # Build the kopia CLI without the embedded HTML UI. The nohtmlui build
+      # tag avoids needing a node toolchain at build time; server-mode
+      # operations still work, only the in-browser UI is unavailable.
+      # If/when we want the UI here, we'd add nodejs + npm to the build env
+      # and run `make htmlui` before the go build.
+      mkdir -p "${{targets.destdir}}/usr/bin"
+      LDFLAGS="-s -w \
+        -X github.com/kopia/kopia/repo.BuildVersion=${{package.version}} \
+        -X github.com/kopia/kopia/repo.BuildGitHash=$(git rev-parse HEAD) \
+        -X github.com/kopia/kopia/repo.BuildInfo=${{package.version}}-distroless"
+      CGO_ENABLED=0 go build \
+        -trimpath \
+        -tags nohtmlui \
+        -ldflags "$LDFLAGS" \
+        -o "${{targets.destdir}}/usr/bin/kopia" \
+        .
+
+  - uses: strip
+
+test:
+  # `melange test` builds a separate sandbox from the build environment,
+  # so it needs its own repository config too — otherwise the test guest
+  # fails with `must provide at least one repository`. busybox provides
+  # /bin/sh for executing the `runs:` script — without it the sandbox
+  # fails with `bwrap: execvp /bin/sh: No such file or directory`.
+  # Wolfi's CI provides these implicitly for in-tree recipes; ours has
+  # to spell them out.
+  environment:
+    contents:
+      repositories:
+        - https://packages.wolfi.dev/os
+      keyring:
+        - https://packages.wolfi.dev/os/wolfi-signing.rsa.pub
+      packages:
+        - busybox
+        - ca-certificates-bundle
+  pipeline:
+    - runs: |
+        kopia --version
