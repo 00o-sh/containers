@@ -421,13 +421,22 @@ jobs:
         # whether the apk came from Wolfi directly or from a local melange
         # build; the SBOM is the single source of truth for what's actually
         # in the image.
+        #
+        # Match strategy: prefer an exact name match (the common case —
+        # `cloudflared`, `kopia`, `tqm` all have apk names equal to the
+        # distroless dir name). Fall back to a hyphen-prefix match for
+        # apks Wolfi ships per-minor with a version suffix (e.g.
+        # `kubectl-1.36`, `kubectl-1.36-default`). `head -1` deterministically
+        # picks the SBOM-first match, which is the order the package list
+        # in apko.yaml dictates — so the "main" versioned package wins
+        # over the `-default` alias.
         run: |
           set -euo pipefail
           raw=$(jq -r --arg name "${{ matrix.image }}" \
-            '.packages[] | select(.name == $name) | .versionInfo' \
+            '.packages[] | select(.name == $name or (.name | startswith($name + "-"))) | .versionInfo' \
             sbom-x86_64.spdx.json | head -1)
           if [ -z "$raw" ] || [ "$raw" = "null" ]; then
-            echo "::error::Could not find package '${{ matrix.image }}' in SBOM"
+            echo "::error::Could not find package matching '${{ matrix.image }}' (exact or prefix) in SBOM"
             exit 1
           fi
           # Strip apk -rN release suffix to produce a semver-shaped tag
