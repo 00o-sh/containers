@@ -200,6 +200,12 @@ jobs:
               timeout 15s docker run --rm \
                 --entrypoint /usr/bin/cloudflared "$IMG" --version
               ;;
+            kubectl)
+              # `version --client` avoids any attempt to reach a cluster;
+              # exits 0 with the embedded client version + go version.
+              timeout 15s docker run --rm \
+                --entrypoint /usr/bin/kubectl "$IMG" version --client
+              ;;
             *)
               echo "::warning::No boot-smoke recipe for ${{ matrix.image }}; skipping"
               ;;
