@@ -11,7 +11,14 @@ contents:
     # (kubectl-1.24 through kubectl-1.36 available). Pinned to 1.35
     # to match the operator's cluster k8s version. Bump to
     # kubectl-1.36 (etc.) when the cluster's control plane rolls.
+    #
+    # Both packages required:
+    # - kubectl-1.35:         ships /usr/bin/kubectl-1.35 (versioned binary)
+    # - kubectl-1.35-default: ships /usr/bin/kubectl alias → kubectl-1.35
+    # Our entrypoint uses the unversioned path, so -default is what
+    # makes /usr/bin/kubectl exist in the image.
     - kubectl-1.35
+    - kubectl-1.35-default
 
 accounts:
   groups:
