@@ -53,19 +53,57 @@ jobs:
         with:
           persist-credentials: false
 
+      # Only run changed-files detection on PR/push events. For schedule
+      # (daily CVE rebuild) and workflow_dispatch we want every image
+      # rebuilt regardless of git diff. Mirrors apps/'s release.yaml.
+      - name: Get changed distroless dirs
+        if: github.event_name == 'pull_request' || github.event_name == 'push'
+        uses: bjw-s-labs/action-changed-files@a9a36fb08ce06db9b02fbd8026cc2c0945eb9841 # v0.6.0
+        id: changed-files
+        with:
+          path: distroless
+          include_only_directories: true
+          max_depth: 1
+
       - name: Resolve image list
         id: set
         shell: bash
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          INPUT_IMAGE: ${{ inputs.image }}
+          CHANGED_FILES: ${{ steps.changed-files.outputs.changed_files }}
         run: |
           set -euo pipefail
-          if [ -n "${{ inputs.image }}" ]; then
-            images_json=$(jq -nc --arg i "${{ inputs.image }}" '[$i]')
-          else
-            images_json=$(find distroless -maxdepth 2 -name apko.yaml -printf '%h\n' \
+
+          # Decision tree:
+          # 1. workflow_dispatch with input.image → just that one
+          # 2. workflow_dispatch w/o input, or schedule → all
+          #    (operator explicitly wants full rebuild, or daily CVE cycle)
+          # 3. pull_request / push:
+          #    a. distroless/<dir>/ changed → just those dirs
+          #    b. only the workflow itself changed (no dirs in path filter
+          #       matched) → all images (workflow changes can break any
+          #       image; test them all)
+
+          all_images() {
+            find distroless -maxdepth 2 -name apko.yaml -printf '%h\n' \
               | sed 's|^distroless/||' \
               | sort -u \
-              | jq -R -s -c 'split("\n") | map(select(length > 0))')
+              | jq -R -s -c 'split("\n") | map(select(length > 0))'
+          }
+
+          if [ -n "$INPUT_IMAGE" ]; then
+            images_json=$(jq -nc --arg i "$INPUT_IMAGE" '[$i]')
+          elif [ "$EVENT_NAME" = "schedule" ] || [ "$EVENT_NAME" = "workflow_dispatch" ]; then
+            images_json=$(all_images)
+          elif [ -n "$CHANGED_FILES" ] && [ "$CHANGED_FILES" != "[]" ]; then
+            images_json="$CHANGED_FILES"
+          else
+            # PR/push but no distroless/ dirs changed → workflow itself
+            # was the only thing modified. Validate against all images.
+            images_json=$(all_images)
           fi
+
           echo "images=$images_json" >> "$GITHUB_OUTPUT"
           if [ "$images_json" = "[]" ]; then
             echo "any=false" >> "$GITHUB_OUTPUT"
@@ -186,20 +224,19 @@ jobs:
           fi
           echo "::endgroup::"
 
-      - name: Setup Mise (for boot smoke)
+      - name: Setup Go (for boot smoke)
+        # Use actions/setup-go directly instead of jdx/mise-action: mise
+        # tries to fetch version info for every tool in .mise.toml (apko,
+        # melange, cosign, claude-code, tmux, etc.) on first run, and on
+        # the aarch64 runner the mise cache is empty → anonymous GitHub
+        # API calls → 401 rate-limit fail. setup-go is targeted: only
+        # installs Go (which is all the boot-smoke test needs) and has
+        # its own caching.
         if: hashFiles(format('distroless/{0}/container_test.go', matrix.image)) != ''
-        uses: jdx/mise-action@1648a7812b9aeae629881980618f079932869151 # v4.0.1
+        uses: actions/setup-go@40f1582b2485089dde7abd97c1529aa768e1baff # v5.6.0
         with:
-          experimental: true
-
-      - name: Restore Go Modules
-        if: hashFiles(format('distroless/{0}/container_test.go', matrix.image)) != ''
-        uses: actions/cache/restore@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
-        with:
-          path: |
-            ~/.cache/go-build
-            ~/go/pkg/mod
-          key: ${{ runner.os }}-go-${{ hashFiles('go.sum') }}
+          go-version-file: go.mod
+          cache: true
 
       - name: Boot smoke (${{ matrix.image }})
         # Per-image smoke runs distroless/<image>/container_test.go via the
