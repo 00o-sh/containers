@@ -186,24 +186,42 @@ jobs:
           fi
           echo "::endgroup::"
 
+      - name: Setup Mise (for boot smoke)
+        if: hashFiles(format('distroless/{0}/container_test.go', matrix.image)) != ''
+        uses: jdx/mise-action@1648a7812b9aeae629881980618f079932869151 # v4.0.1
+        with:
+          experimental: true
+
+      - name: Restore Go Modules
+        if: hashFiles(format('distroless/{0}/container_test.go', matrix.image)) != ''
+        uses: actions/cache/restore@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
+        with:
+          path: |
+            ~/.cache/go-build
+            ~/go/pkg/mod
+          key: ${{ runner.os }}-go-${{ hashFiles('go.sum') }}
+
       - name: Boot smoke (${{ matrix.image }})
-        # Per-image smoke. Override entrypoint to invoke the binary with a
-        # benign arg (--version) so we don't try to run the real service.
+        # Per-image smoke runs distroless/<image>/container_test.go via the
+        # testhelpers package (testcontainers-go). Tests live next to the
+        # recipe; this workflow is generic. To add a new image: drop a
+        # container_test.go alongside apko.yaml — no workflow edit needed.
+        # Mirrors the apps/ track (see .github/actions/app-tests/).
+        if: hashFiles(format('distroless/{0}/container_test.go', matrix.image)) != ''
+        shell: bash
+        env:
+          # testhelpers.GetTestImage reads TEST_IMAGE; falls back to the
+          # `:rolling` tag if unset. Override to the just-built sandbox so
+          # we test what this PR produces, not what's already published.
+          TEST_IMAGE: ${{ env.REGISTRY_NAMESPACE }}/${{ matrix.image }}-distroless:verify-${{ matrix.arch }}
+        run: |-
+          go test -v ./distroless/${{ matrix.image }}/...
+
+      - name: Warn if no boot smoke for ${{ matrix.image }}
+        if: hashFiles(format('distroless/{0}/container_test.go', matrix.image)) == ''
         shell: bash
         run: |
-          set -euo pipefail
-          IMG="${{ env.REGISTRY_NAMESPACE }}/${{ matrix.image }}-distroless:verify-${{ matrix.arch }}"
-          case "${{ matrix.image }}" in
-            cloudflared)
-              # binfmt makes aarch64 runnable under qemu on amd64 hosts; matrix
-              # arch already matches runner arch so this is a native exec.
-              timeout 15s docker run --rm \
-                --entrypoint /usr/bin/cloudflared "$IMG" --version
-              ;;
-            *)
-              echo "::warning::No boot-smoke recipe for ${{ matrix.image }}; skipping"
-              ;;
-          esac
+          echo "::warning::No distroless/${{ matrix.image }}/container_test.go found; skipping boot smoke. Drop a Go test next to apko.yaml to enable."
 
       - name: Compute Grype cache key
         id: grype-key
