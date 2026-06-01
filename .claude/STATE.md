@@ -2,13 +2,13 @@
 
 Live working log. Future Claude: **read this first**, then update it as you go (mark items resolved, add new threads, prune stale ones). If this file contradicts the repo, trust the repo and fix the file.
 
-**Last updated:** 2026-05-19 (session: apps/ CVE gate set to report-only on both Grype + Trivy)
+**Last updated:** 2026-05-19 (session: kopia rebased on top of #26 apps/ gate disable)
 
 ---
 
 ## Current branch
 
-`chore/apps-cve-gate-report-only`. PRs #22 + #25 merged. PR #21 (kopia) rebased on top, MERGEABLE, CI running. This PR disables the apps/ CVE gate entirely (Grype `fail-build: false`, Trivy `exit-code: "0"`) — distroless gate stays strict.
+`feat/distroless-kopia-pilot`. PRs #22 (CVE bundle bypass), #25 (repology disable), and #26 (apps/ CVE gate report-only) all merged. Kopia rebased on top — only this branch remains open from the recent work batch.
 
 ## Open threads
 
@@ -127,31 +127,49 @@ All three are dormant on the operator's cluster (only `cloudflared-distroless` c
 
 **Implementation:** new `packageRule` at the top of `packageRules:` in `.renovaterc.json5` with `matchDatasources: ["repology"], enabled: false`. Carries the rationale + the docs link as inline comments so future-you understands why on a casual read.
 
-### 11. Apps/ CVE gate disabled — report-only on both scanners (this PR)
+### 10. Distroless catalog expansion — kopia pilot (this PR)
+
+**Why kopia next:** survey of all 37 `apps/` against Wolfi's package set turned up exactly one apko-only candidate (`cni-plugins`), and its `rsync`-to-host runtime semantics fight distroless (no shell for glob expansion; would need an explicit-list `cmd:` or a melange overlay just to relocate files). The user's "easy" bucket — Go-static services — gives a cleaner first melange recipe, and kopia is the largest Go-static service in `apps/`.
+
+**Approach:**
+
+- `distroless/kopia/melange.yaml` — builds the kopia CLI from upstream `github.com/kopia/kopia@v0.23.0` via `go build -tags nohtmlui`. The `nohtmlui` build tag is kopia's own escape hatch (per their Makefile's `install-noui` target) — avoids needing a node toolchain to compile the embedded HTML UI. CLI is fully functional; only the in-browser web UI is unavailable.
+- `distroless/kopia/apko.yaml` — composes the kopia package with `wolfi-baselayout` + `ca-certificates-bundle` + `tzdata`. Same shape as cloudflared.
+- **Operational change vs. `apps/kopia`:** the Alpine image had an `entrypoint.sh` bash script that auto-launched `kopia server start` when `KOPIA_WEB_ENABLED=true`. That convenience can't run in distroless (no shell). The new entrypoint is just `/usr/bin/kopia` — orchestrator (k8s manifest, docker run args) owns the command line. Standard distroless idiom; preserves all the environment-variable defaults the Alpine image set.
+
+**Boot smoke** added to `distroless-build.yaml`: `kopia --version`. Same shape as cloudflared's smoke arm.
+
+**Pattern lessons for future melange recipes** (each burned a CI cycle to discover):
+
+1. **Build env needs repos/keyring**: `environment.contents:` must list `repositories:` + `keyring:`. Otherwise: `failed to initialize apk repositories: must provide at least one repository`.
+2. **Test env needs the same**: `test.environment.contents:` is a separate sandbox; needs its own `repositories:` + `keyring:`. Same error mode if missing.
+3. **Test env needs `packages:` too** — at minimum `busybox` (for `/bin/sh` to execute the `runs:` script) and `ca-certificates-bundle`. Otherwise: `bwrap: execvp /bin/sh: No such file or directory` followed by `unable to start pod: exit status 1`.
+4. **Workflow needs `--repository-append` for melange test**: the test sandbox can't find the just-built apk in our local `packages/` dir unless the workflow passes `--repository-append "${{ github.workspace }}/packages"` (mirroring apko's pattern). Otherwise: `nothing provides "<package>"`.
+
+Bake all four into CLAUDE.md as a footnote when kopia merges. Wolfi's CI provides these implicitly for in-tree recipes; ours have to spell them out.
+
+**Known limitations (acceptable for v1):**
+
+- No embedded HTML UI. Add later by including `nodejs` + `npm` in the melange `environment.contents.packages`, then `make htmlui` before `go build`. Bigger build, more attack surface — defer until someone actually wants the UI in distroless.
+- Build version info uses `git rev-parse HEAD` inside the build pipeline, which gives the SHA but not kopia's normal `git describe --tags --dirty` style version string. Cosmetic in `kopia --version` output.
+
+### 11. Apps/ CVE gate disabled — report-only on both scanners (resolved in #26)
 
 **Final step in the apps/ gate progression:**
 
 1. **#13** (2026-05-17): apps/ gate lowered from `HIGH+` to `CRITICAL+fixable` — narrowed the threshold.
 2. **#22** (2026-05-19): time-bounded ignores for 24 upstream-vendored CRITICAL clusters — kept gate strict but excluded what we can't patch.
-3. **This PR** (2026-05-19): `fail-build: false` on Grype, `exit-code: "0"` on Trivy. Both scanners still run; SARIF still uploads; sticky PR comment still posts the CRITICAL count. The gate just doesn't block merges anymore.
+3. **#26** (2026-05-19): `fail-build: false` on Grype, `exit-code: "0"` on Trivy. Both scanners still run; SARIF still uploads; sticky PR comment still posts the CRITICAL count. The gate just doesn't block merges anymore.
 
 **Why the further softening:**
 
-- Most apps/ CVEs are upstream-vendored libraries that this build pipeline can't patch. Threads #8 documented 24 such clusters; in practice that pattern is endless — every Renovate base-image bump can introduce a new CVE in something upstream bundles.
+- Most apps/ CVEs are upstream-vendored libraries that this build pipeline can't patch. Thread #8 documented 24 such clusters; in practice that pattern is endless — every Renovate base-image bump can introduce a new CVE in something upstream bundles.
 - Apps/ is dormant on the operator's cluster (only `cloudflared-distroless` is consumed). Gating dormant images on un-actionable findings was just operational noise.
-- Distroless images stay strict (`HIGH+` + `--only-fixed`, no ignores honored for the gating decision since the ignore file is mostly apps/-specific anyway). That's where the actual security floor lives.
+- Distroless images stay strict (`HIGH+` + `--only-fixed`). That's where the actual security floor lives.
 
-**What this changes operationally:**
+**What thread #8's ignore file does now:** `.grype.yaml` + `.trivyignore.yaml` are now mostly cosmetic for apps/ — they reduce Security tab noise from the daily nightly scan but don't affect any gate decision. They DO still apply to distroless scans, but distroless images shouldn't carry most of those CVEs anyway. Could potentially be deleted once Security-tab cleanliness is no longer a priority; keeping them for now is harmless.
 
-- Renovate apps/ PRs no longer fail CI on CVE counts. Auto-merges land regardless of findings.
-- Security tab still gets the SARIF (informational only).
-- Sticky PR comment still posts the table — text updated to "Report-only on apps/".
-
-**What thread #8's ignore file does now:**
-
-`.grype.yaml` + `.trivyignore.yaml` are now mostly cosmetic for apps/ — they reduce Security tab noise from the daily nightly scan but don't affect any gate decision. They DO still apply to distroless scans, but distroless images shouldn't carry most of those CVEs anyway. Could potentially be deleted once Security-tab cleanliness is no longer a priority; keeping them for now is harmless.
-
-**Restore the gate by reverting this PR.** All three steps in the progression (#13, #22, this) are individually reversible.
+**Restore the gate by reverting #26.** All three steps in the progression (#13, #22, #26) are individually reversible.
 
 ### 6. Local branch hygiene
 

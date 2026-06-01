@@ -163,10 +163,16 @@ jobs:
         if: steps.melange.outputs.present == 'true'
         # Test runs in a sandbox where extra tools (busybox, etc.) are allowed.
         # The final apko image stays bare.
+        # --repository-append mirrors the apko build step below — the test
+        # sandbox needs to find the just-built apk in our local packages/
+        # dir, otherwise apk can't resolve the package-under-test (e.g.
+        # `nothing provides "kopia"`). The recipe still declares Wolfi as
+        # its base repo; this flag appends the local override.
         run: |
           melange test "distroless/${{ matrix.image }}/melange.yaml" \
             --arch "${{ matrix.arch }}" \
             --keyring-append melange.rsa.pub \
+            --repository-append "${{ github.workspace }}/packages" \
             --source-dir packages
 
       - name: apko build
