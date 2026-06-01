@@ -5,7 +5,7 @@ unix_default_inline_shell_args = "bash -c -o errexit -o pipefail -o nounset"
 [tools]
 "aqua:anchore/grype" = "0.112.0"
 "aqua:chainguard-dev/apko" = "1.2.15"
-"aqua:chainguard-dev/melange" = "0.51.0"
+"aqua:chainguard-dev/melange" = "0.52.0"
 "aqua:cli/cli" = "2.93.0"
 "aqua:evilmartians/lefthook" = "2.1.9"
 "aqua:jqlang/jq" = "1.8.1"
