@@ -15,7 +15,7 @@ unix_default_inline_shell_args = "bash -c -o errexit -o pipefail -o nounset"
 "aqua:tmux/tmux-builds" = "3.6a"
 "aqua:zizmorcore/zizmor" = "1.25.2"
 claude-code = "latest"
-"go" = "1.26.3"
+"go" = "1.26.4"
 "node" = "24.16.0"
 
 [tasks.local-build]
