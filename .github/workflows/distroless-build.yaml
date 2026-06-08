@@ -36,7 +36,7 @@ permissions:
 
 env:
   REGISTRY_NAMESPACE: ghcr.io/${{ github.repository_owner }}
-  MELANGE_VERSION: v0.50.8 # renovate: datasource=github-releases depName=chainguard-dev/melange
+  MELANGE_VERSION: v0.52.0 # renovate: datasource=github-releases depName=chainguard-dev/melange
   # Renovate will pin a digest (`@sha256:...`) on first run via pinDigests.
   APKO_IMAGE: ghcr.io/wolfi-dev/sdk:latest # renovate: datasource=docker depName=ghcr.io/wolfi-dev/sdk
 
