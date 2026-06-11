@@ -143,7 +143,7 @@ jobs:
 
       - name: Install melange
         if: steps.melange.outputs.present == 'true'
-        uses: chainguard-dev/actions/setup-melange@05fbd381f7c158bd33c9bbf3a28f67852269fdf8 # v1.6.21
+        uses: chainguard-dev/actions/setup-melange@3b7bbeebc3a5d2bc37aa008350202651c32a26e1 # v1.6.22
         with:
           version: ${{ env.MELANGE_VERSION }}
 
