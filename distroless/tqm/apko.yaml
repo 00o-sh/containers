@@ -1,0 +1,41 @@
+contents:
+  repositories:
+    - https://packages.wolfi.dev/os
+  keyring:
+    - https://packages.wolfi.dev/os/wolfi-signing.rsa.pub
+  packages:
+    - wolfi-baselayout
+    - ca-certificates-bundle
+    - tzdata
+    - tqm
+
+accounts:
+  groups:
+    - groupname: nonroot
+      gid: 65532
+  users:
+    - username: nonroot
+      uid: 65532
+      gid: 65532
+  run-as: "65532"
+
+# No `cmd:` — distroless idiom is that the orchestrator (k8s manifest,
+# docker run args) supplies the subcommand. The Alpine apps/tqm shipped
+# with an entrypoint.sh wrapper that the distroless image deliberately
+# doesn't carry (no shell). Callers specify the tqm subcommand and
+# config path directly via `args:`.
+entrypoint:
+  command: /usr/bin/tqm
+
+environment:
+  LANG: C.UTF-8
+
+archs:
+  - x86_64
+  - aarch64
+
+annotations:
+  org.opencontainers.image.source: https://github.com/00o-sh/containers
+  org.opencontainers.image.url: https://github.com/autobrr/tqm
+  org.opencontainers.image.licenses: GPL-3.0-or-later
+  org.opencontainers.image.description: Torrent Queue Manager (distroless / Wolfi)
