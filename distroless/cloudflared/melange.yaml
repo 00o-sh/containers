@@ -1,0 +1,78 @@
+package:
+  name: cloudflared
+  version: "2026.6.1" # renovate: datasource=github-releases depName=cloudflare/cloudflared
+  # Epoch 99, deliberately: scanners match this package against Wolfi's
+  # security advisories by name, and Wolfi expresses fixes as
+  # "<upstream>-rN" using THEIR build counter. Our source build of the
+  # same upstream version at -r0 would compare "older" than their
+  # advisory's -rN and false-positive the exact CVE the build fixes
+  # (seen live with CVE-2026-41178: our 2026.6.1-r0 vs their fixed-in
+  # 2026.6.1-r2). r99 outranks any plausible Wolfi rebuild of the same
+  # upstream version, while advisories against NEWER upstream versions
+  # still fire correctly — which is the real "Renovate should bump us"
+  # signal.
+  epoch: 99
+  description: Cloudflare Tunnel client, built from source.
+  copyright:
+    - license: Apache-2.0
+
+# Why source-built instead of Wolfi's apk (switched 2026-07-04): Wolfi's
+# cloudflared packaging lags upstream chronically — upstream 2026.6.1
+# (with the CVE-2026-41178 fix) was a month old while Wolfi's APKINDEX
+# still topped out at 2026.5.2, and their index history shows an earlier
+# 2025.10 → 2026.3 gap. This is the plan §6 escape hatch ("PRs red for
+# weeks → switch to source build"). cloudflared is the one image the
+# operator's cluster consumes; it shouldn't be hostage to a downstream
+# packager's cadence. Note Cloudflare's official image is also
+# distroless (gcr.io/distroless/base-debian13:nonroot) — kept in-repo
+# for the daily Wolfi base rebuilds, our PR gate on version bumps, and
+# our provenance attestation; consuming the official image instead is
+# the documented alternative (plan §3).
+environment:
+  contents:
+    repositories:
+      - https://packages.wolfi.dev/os
+    keyring:
+      - https://packages.wolfi.dev/os/wolfi-signing.rsa.pub
+    packages:
+      - busybox
+      - ca-certificates-bundle
+      - git
+      - go-1.26
+
+pipeline:
+  # Tags are not v-prefixed (2026.6.1). No expected-commit — same
+  # rationale as the other melange recipes (distroless/README.md).
+  - uses: git-checkout
+    with:
+      repository: https://github.com/cloudflare/cloudflared
+      tag: ${{package.version}}
+
+  - runs: |
+      # Mirrors the official container build (their Dockerfile /
+      # Makefile): vendored deps, CGO off, metrics.Runtime=virtual so
+      # the metrics server binds container-appropriately.
+      mkdir -p "${{targets.destdir}}/usr/bin"
+      CGO_ENABLED=0 go build \
+        -trimpath \
+        -mod=vendor \
+        -ldflags '-s -w -X "main.Version=${{package.version}}" -X "github.com/cloudflare/cloudflared/metrics.Runtime=virtual"' \
+        -o "${{targets.destdir}}/usr/bin/cloudflared" \
+        ./cmd/cloudflared
+
+  - uses: strip
+
+test:
+  environment:
+    contents:
+      repositories:
+        - https://packages.wolfi.dev/os
+      keyring:
+        - https://packages.wolfi.dev/os/wolfi-signing.rsa.pub
+      packages:
+        - busybox
+        - ca-certificates-bundle
+  pipeline:
+    - runs: |
+        cloudflared --version
+        cloudflared --version | grep -q "${{package.version}}"

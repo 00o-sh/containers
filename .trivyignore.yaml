@@ -98,12 +98,6 @@ vulnerabilities:
     expired_at: 2026-08-19
 
   # Wolfi advisory-ahead-of-package (distroless track)
-  - id: CVE-2026-41178
-    statement: "cloudflared < 2026.6.1; Wolfi's fixed apk (2026.6.1-r2) not yet published in APKINDEX. Daily cron self-heals when it lands. See .grype.yaml."
-    expired_at: 2026-08-01
-  - id: GHSA-5wrp-cwcj-q835
-    statement: "Alias of CVE-2026-41178 (cloudflared). See .grype.yaml."
-    expired_at: 2026-08-01
   - id: GHSA-537c-gmf6-5ccf
     statement: "python cryptography 48.0.0 inside Wolfi's k8s-sidecar venv; fixed in k8s-sidecar 2.7.3-r3, not yet published. See .grype.yaml."
     expired_at: 2026-08-01

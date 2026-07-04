@@ -32,7 +32,7 @@ Every image carries exactly one Renovate-managed version anchor:
   - cloudflared>=2026.5.2 # renovate: datasource=github-releases depName=cloudflare/cloudflared
   ```
 
-  The apk resolver floats upward within the floor, so the daily 02:00 rebuild keeps delivering Wolfi `-rN` CVE patches without a PR. Renovate bumps the floor on upstream releases; if Wolfi hasn't packaged that version yet, the PR fails apk resolution and sits red until it has — lag is visible, never silent. (Exception: per-minor-versioned packages like `kubectl-1.36` are bumped manually, see the comment in that recipe.)
+  The apk resolver floats upward within the floor, so the daily 02:00 rebuild keeps delivering Wolfi `-rN` CVE patches without a PR. Renovate bumps the floor on upstream releases; if Wolfi hasn't packaged that version yet, the PR fails apk resolution and sits red — lag is visible, never silent. Note: Wolfi's advisories/recipes reference new versions *before* the apk is installable from the APKINDEX. `retry-renovate-distroless.yaml` re-runs those red builds daily so the PR self-greens and automerges once the package actually lands. (Exception: per-minor-versioned packages like `kubectl-1.36` are bumped manually, see the comment in that recipe.)
 
 - **We build the app** → annotation on `package.version` in `melange.yaml`:
 
