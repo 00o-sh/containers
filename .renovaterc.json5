@@ -53,7 +53,18 @@
         "/^\\.github/workflows/.*\\.ya?ml$/",
       ],
       matchStrings: [
-        ".+?:\\s+\"?(?<currentValue>[^\"\\s#]+)\"?\\s+#\\s*renovate:\\s+datasource=(?<datasource>\\S+)\\s+depName=(?<depName>\\S+)(\\s+versioning=(?<versioning>\\S+))?",
+        // `key: value # renovate: ...` — melange package.version, workflow
+        // env pins, etc. extractVersion is needed for upstreams whose git
+        // tags carry a v-prefix (kopia v0.23.0) while melange versions
+        // don't — without it Renovate may write the prefixed tag back.
+        ".+?:\\s+\"?(?<currentValue>[^\"\\s#]+)\"?\\s+#\\s*renovate:\\s+datasource=(?<datasource>\\S+)\\s+depName=(?<depName>\\S+)(\\s+versioning=(?<versioning>\\S+))?(\\s+extractVersion=(?<extractVersion>\\S+))?",
+        // apko package-list floor pins: `- pkg>=1.2.3 # renovate: ...`.
+        // The floor is the Renovate-managed value; the apk resolver still
+        // floats upward within it, so the daily cron keeps delivering
+        // Wolfi -rN CVE rebuilds without a PR. If Wolfi lags upstream,
+        // the bump PR fails apk resolution and sits red until Wolfi
+        // catches up — visible lag instead of silent drift.
+        "-\\s+[A-Za-z0-9._-]+>=(?<currentValue>[^\\s#]+)\\s+#\\s*renovate:\\s+datasource=(?<datasource>\\S+)\\s+depName=(?<depName>\\S+)(\\s+versioning=(?<versioning>\\S+))?(\\s+extractVersion=(?<extractVersion>\\S+))?",
       ],
       datasourceTemplate: "{{#if datasource}}{{{datasource}}}{{else}}github-releases{{/if}}",
       versioningTemplate: "{{#if versioning}}{{{versioning}}}{{else}}semver{{/if}}",
@@ -131,6 +142,27 @@
       matchManagers: ["gomod", "mise"],
       matchDepNames: ["go"],
       groupName: "golang",
+    },
+    {
+      description: ["Release Rules for Distroless Updates"],
+      addLabels: ["distroless/{{parentDir}}"],
+      additionalBranchPrefix: "{{parentDir}}-distroless-",
+      commitMessageExtra: "( {{currentVersion}} → {{newVersion}} )",
+      commitMessageTopic: "{{depName}}",
+      matchFileNames: ["distroless/**/apko.yaml", "distroless/**/melange.yaml"],
+      semanticCommitScope: "{{parentDir}}-distroless",
+      semanticCommitType: "release",
+    },
+    {
+      // Same policy as the docker-bake.hcl rule below: the distroless PR
+      // gate (build → structure assertions → melange test → boot smoke →
+      // Grype/Trivy HIGH+) is the merge decision. ignoreTests: false means
+      // a red gate blocks the automerge — that gate is the whole point.
+      description: ["Auto-merge Distroless Updates"],
+      matchFileNames: ["distroless/**/apko.yaml", "distroless/**/melange.yaml"],
+      automerge: true,
+      automergeType: "pr",
+      ignoreTests: false,
     },
     {
       description: ["Release Rules for App Updates"],

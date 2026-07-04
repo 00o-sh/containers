@@ -1,0 +1,53 @@
+contents:
+  repositories:
+    - https://packages.wolfi.dev/os
+  keyring:
+    - https://packages.wolfi.dev/os/wolfi-signing.rsa.pub
+  packages:
+    - wolfi-baselayout
+    - ca-certificates-bundle
+    - tzdata
+    # Wolfi packages the whole app (venv under /usr/share/k8s-sidecar,
+    # python-3.13 pulled in as a dependency). The >= floor is the
+    # Renovate-managed value; the resolver floats upward within it so
+    # the daily cron still delivers Wolfi -rN CVE rebuilds without a PR.
+    # If Wolfi lags upstream, the bump PR fails apk resolution and sits
+    # red until Wolfi catches up — visible lag instead of silent drift.
+    - k8s-sidecar>=2.7.3 # renovate: datasource=docker depName=ghcr.io/kiwigrid/k8s-sidecar
+
+accounts:
+  groups:
+    - groupname: nonroot
+      gid: 65532
+  users:
+    - username: nonroot
+      uid: 65532
+      gid: 65532
+  run-as: "65532"
+
+# Mirrors upstream kiwigrid's `python -u /app/sidecar.py` entrypoint,
+# adjusted to Wolfi's venv layout. Configuration is entirely
+# env-driven (LABEL, FOLDER, RESOURCE, ...) — no args, no shell.
+#
+# Parity caveat (flagged, not hidden): apps/k8s-sidecar layered
+# bash/curl/jq on top of the upstream image so the optional SCRIPT
+# change-hook could exec shell one-liners. A shell-free image can't run
+# those; SCRIPT still works for non-shell executables. Core function
+# (configmap/secret → file collection, REQ_* webhooks) is unaffected.
+# If shell hooks matter for a deployment, use <app>-alpine instead.
+entrypoint:
+  command: /usr/share/k8s-sidecar/bin/python /usr/share/k8s-sidecar/app/sidecar.py
+
+environment:
+  LANG: C.UTF-8
+  PYTHONUNBUFFERED: "1"
+
+archs:
+  - x86_64
+  - aarch64
+
+annotations:
+  org.opencontainers.image.source: https://github.com/00o-sh/containers
+  org.opencontainers.image.url: https://github.com/kiwigrid/k8s-sidecar
+  org.opencontainers.image.licenses: MIT
+  org.opencontainers.image.description: k8s-sidecar configmap/secret collector (distroless / Wolfi)

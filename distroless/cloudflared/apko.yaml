@@ -7,7 +7,11 @@ contents:
     - wolfi-baselayout
     - ca-certificates-bundle
     - tzdata
-    - cloudflared
+    # >= floor is the Renovate-managed value; the resolver floats upward
+    # within it so the daily cron still delivers Wolfi -rN CVE rebuilds
+    # without a PR. If Wolfi lags upstream, the bump PR fails apk
+    # resolution and sits red until Wolfi catches up.
+    - cloudflared>=2026.5.2 # renovate: datasource=github-releases depName=cloudflare/cloudflared
 
 accounts:
   groups:

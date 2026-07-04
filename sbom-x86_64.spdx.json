@@ -1,0 +1,2790 @@
+{
+  "SPDXID": "SPDXRef-DOCUMENT",
+  "name": "sbom-sha256:f5c985d06117af02f9a5c0acc1c8e0c4a4217113156914613e1571aec2149a6f",
+  "spdxVersion": "SPDX-2.3",
+  "creationInfo": {
+    "created": "2026-06-04T11:20:00Z",
+    "creators": [
+      "Tool: apko (v1.2.21)",
+      "Organization: Chainguard, Inc"
+    ],
+    "licenseListVersion": "3.27"
+  },
+  "dataLicense": "CC0-1.0",
+  "documentNamespace": "https://spdx.org/spdxdocs/apko/",
+  "documentDescribes": [
+    "SPDXRef-Package-Image-sha256-5c6b03daaed2ba8b625f193c1f313a1c94f551ed43001e80895ecc668a74c483"
+  ],
+  "packages": [
+    {
+      "SPDXID": "SPDXRef-Package-Image-sha256-5c6b03daaed2ba8b625f193c1f313a1c94f551ed43001e80895ecc668a74c483",
+      "name": "sha256:5c6b03daaed2ba8b625f193c1f313a1c94f551ed43001e80895ecc668a74c483",
+      "versionInfo": "sha256:5c6b03daaed2ba8b625f193c1f313a1c94f551ed43001e80895ecc668a74c483",
+      "filesAnalyzed": false,
+      "description": "apko container image",
+      "downloadLocation": "NOASSERTION",
+      "supplier": "Organization: Wolfi",
+      "primaryPackagePurpose": "CONTAINER",
+      "checksums": [
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "5c6b03daaed2ba8b625f193c1f313a1c94f551ed43001e80895ecc668a74c483"
+        }
+      ],
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceLocator": "pkg:oci/cf-local@sha256:5c6b03daaed2ba8b625f193c1f313a1c94f551ed43001e80895ecc668a74c483?arch=amd64\u0026mediaType=application%2Fvnd.oci.image.manifest.v1%2Bjson\u0026os=linux",
+          "referenceType": "purl"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-Package-ImageLayer-sha256-f5c985d06117af02f9a5c0acc1c8e0c4a4217113156914613e1571aec2149a6f",
+      "name": "sha256:f5c985d06117af02f9a5c0acc1c8e0c4a4217113156914613e1571aec2149a6f",
+      "versionInfo": "20230201",
+      "filesAnalyzed": false,
+      "description": "apko operating system layer",
+      "downloadLocation": "NOASSERTION",
+      "supplier": "Organization: Wolfi",
+      "primaryPackagePurpose": "CONTAINER",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceLocator": "pkg:oci/cf-local@sha256:f5c985d06117af02f9a5c0acc1c8e0c4a4217113156914613e1571aec2149a6f?arch=amd64\u0026mediaType=application%2Fvnd.oci.image.layer.v1.tar%2Bgzip\u0026os=linux",
+          "referenceType": "purl"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-OperatingSystem-wolfi",
+      "name": "wolfi",
+      "versionInfo": "20230201",
+      "filesAnalyzed": false,
+      "description": "Operating System",
+      "downloadLocation": "NOASSERTION",
+      "supplier": "Organization: Wolfi",
+      "primaryPackagePurpose": "OPERATING_SYSTEM"
+    },
+    {
+      "SPDXID": "SPDXRef-Package-apk-wolfi-baselayout-20230201-r29",
+      "name": "wolfi-baselayout",
+      "versionInfo": "20230201-r29",
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "MIT",
+      "downloadLocation": "NOASSERTION",
+      "originator": "Organization: Wolfi",
+      "supplier": "Organization: Wolfi",
+      "copyrightText": "NOASSERTION",
+      "primaryPackagePurpose": "APPLICATION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceLocator": "pkg:apk/wolfi/wolfi-baselayout@20230201-r29?arch=x86_64\u0026distro=wolfi",
+          "referenceType": "purl"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-Package-Melange-wolfi-baselayout.yaml-35e7b4713442869116936fae3fe8cf7c69bc9054",
+      "name": "wolfi-baselayout.yaml",
+      "versionInfo": "35e7b4713442869116936fae3fe8cf7c69bc9054",
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "Apache-2.0",
+      "downloadLocation": "NOASSERTION",
+      "originator": "Organization: Wolfi",
+      "supplier": "Organization: Wolfi",
+      "primaryPackagePurpose": "INSTALL",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceLocator": "pkg:github/chainguard-dev/stereo@35e7b4713442869116936fae3fe8cf7c69bc9054#wolfi-baselayout.yaml",
+          "referenceType": "purl"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-Package-apk-wolfi-baselayout-88b07837a3ad9a7f",
+      "name": "wolfi-baselayout",
+      "versionInfo": "20230201-r29",
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "MIT",
+      "description": "baselayout data for Wolfi",
+      "downloadLocation": "NOASSERTION",
+      "originator": "Organization: Wolfi",
+      "supplier": "Organization: chainguard",
+      "sourceInfo": "acquired package info from APK DB: /.PKGINFO",
+      "copyrightText": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "SECURITY",
+          "referenceLocator": "cpe:2.3:a:wolfi-baselayout:wolfi-baselayout:20230201-r29:*:*:*:*:*:*:*",
+          "referenceType": "cpe23Type"
+        },
+        {
+          "referenceCategory": "SECURITY",
+          "referenceLocator": "cpe:2.3:a:wolfi-baselayout:wolfi_baselayout:20230201-r29:*:*:*:*:*:*:*",
+          "referenceType": "cpe23Type"
+        },
+        {
+          "referenceCategory": "SECURITY",
+          "referenceLocator": "cpe:2.3:a:wolfi_baselayout:wolfi-baselayout:20230201-r29:*:*:*:*:*:*:*",
+          "referenceType": "cpe23Type"
+        },
+        {
+          "referenceCategory": "SECURITY",
+          "referenceLocator": "cpe:2.3:a:wolfi_baselayout:wolfi_baselayout:20230201-r29:*:*:*:*:*:*:*",
+          "referenceType": "cpe23Type"
+        },
+        {
+          "referenceCategory": "SECURITY",
+          "referenceLocator": "cpe:2.3:a:wolfi:wolfi-baselayout:20230201-r29:*:*:*:*:*:*:*",
+          "referenceType": "cpe23Type"
+        },
+        {
+          "referenceCategory": "SECURITY",
+          "referenceLocator": "cpe:2.3:a:wolfi:wolfi_baselayout:20230201-r29:*:*:*:*:*:*:*",
+          "referenceType": "cpe23Type"
+        },
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceLocator": "pkg:apk/wolfi/wolfi-baselayout@20230201-r29?arch=x86_64\u0026origin=wolfi-baselayout",
+          "referenceType": "purl"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-DocumentRoot-Directory-wolfi-baselayout",
+      "name": "wolfi-baselayout",
+      "versionInfo": "20230201-r29",
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
+      "downloadLocation": "NOASSERTION",
+      "originator": "Organization: Wolfi",
+      "supplier": "Organization: chainguard",
+      "copyrightText": "NOASSERTION",
+      "primaryPackagePurpose": "FILE"
+    },
+    {
+      "SPDXID": "SPDXRef-Package-apk-ca-certificates-bundle-20260413-r0",
+      "name": "ca-certificates-bundle",
+      "versionInfo": "20260413-r0",
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "MPL-2.0 AND MIT",
+      "downloadLocation": "NOASSERTION",
+      "originator": "Organization: Wolfi",
+      "supplier": "Organization: Wolfi",
+      "copyrightText": "NOASSERTION",
+      "primaryPackagePurpose": "APPLICATION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceLocator": "pkg:apk/wolfi/ca-certificates-bundle@20260413-r0?arch=x86_64\u0026distro=wolfi",
+          "referenceType": "purl"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-Package-Melange-ca-certificates.yaml-5fb1c6869c186cb9b385b875141643409c440ac2",
+      "name": "ca-certificates.yaml",
+      "versionInfo": "5fb1c6869c186cb9b385b875141643409c440ac2",
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "Apache-2.0",
+      "downloadLocation": "NOASSERTION",
+      "originator": "Organization: Wolfi",
+      "supplier": "Organization: Wolfi",
+      "primaryPackagePurpose": "INSTALL",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceLocator": "pkg:github/chainguard-dev/stereo@5fb1c6869c186cb9b385b875141643409c440ac2#ca-certificates.yaml",
+          "referenceType": "purl"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-Package-Source-gitlab.alpinelinux.org-alpine-ca-certificates-20260413-721ff6606b8c145755691d6cf87088ae7ff3d346-0",
+      "name": "ca-certificates",
+      "versionInfo": "20260413",
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "MPL-2.0 AND MIT",
+      "downloadLocation": "https://gitlab.alpinelinux.org/alpine/ca-certificates/-/archive/721ff6606b8c145755691d6cf87088ae7ff3d346/721ff6606b8c145755691d6cf87088ae7ff3d346.tar.gz",
+      "originator": "Organization: Alpine",
+      "supplier": "Organization: Alpine",
+      "primaryPackagePurpose": "SOURCE",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceLocator": "pkg:generic/ca-certificates@20260413?vcs_url=git%2Bhttps:%2F%2Fgitlab.alpinelinux.org%2Falpine%2Fca-certificates%40721ff6606b8c145755691d6cf87088ae7ff3d346",
+          "referenceType": "purl"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-Package-apk-ca-certificates-bundle-78142317e3a0ac94",
+      "name": "ca-certificates-bundle",
+      "versionInfo": "20260413-r0",
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "(MPL-2.0 AND MIT)",
+      "downloadLocation": "NOASSERTION",
+      "originator": "Organization: Wolfi",
+      "supplier": "Organization: chainguard",
+      "sourceInfo": "acquired package info from APK DB: /.PKGINFO",
+      "copyrightText": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "SECURITY",
+          "referenceLocator": "cpe:2.3:a:ca-certificates-bundle:ca-certificates-bundle:20260413-r0:*:*:*:*:*:*:*",
+          "referenceType": "cpe23Type"
+        },
+        {
+          "referenceCategory": "SECURITY",
+          "referenceLocator": "cpe:2.3:a:ca-certificates-bundle:ca_certificates_bundle:20260413-r0:*:*:*:*:*:*:*",
+          "referenceType": "cpe23Type"
+        },
+        {
+          "referenceCategory": "SECURITY",
+          "referenceLocator": "cpe:2.3:a:ca_certificates_bundle:ca-certificates-bundle:20260413-r0:*:*:*:*:*:*:*",
+          "referenceType": "cpe23Type"
+        },
+        {
+          "referenceCategory": "SECURITY",
+          "referenceLocator": "cpe:2.3:a:ca_certificates_bundle:ca_certificates_bundle:20260413-r0:*:*:*:*:*:*:*",
+          "referenceType": "cpe23Type"
+        },
+        {
+          "referenceCategory": "SECURITY",
+          "referenceLocator": "cpe:2.3:a:ca-certificates:ca-certificates-bundle:20260413-r0:*:*:*:*:*:*:*",
+          "referenceType": "cpe23Type"
+        },
+        {
+          "referenceCategory": "SECURITY",
+          "referenceLocator": "cpe:2.3:a:ca-certificates:ca_certificates_bundle:20260413-r0:*:*:*:*:*:*:*",
+          "referenceType": "cpe23Type"
+        },
+        {
+          "referenceCategory": "SECURITY",
+          "referenceLocator": "cpe:2.3:a:ca_certificates:ca-certificates-bundle:20260413-r0:*:*:*:*:*:*:*",
+          "referenceType": "cpe23Type"
+        },
+        {
+          "referenceCategory": "SECURITY",
+          "referenceLocator": "cpe:2.3:a:ca_certificates:ca_certificates_bundle:20260413-r0:*:*:*:*:*:*:*",
+          "referenceType": "cpe23Type"
+        },
+        {
+          "referenceCategory": "SECURITY",
+          "referenceLocator": "cpe:2.3:a:ca:ca-certificates-bundle:20260413-r0:*:*:*:*:*:*:*",
+          "referenceType": "cpe23Type"
+        },
+        {
+          "referenceCategory": "SECURITY",
+          "referenceLocator": "cpe:2.3:a:ca:ca_certificates_bundle:20260413-r0:*:*:*:*:*:*:*",
+          "referenceType": "cpe23Type"
+        },
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceLocator": "pkg:apk/wolfi/ca-certificates-bundle@20260413-r0?arch=x86_64\u0026origin=ca-certificates",
+          "referenceType": "purl"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-DocumentRoot-Directory-ca-certificates-bundle",
+      "name": "ca-certificates-bundle",
+      "versionInfo": "20260413-r0",
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
+      "downloadLocation": "NOASSERTION",
+      "originator": "Organization: Wolfi",
+      "supplier": "Organization: chainguard",
+      "copyrightText": "NOASSERTION",
+      "primaryPackagePurpose": "FILE"
+    },
+    {
+      "SPDXID": "SPDXRef-Package-apk-cloudflared-2026.5.2-r2",
+      "name": "cloudflared",
+      "versionInfo": "2026.5.2-r2",
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "Apache-2.0",
+      "downloadLocation": "NOASSERTION",
+      "originator": "Organization: Wolfi",
+      "supplier": "Organization: Wolfi",
+      "copyrightText": "NOASSERTION",
+      "primaryPackagePurpose": "APPLICATION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceLocator": "pkg:apk/wolfi/cloudflared@2026.5.2-r2?arch=x86_64\u0026distro=wolfi",
+          "referenceType": "purl"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-Package-Melange-cloudflared.yaml-58295af2d77fac8ca7abc66bd5e852eb0a6c9038",
+      "name": "cloudflared.yaml",
+      "versionInfo": "58295af2d77fac8ca7abc66bd5e852eb0a6c9038",
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "Apache-2.0",
+      "downloadLocation": "NOASSERTION",
+      "originator": "Organization: Wolfi",
+      "supplier": "Organization: Wolfi",
+      "primaryPackagePurpose": "INSTALL",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceLocator": "pkg:github/chainguard-dev/stereo@58295af2d77fac8ca7abc66bd5e852eb0a6c9038#cloudflared.yaml",
+          "referenceType": "purl"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-Package-Source-github.com-cloudflare-cloudflared-2026.5.2-0e84636de9450d9e73c1e28932ed2bd62cb33e10-0",
+      "name": "cloudflared",
+      "versionInfo": "2026.5.2",
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "Apache-2.0",
+      "downloadLocation": "https://github.com/cloudflare/cloudflared/archive/0e84636de9450d9e73c1e28932ed2bd62cb33e10.tar.gz",
+      "originator": "Organization: Cloudflare",
+      "supplier": "Organization: Cloudflare",
+      "primaryPackagePurpose": "SOURCE",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceLocator": "pkg:github/cloudflare/cloudflared@2026.5.2",
+          "referenceType": "purl"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-Package-apk-cloudflared-4ec4ffa929ea4a89",
+      "name": "cloudflared",
+      "versionInfo": "2026.5.2-r2",
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "Apache-2.0",
+      "description": "Cloudflare Tunnel client",
+      "downloadLocation": "NOASSERTION",
+      "originator": "Organization: Wolfi",
+      "supplier": "Organization: chainguard",
+      "sourceInfo": "acquired package info from APK DB: /.PKGINFO",
+      "copyrightText": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceLocator": "pkg:apk/wolfi/cloudflared@2026.5.2-r2?arch=x86_64\u0026origin=cloudflared",
+          "referenceType": "purl"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-Package-go-module-github.com-BurntSushi-toml-d0ad643d33834789",
+      "name": "github.com/BurntSushi/toml",
+      "versionInfo": "v1.2.0",
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
+      "downloadLocation": "NOASSERTION",
+      "originator": "Organization: Wolfi",
+      "supplier": "Organization: chainguard",
+      "sourceInfo": "acquired package info from go module information: usr/bin/cloudflared",
+      "copyrightText": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceLocator": "pkg:golang/github.com/BurntSushi/toml@v1.2.0",
+          "referenceType": "purl"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-Package-go-module-github.com-beorn7-perks-df4b102abfbf1dae",
+      "name": "github.com/beorn7/perks",
+      "versionInfo": "v1.0.1",
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
+      "downloadLocation": "NOASSERTION",
+      "originator": "Organization: Wolfi",
+      "supplier": "Organization: chainguard",
+      "sourceInfo": "acquired package info from go module information: usr/bin/cloudflared",
+      "copyrightText": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceLocator": "pkg:golang/github.com/beorn7/perks@v1.0.1",
+          "referenceType": "purl"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-Package-go-module-github.com-cespare-xxhash-v2-ea37ba08fd4b1aa1",
+      "name": "github.com/cespare/xxhash/v2",
+      "versionInfo": "v2.3.0",
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
+      "downloadLocation": "NOASSERTION",
+      "originator": "Organization: Wolfi",
+      "supplier": "Organization: chainguard",
+      "sourceInfo": "acquired package info from go module information: usr/bin/cloudflared",
+      "copyrightText": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceLocator": "pkg:golang/github.com/cespare/xxhash/v2@v2.3.0",
+          "referenceType": "purl"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-Package-go-module-github.com-chungthuang-quic-go-3baccafdc70d47ab",
+      "name": "github.com/chungthuang/quic-go",
+      "versionInfo": "v0.45.1-0.20250428085412-43229ad201fd",
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
+      "downloadLocation": "NOASSERTION",
+      "originator": "Organization: Wolfi",
+      "supplier": "Organization: chainguard",
+      "sourceInfo": "acquired package info from go module information: usr/bin/cloudflared",
+      "copyrightText": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceLocator": "pkg:golang/github.com/chungthuang/quic-go@v0.45.1-0.20250428085412-43229ad201fd",
+          "referenceType": "purl"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-Package-go-module-github.com-cloudflare-backoff-8040c1f70ae2b5e2",
+      "name": "github.com/cloudflare/backoff",
+      "versionInfo": "v0.0.0-20240920015135-e46b80a3a7d0",
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
+      "downloadLocation": "NOASSERTION",
+      "originator": "Organization: Wolfi",
+      "supplier": "Organization: chainguard",
+      "sourceInfo": "acquired package info from go module information: usr/bin/cloudflared",
+      "copyrightText": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceLocator": "pkg:golang/github.com/cloudflare/backoff@v0.0.0-20240920015135-e46b80a3a7d0",
+          "referenceType": "purl"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-Package-go-module-github.com-cloudflare-cloudflared-dbd7622e50c83452",
+      "name": "github.com/cloudflare/cloudflared",
+      "versionInfo": "v0.0.0-20260527101536-0e84636de945+dirty",
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
+      "downloadLocation": "NOASSERTION",
+      "originator": "Organization: Wolfi",
+      "supplier": "Organization: chainguard",
+      "sourceInfo": "acquired package info from go module information: usr/bin/cloudflared",
+      "copyrightText": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceLocator": "pkg:golang/github.com/cloudflare/cloudflared@v0.0.0-20260527101536-0e84636de945%2Bdirty",
+          "referenceType": "purl"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-Package-go-module-github.com-coreos-go-oidc-v3-90392f011e279899",
+      "name": "github.com/coreos/go-oidc/v3",
+      "versionInfo": "v3.17.0",
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
+      "downloadLocation": "NOASSERTION",
+      "originator": "Organization: Wolfi",
+      "supplier": "Organization: chainguard",
+      "sourceInfo": "acquired package info from go module information: usr/bin/cloudflared",
+      "copyrightText": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceLocator": "pkg:golang/github.com/coreos/go-oidc/v3@v3.17.0",
+          "referenceType": "purl"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-Package-go-module-github.com-coreos-go-systemd-v22-36175fc850a90f9d",
+      "name": "github.com/coreos/go-systemd/v22",
+      "versionInfo": "v22.5.0",
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
+      "downloadLocation": "NOASSERTION",
+      "originator": "Organization: Wolfi",
+      "supplier": "Organization: chainguard",
+      "sourceInfo": "acquired package info from go module information: usr/bin/cloudflared",
+      "copyrightText": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceLocator": "pkg:golang/github.com/coreos/go-systemd/v22@v22.5.0",
+          "referenceType": "purl"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-Package-go-module-github.com-cpuguy83-go-md2man-v2-5a01df0e5b4855ba",
+      "name": "github.com/cpuguy83/go-md2man/v2",
+      "versionInfo": "v2.0.0",
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
+      "downloadLocation": "NOASSERTION",
+      "originator": "Organization: Wolfi",
+      "supplier": "Organization: chainguard",
+      "sourceInfo": "acquired package info from go module information: usr/bin/cloudflared",
+      "copyrightText": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceLocator": "pkg:golang/github.com/cpuguy83/go-md2man/v2@v2.0.0",
+          "referenceType": "purl"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-Package-go-module-github.com-facebookgo-grace-be9daa060d117ce1",
+      "name": "github.com/facebookgo/grace",
+      "versionInfo": "v0.0.0-20180706040059-75cf19382434",
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
+      "downloadLocation": "NOASSERTION",
+      "originator": "Organization: Wolfi",
+      "supplier": "Organization: chainguard",
+      "sourceInfo": "acquired package info from go module information: usr/bin/cloudflared",
+      "copyrightText": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceLocator": "pkg:golang/github.com/facebookgo/grace@v0.0.0-20180706040059-75cf19382434",
+          "referenceType": "purl"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-Package-go-module-github.com-fsnotify-fsnotify-946dbd0b5ee9b0e2",
+      "name": "github.com/fsnotify/fsnotify",
+      "versionInfo": "v1.4.9",
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
+      "downloadLocation": "NOASSERTION",
+      "originator": "Organization: Wolfi",
+      "supplier": "Organization: chainguard",
+      "sourceInfo": "acquired package info from go module information: usr/bin/cloudflared",
+      "copyrightText": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceLocator": "pkg:golang/github.com/fsnotify/fsnotify@v1.4.9",
+          "referenceType": "purl"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-Package-go-module-github.com-getsentry-sentry-go-7f3cf1a9e99dcdc0",
+      "name": "github.com/getsentry/sentry-go",
+      "versionInfo": "v0.43.0",
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
+      "downloadLocation": "NOASSERTION",
+      "originator": "Organization: Wolfi",
+      "supplier": "Organization: chainguard",
+      "sourceInfo": "acquired package info from go module information: usr/bin/cloudflared",
+      "copyrightText": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceLocator": "pkg:golang/github.com/getsentry/sentry-go@v0.43.0",
+          "referenceType": "purl"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-Package-go-module-github.com-go-chi-chi-v5-988817038e2292b3",
+      "name": "github.com/go-chi/chi/v5",
+      "versionInfo": "v5.2.2",
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
+      "downloadLocation": "NOASSERTION",
+      "originator": "Organization: Wolfi",
+      "supplier": "Organization: chainguard",
+      "sourceInfo": "acquired package info from go module information: usr/bin/cloudflared",
+      "copyrightText": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceLocator": "pkg:golang/github.com/go-chi/chi/v5@v5.2.2",
+          "referenceType": "purl"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-Package-go-module-github.com-go-chi-cors-3759383f4ed249c7",
+      "name": "github.com/go-chi/cors",
+      "versionInfo": "v1.2.1",
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
+      "downloadLocation": "NOASSERTION",
+      "originator": "Organization: Wolfi",
+      "supplier": "Organization: chainguard",
+      "sourceInfo": "acquired package info from go module information: usr/bin/cloudflared",
+      "copyrightText": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceLocator": "pkg:golang/github.com/go-chi/cors@v1.2.1",
+          "referenceType": "purl"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-Package-go-module-github.com-go-jose-go-jose-v4-74d8028d3f364fdd",
+      "name": "github.com/go-jose/go-jose/v4",
+      "versionInfo": "v4.1.4",
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
+      "downloadLocation": "NOASSERTION",
+      "originator": "Organization: Wolfi",
+      "supplier": "Organization: chainguard",
+      "sourceInfo": "acquired package info from go module information: usr/bin/cloudflared",
+      "copyrightText": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceLocator": "pkg:golang/github.com/go-jose/go-jose/v4@v4.1.4",
+          "referenceType": "purl"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-Package-go-module-github.com-go-logr-logr-834baa90dbe0a459",
+      "name": "github.com/go-logr/logr",
+      "versionInfo": "v1.4.3",
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
+      "downloadLocation": "NOASSERTION",
+      "originator": "Organization: Wolfi",
+      "supplier": "Organization: chainguard",
+      "sourceInfo": "acquired package info from go module information: usr/bin/cloudflared",
+      "copyrightText": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceLocator": "pkg:golang/github.com/go-logr/logr@v1.4.3",
+          "referenceType": "purl"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-Package-go-module-github.com-go-logr-stdr-5372b9ee3e7c623d",
+      "name": "github.com/go-logr/stdr",
+      "versionInfo": "v1.2.2",
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
+      "downloadLocation": "NOASSERTION",
+      "originator": "Organization: Wolfi",
+      "supplier": "Organization: chainguard",
+      "sourceInfo": "acquired package info from go module information: usr/bin/cloudflared",
+      "copyrightText": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceLocator": "pkg:golang/github.com/go-logr/stdr@v1.2.2",
+          "referenceType": "purl"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-Package-go-module-github.com-gobwas-httphead-21b9a1342964efeb",
+      "name": "github.com/gobwas/httphead",
+      "versionInfo": "v0.1.0",
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
+      "downloadLocation": "NOASSERTION",
+      "originator": "Organization: Wolfi",
+      "supplier": "Organization: chainguard",
+      "sourceInfo": "acquired package info from go module information: usr/bin/cloudflared",
+      "copyrightText": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceLocator": "pkg:golang/github.com/gobwas/httphead@v0.1.0",
+          "referenceType": "purl"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-Package-go-module-github.com-gobwas-pool-1075566c413702ee",
+      "name": "github.com/gobwas/pool",
+      "versionInfo": "v0.2.1",
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
+      "downloadLocation": "NOASSERTION",
+      "originator": "Organization: Wolfi",
+      "supplier": "Organization: chainguard",
+      "sourceInfo": "acquired package info from go module information: usr/bin/cloudflared",
+      "copyrightText": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceLocator": "pkg:golang/github.com/gobwas/pool@v0.2.1",
+          "referenceType": "purl"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-Package-go-module-github.com-gobwas-ws-b9f397bff9684179",
+      "name": "github.com/gobwas/ws",
+      "versionInfo": "v1.2.1",
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
+      "downloadLocation": "NOASSERTION",
+      "originator": "Organization: Wolfi",
+      "supplier": "Organization: chainguard",
+      "sourceInfo": "acquired package info from go module information: usr/bin/cloudflared",
+      "copyrightText": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceLocator": "pkg:golang/github.com/gobwas/ws@v1.2.1",
+          "referenceType": "purl"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-Package-go-module-github.com-google-gopacket-bd832e9336c586eb",
+      "name": "github.com/google/gopacket",
+      "versionInfo": "v1.1.19",
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
+      "downloadLocation": "NOASSERTION",
+      "originator": "Organization: Wolfi",
+      "supplier": "Organization: chainguard",
+      "sourceInfo": "acquired package info from go module information: usr/bin/cloudflared",
+      "copyrightText": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceLocator": "pkg:golang/github.com/google/gopacket@v1.1.19",
+          "referenceType": "purl"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-Package-go-module-github.com-google-uuid-0dfefce4bc8ecc70",
+      "name": "github.com/google/uuid",
+      "versionInfo": "v1.6.0",
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
+      "downloadLocation": "NOASSERTION",
+      "originator": "Organization: Wolfi",
+      "supplier": "Organization: chainguard",
+      "sourceInfo": "acquired package info from go module information: usr/bin/cloudflared",
+      "copyrightText": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceLocator": "pkg:golang/github.com/google/uuid@v1.6.0",
+          "referenceType": "purl"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-Package-go-module-github.com-gorilla-websocket-5b2746374e14790d",
+      "name": "github.com/gorilla/websocket",
+      "versionInfo": "v1.5.0",
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
+      "downloadLocation": "NOASSERTION",
+      "originator": "Organization: Wolfi",
+      "supplier": "Organization: chainguard",
+      "sourceInfo": "acquired package info from go module information: usr/bin/cloudflared",
+      "copyrightText": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceLocator": "pkg:golang/github.com/gorilla/websocket@v1.5.0",
+          "referenceType": "purl"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-Package-go-module-github.com-grpc-ecosystem-grpc-gateway-v2-1a8852bfaf418b48",
+      "name": "github.com/grpc-ecosystem/grpc-gateway/v2",
+      "versionInfo": "v2.28.0",
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
+      "downloadLocation": "NOASSERTION",
+      "originator": "Organization: Wolfi",
+      "supplier": "Organization: chainguard",
+      "sourceInfo": "acquired package info from go module information: usr/bin/cloudflared",
+      "copyrightText": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceLocator": "pkg:golang/github.com/grpc-ecosystem/grpc-gateway/v2@v2.28.0",
+          "referenceType": "purl"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-Package-go-module-github.com-ipostelnik-cli-v2-c837f27a06a9c42c",
+      "name": "github.com/ipostelnik/cli/v2",
+      "versionInfo": "v2.3.1-0.20210324024421-b6ea8234fe3d",
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
+      "downloadLocation": "NOASSERTION",
+      "originator": "Organization: Wolfi",
+      "supplier": "Organization: chainguard",
+      "sourceInfo": "acquired package info from go module information: usr/bin/cloudflared",
+      "copyrightText": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceLocator": "pkg:golang/github.com/ipostelnik/cli/v2@v2.3.1-0.20210324024421-b6ea8234fe3d",
+          "referenceType": "purl"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-Package-go-module-github.com-json-iterator-go-513adc8058f2d1f1",
+      "name": "github.com/json-iterator/go",
+      "versionInfo": "v1.1.12",
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
+      "downloadLocation": "NOASSERTION",
+      "originator": "Organization: Wolfi",
+      "supplier": "Organization: chainguard",
+      "sourceInfo": "acquired package info from go module information: usr/bin/cloudflared",
+      "copyrightText": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceLocator": "pkg:golang/github.com/json-iterator/go@v1.1.12",
+          "referenceType": "purl"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-Package-go-module-github.com-klauspost-compress-439c944ae5e7229d",
+      "name": "github.com/klauspost/compress",
+      "versionInfo": "v1.18.0",
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
+      "downloadLocation": "NOASSERTION",
+      "originator": "Organization: Wolfi",
+      "supplier": "Organization: chainguard",
+      "sourceInfo": "acquired package info from go module information: usr/bin/cloudflared",
+      "copyrightText": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceLocator": "pkg:golang/github.com/klauspost/compress@v1.18.0",
+          "referenceType": "purl"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-Package-go-module-github.com-mattn-go-colorable-90b0195fe1d098d6",
+      "name": "github.com/mattn/go-colorable",
+      "versionInfo": "v0.1.13",
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
+      "downloadLocation": "NOASSERTION",
+      "originator": "Organization: Wolfi",
+      "supplier": "Organization: chainguard",
+      "sourceInfo": "acquired package info from go module information: usr/bin/cloudflared",
+      "copyrightText": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceLocator": "pkg:golang/github.com/mattn/go-colorable@v0.1.13",
+          "referenceType": "purl"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-Package-go-module-github.com-mattn-go-isatty-58453c808d39dc05",
+      "name": "github.com/mattn/go-isatty",
+      "versionInfo": "v0.0.20",
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
+      "downloadLocation": "NOASSERTION",
+      "originator": "Organization: Wolfi",
+      "supplier": "Organization: chainguard",
+      "sourceInfo": "acquired package info from go module information: usr/bin/cloudflared",
+      "copyrightText": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceLocator": "pkg:golang/github.com/mattn/go-isatty@v0.0.20",
+          "referenceType": "purl"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-Package-go-module-github.com-mitchellh-go-homedir-7b88ce0c168a9705",
+      "name": "github.com/mitchellh/go-homedir",
+      "versionInfo": "v1.1.0",
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
+      "downloadLocation": "NOASSERTION",
+      "originator": "Organization: Wolfi",
+      "supplier": "Organization: chainguard",
+      "sourceInfo": "acquired package info from go module information: usr/bin/cloudflared",
+      "copyrightText": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceLocator": "pkg:golang/github.com/mitchellh/go-homedir@v1.1.0",
+          "referenceType": "purl"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-Package-go-module-github.com-modern-go-concurrent-5efd4eddbab6f8b2",
+      "name": "github.com/modern-go/concurrent",
+      "versionInfo": "v0.0.0-20180306012644-bacd9c7ef1dd",
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
+      "downloadLocation": "NOASSERTION",
+      "originator": "Organization: Wolfi",
+      "supplier": "Organization: chainguard",
+      "sourceInfo": "acquired package info from go module information: usr/bin/cloudflared",
+      "copyrightText": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceLocator": "pkg:golang/github.com/modern-go/concurrent@v0.0.0-20180306012644-bacd9c7ef1dd",
+          "referenceType": "purl"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-Package-go-module-github.com-modern-go-reflect2-68e7a32a229533df",
+      "name": "github.com/modern-go/reflect2",
+      "versionInfo": "v1.0.2",
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
+      "downloadLocation": "NOASSERTION",
+      "originator": "Organization: Wolfi",
+      "supplier": "Organization: chainguard",
+      "sourceInfo": "acquired package info from go module information: usr/bin/cloudflared",
+      "copyrightText": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceLocator": "pkg:golang/github.com/modern-go/reflect2@v1.0.2",
+          "referenceType": "purl"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-Package-go-module-github.com-munnerz-goautoneg-8c51513b1734d0c3",
+      "name": "github.com/munnerz/goautoneg",
+      "versionInfo": "v0.0.0-20191010083416-a7dc8b61c822",
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
+      "downloadLocation": "NOASSERTION",
+      "originator": "Organization: Wolfi",
+      "supplier": "Organization: chainguard",
+      "sourceInfo": "acquired package info from go module information: usr/bin/cloudflared",
+      "copyrightText": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceLocator": "pkg:golang/github.com/munnerz/goautoneg@v0.0.0-20191010083416-a7dc8b61c822",
+          "referenceType": "purl"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-Package-go-module-github.com-pkg-errors-0444178e438015c8",
+      "name": "github.com/pkg/errors",
+      "versionInfo": "v0.9.1",
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
+      "downloadLocation": "NOASSERTION",
+      "originator": "Organization: Wolfi",
+      "supplier": "Organization: chainguard",
+      "sourceInfo": "acquired package info from go module information: usr/bin/cloudflared",
+      "copyrightText": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceLocator": "pkg:golang/github.com/pkg/errors@v0.9.1",
+          "referenceType": "purl"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-Package-go-module-github.com-prometheus-client-golang-c9a835f003085821",
+      "name": "github.com/prometheus/client_golang",
+      "versionInfo": "v1.22.0",
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
+      "downloadLocation": "NOASSERTION",
+      "originator": "Organization: Wolfi",
+      "supplier": "Organization: chainguard",
+      "sourceInfo": "acquired package info from go module information: usr/bin/cloudflared",
+      "copyrightText": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceLocator": "pkg:golang/github.com/prometheus/client_golang@v1.22.0",
+          "referenceType": "purl"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-Package-go-module-github.com-prometheus-client-model-d128a4935e1b7d0e",
+      "name": "github.com/prometheus/client_model",
+      "versionInfo": "v0.6.2",
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
+      "downloadLocation": "NOASSERTION",
+      "originator": "Organization: Wolfi",
+      "supplier": "Organization: chainguard",
+      "sourceInfo": "acquired package info from go module information: usr/bin/cloudflared",
+      "copyrightText": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceLocator": "pkg:golang/github.com/prometheus/client_model@v0.6.2",
+          "referenceType": "purl"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-Package-go-module-github.com-prometheus-common-3a9392344e8a4029",
+      "name": "github.com/prometheus/common",
+      "versionInfo": "v0.64.0",
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
+      "downloadLocation": "NOASSERTION",
+      "originator": "Organization: Wolfi",
+      "supplier": "Organization: chainguard",
+      "sourceInfo": "acquired package info from go module information: usr/bin/cloudflared",
+      "copyrightText": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceLocator": "pkg:golang/github.com/prometheus/common@v0.64.0",
+          "referenceType": "purl"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-Package-go-module-github.com-prometheus-procfs-1c1dcfef7f1d8b16",
+      "name": "github.com/prometheus/procfs",
+      "versionInfo": "v0.15.1",
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
+      "downloadLocation": "NOASSERTION",
+      "originator": "Organization: Wolfi",
+      "supplier": "Organization: chainguard",
+      "sourceInfo": "acquired package info from go module information: usr/bin/cloudflared",
+      "copyrightText": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceLocator": "pkg:golang/github.com/prometheus/procfs@v0.15.1",
+          "referenceType": "purl"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-Package-go-module-github.com-rs-zerolog-c3cca812829827f1",
+      "name": "github.com/rs/zerolog",
+      "versionInfo": "v1.20.0",
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
+      "downloadLocation": "NOASSERTION",
+      "originator": "Organization: Wolfi",
+      "supplier": "Organization: chainguard",
+      "sourceInfo": "acquired package info from go module information: usr/bin/cloudflared",
+      "copyrightText": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceLocator": "pkg:golang/github.com/rs/zerolog@v1.20.0",
+          "referenceType": "purl"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-Package-go-module-github.com-russross-blackfriday-v2-04ec4bb516a9afed",
+      "name": "github.com/russross/blackfriday/v2",
+      "versionInfo": "v2.1.0",
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
+      "downloadLocation": "NOASSERTION",
+      "originator": "Organization: Wolfi",
+      "supplier": "Organization: chainguard",
+      "sourceInfo": "acquired package info from go module information: usr/bin/cloudflared",
+      "copyrightText": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceLocator": "pkg:golang/github.com/russross/blackfriday/v2@v2.1.0",
+          "referenceType": "purl"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-Package-go-module-github.com-shirou-gopsutil-v4-9e0a03768a2112f5",
+      "name": "github.com/shirou/gopsutil/v4",
+      "versionInfo": "v4.26.3",
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
+      "downloadLocation": "NOASSERTION",
+      "originator": "Organization: Wolfi",
+      "supplier": "Organization: chainguard",
+      "sourceInfo": "acquired package info from go module information: usr/bin/cloudflared",
+      "copyrightText": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceLocator": "pkg:golang/github.com/shirou/gopsutil/v4@v4.26.3",
+          "referenceType": "purl"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-Package-go-module-github.com-tklauser-go-sysconf-32d0a747c85b412e",
+      "name": "github.com/tklauser/go-sysconf",
+      "versionInfo": "v0.3.16",
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
+      "downloadLocation": "NOASSERTION",
+      "originator": "Organization: Wolfi",
+      "supplier": "Organization: chainguard",
+      "sourceInfo": "acquired package info from go module information: usr/bin/cloudflared",
+      "copyrightText": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceLocator": "pkg:golang/github.com/tklauser/go-sysconf@v0.3.16",
+          "referenceType": "purl"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-Package-go-module-github.com-tklauser-numcpus-c14026c3d1b4ff6c",
+      "name": "github.com/tklauser/numcpus",
+      "versionInfo": "v0.11.0",
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
+      "downloadLocation": "NOASSERTION",
+      "originator": "Organization: Wolfi",
+      "supplier": "Organization: chainguard",
+      "sourceInfo": "acquired package info from go module information: usr/bin/cloudflared",
+      "copyrightText": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceLocator": "pkg:golang/github.com/tklauser/numcpus@v0.11.0",
+          "referenceType": "purl"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-Package-go-module-go.opentelemetry.io-auto-sdk-2c005e4982d664b1",
+      "name": "go.opentelemetry.io/auto/sdk",
+      "versionInfo": "v1.2.1",
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
+      "downloadLocation": "NOASSERTION",
+      "originator": "Organization: Wolfi",
+      "supplier": "Organization: chainguard",
+      "sourceInfo": "acquired package info from go module information: usr/bin/cloudflared",
+      "copyrightText": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceLocator": "pkg:golang/go.opentelemetry.io/auto/sdk@v1.2.1",
+          "referenceType": "purl"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-Package-go-module-go.opentelemetry.io-contrib-propagators-7637623a3e1460c4",
+      "name": "go.opentelemetry.io/contrib/propagators",
+      "versionInfo": "v0.22.0",
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
+      "downloadLocation": "NOASSERTION",
+      "originator": "Organization: Wolfi",
+      "supplier": "Organization: chainguard",
+      "sourceInfo": "acquired package info from go module information: usr/bin/cloudflared",
+      "copyrightText": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceLocator": "pkg:golang/go.opentelemetry.io/contrib/propagators@v0.22.0",
+          "referenceType": "purl"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-Package-go-module-go.opentelemetry.io-otel-8ca3dc6eca02b1f4",
+      "name": "go.opentelemetry.io/otel",
+      "versionInfo": "v1.43.0",
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
+      "downloadLocation": "NOASSERTION",
+      "originator": "Organization: Wolfi",
+      "supplier": "Organization: chainguard",
+      "sourceInfo": "acquired package info from go module information: usr/bin/cloudflared",
+      "copyrightText": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceLocator": "pkg:golang/go.opentelemetry.io/otel@v1.43.0",
+          "referenceType": "purl"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-Package-go-module-go.opentelemetry.io-otel-exporters-otlp-otlptrace-6ff326a91c61cc53",
+      "name": "go.opentelemetry.io/otel/exporters/otlp/otlptrace",
+      "versionInfo": "v1.43.0",
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
+      "downloadLocation": "NOASSERTION",
+      "originator": "Organization: Wolfi",
+      "supplier": "Organization: chainguard",
+      "sourceInfo": "acquired package info from go module information: usr/bin/cloudflared",
+      "copyrightText": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceLocator": "pkg:golang/go.opentelemetry.io/otel/exporters/otlp/otlptrace@v1.43.0",
+          "referenceType": "purl"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-Package-go-module-go.opentelemetry.io-otel-metric-74b40c1323ca97f2",
+      "name": "go.opentelemetry.io/otel/metric",
+      "versionInfo": "v1.43.0",
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
+      "downloadLocation": "NOASSERTION",
+      "originator": "Organization: Wolfi",
+      "supplier": "Organization: chainguard",
+      "sourceInfo": "acquired package info from go module information: usr/bin/cloudflared",
+      "copyrightText": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceLocator": "pkg:golang/go.opentelemetry.io/otel/metric@v1.43.0",
+          "referenceType": "purl"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-Package-go-module-go.opentelemetry.io-otel-sdk-7e95fa12ea230e1d",
+      "name": "go.opentelemetry.io/otel/sdk",
+      "versionInfo": "v1.43.0",
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
+      "downloadLocation": "NOASSERTION",
+      "originator": "Organization: Wolfi",
+      "supplier": "Organization: chainguard",
+      "sourceInfo": "acquired package info from go module information: usr/bin/cloudflared",
+      "copyrightText": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceLocator": "pkg:golang/go.opentelemetry.io/otel/sdk@v1.43.0",
+          "referenceType": "purl"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-Package-go-module-go.opentelemetry.io-otel-trace-b9788293759b31d5",
+      "name": "go.opentelemetry.io/otel/trace",
+      "versionInfo": "v1.43.0",
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
+      "downloadLocation": "NOASSERTION",
+      "originator": "Organization: Wolfi",
+      "supplier": "Organization: chainguard",
+      "sourceInfo": "acquired package info from go module information: usr/bin/cloudflared",
+      "copyrightText": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceLocator": "pkg:golang/go.opentelemetry.io/otel/trace@v1.43.0",
+          "referenceType": "purl"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-Package-go-module-go.opentelemetry.io-proto-otlp-84488d122c03fe18",
+      "name": "go.opentelemetry.io/proto/otlp",
+      "versionInfo": "v1.10.0",
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
+      "downloadLocation": "NOASSERTION",
+      "originator": "Organization: Wolfi",
+      "supplier": "Organization: chainguard",
+      "sourceInfo": "acquired package info from go module information: usr/bin/cloudflared",
+      "copyrightText": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceLocator": "pkg:golang/go.opentelemetry.io/proto/otlp@v1.10.0",
+          "referenceType": "purl"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-Package-go-module-go.uber.org-automaxprocs-8ced14cec5059442",
+      "name": "go.uber.org/automaxprocs",
+      "versionInfo": "v1.6.0",
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
+      "downloadLocation": "NOASSERTION",
+      "originator": "Organization: Wolfi",
+      "supplier": "Organization: chainguard",
+      "sourceInfo": "acquired package info from go module information: usr/bin/cloudflared",
+      "copyrightText": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceLocator": "pkg:golang/go.uber.org/automaxprocs@v1.6.0",
+          "referenceType": "purl"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-Package-go-module-golang.org-x-crypto-b94cb15ff3530925",
+      "name": "golang.org/x/crypto",
+      "versionInfo": "v0.52.0",
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
+      "downloadLocation": "NOASSERTION",
+      "originator": "Organization: Wolfi",
+      "supplier": "Organization: chainguard",
+      "sourceInfo": "acquired package info from go module information: usr/bin/cloudflared",
+      "copyrightText": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "SECURITY",
+          "referenceLocator": "cpe:2.3:a:golang:crypto:v0.52.0:*:*:*:*:go:*:*",
+          "referenceType": "cpe23Type"
+        },
+        {
+          "referenceCategory": "SECURITY",
+          "referenceLocator": "cpe:2.3:a:golang:bcrypt:v0.52.0:*:*:*:*:go:*:*",
+          "referenceType": "cpe23Type"
+        },
+        {
+          "referenceCategory": "SECURITY",
+          "referenceLocator": "cpe:2.3:a:golang:openpgp:v0.52.0:*:*:*:*:go:*:*",
+          "referenceType": "cpe23Type"
+        },
+        {
+          "referenceCategory": "SECURITY",
+          "referenceLocator": "cpe:2.3:a:golang:scrypt:v0.52.0:*:*:*:*:go:*:*",
+          "referenceType": "cpe23Type"
+        },
+        {
+          "referenceCategory": "SECURITY",
+          "referenceLocator": "cpe:2.3:a:golang:ssh:v0.52.0:*:*:*:*:go:*:*",
+          "referenceType": "cpe23Type"
+        },
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceLocator": "pkg:golang/golang.org/x/crypto@v0.52.0",
+          "referenceType": "purl"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-Package-go-module-golang.org-x-net-87b36e290d917341",
+      "name": "golang.org/x/net",
+      "versionInfo": "v0.55.0",
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
+      "downloadLocation": "NOASSERTION",
+      "originator": "Organization: Wolfi",
+      "supplier": "Organization: chainguard",
+      "sourceInfo": "acquired package info from go module information: usr/bin/cloudflared",
+      "copyrightText": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "SECURITY",
+          "referenceLocator": "cpe:2.3:a:golang:networking:v0.55.0:*:*:*:*:go:*:*",
+          "referenceType": "cpe23Type"
+        },
+        {
+          "referenceCategory": "SECURITY",
+          "referenceLocator": "cpe:2.3:a:golang:bpf:v0.55.0:*:*:*:*:go:*:*",
+          "referenceType": "cpe23Type"
+        },
+        {
+          "referenceCategory": "SECURITY",
+          "referenceLocator": "cpe:2.3:a:golang:dns:v0.55.0:*:*:*:*:go:*:*",
+          "referenceType": "cpe23Type"
+        },
+        {
+          "referenceCategory": "SECURITY",
+          "referenceLocator": "cpe:2.3:a:golang:html:v0.55.0:*:*:*:*:go:*:*",
+          "referenceType": "cpe23Type"
+        },
+        {
+          "referenceCategory": "SECURITY",
+          "referenceLocator": "cpe:2.3:a:golang:http:v0.55.0:*:*:*:*:go:*:*",
+          "referenceType": "cpe23Type"
+        },
+        {
+          "referenceCategory": "SECURITY",
+          "referenceLocator": "cpe:2.3:a:golang:httpproxy:v0.55.0:*:*:*:*:go:*:*",
+          "referenceType": "cpe23Type"
+        },
+        {
+          "referenceCategory": "SECURITY",
+          "referenceLocator": "cpe:2.3:a:golang:http2:v0.55.0:*:*:*:*:go:*:*",
+          "referenceType": "cpe23Type"
+        },
+        {
+          "referenceCategory": "SECURITY",
+          "referenceLocator": "cpe:2.3:a:golang:hpack:v0.55.0:*:*:*:*:go:*:*",
+          "referenceType": "cpe23Type"
+        },
+        {
+          "referenceCategory": "SECURITY",
+          "referenceLocator": "cpe:2.3:a:golang:proxy:v0.55.0:*:*:*:*:go:*:*",
+          "referenceType": "cpe23Type"
+        },
+        {
+          "referenceCategory": "SECURITY",
+          "referenceLocator": "cpe:2.3:a:golang:route:v0.55.0:*:*:*:*:go:*:*",
+          "referenceType": "cpe23Type"
+        },
+        {
+          "referenceCategory": "SECURITY",
+          "referenceLocator": "cpe:2.3:a:golang:trace:v0.55.0:*:*:*:*:go:*:*",
+          "referenceType": "cpe23Type"
+        },
+        {
+          "referenceCategory": "SECURITY",
+          "referenceLocator": "cpe:2.3:a:golang:webdev:v0.55.0:*:*:*:*:go:*:*",
+          "referenceType": "cpe23Type"
+        },
+        {
+          "referenceCategory": "SECURITY",
+          "referenceLocator": "cpe:2.3:a:golang:websocket:v0.55.0:*:*:*:*:go:*:*",
+          "referenceType": "cpe23Type"
+        },
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceLocator": "pkg:golang/golang.org/x/net@v0.55.0",
+          "referenceType": "purl"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-Package-go-module-golang.org-x-oauth2-b5b32c9c676d538c",
+      "name": "golang.org/x/oauth2",
+      "versionInfo": "v0.35.0",
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
+      "downloadLocation": "NOASSERTION",
+      "originator": "Organization: Wolfi",
+      "supplier": "Organization: chainguard",
+      "sourceInfo": "acquired package info from go module information: usr/bin/cloudflared",
+      "copyrightText": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "SECURITY",
+          "referenceLocator": "cpe:2.3:a:golang:oauth2:v0.35.0:*:*:*:*:go:*:*",
+          "referenceType": "cpe23Type"
+        },
+        {
+          "referenceCategory": "SECURITY",
+          "referenceLocator": "cpe:2.3:a:golang:jws:v0.35.0:*:*:*:*:go:*:*",
+          "referenceType": "cpe23Type"
+        },
+        {
+          "referenceCategory": "SECURITY",
+          "referenceLocator": "cpe:2.3:a:golang:jwt:v0.35.0:*:*:*:*:go:*:*",
+          "referenceType": "cpe23Type"
+        },
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceLocator": "pkg:golang/golang.org/x/oauth2@v0.35.0",
+          "referenceType": "purl"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-Package-go-module-golang.org-x-sync-b654a527b3f2455c",
+      "name": "golang.org/x/sync",
+      "versionInfo": "v0.20.0",
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
+      "downloadLocation": "NOASSERTION",
+      "originator": "Organization: Wolfi",
+      "supplier": "Organization: chainguard",
+      "sourceInfo": "acquired package info from go module information: usr/bin/cloudflared",
+      "copyrightText": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceLocator": "pkg:golang/golang.org/x/sync@v0.20.0",
+          "referenceType": "purl"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-Package-go-module-golang.org-x-sys-86e8908615bfee9f",
+      "name": "golang.org/x/sys",
+      "versionInfo": "v0.45.0",
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
+      "downloadLocation": "NOASSERTION",
+      "originator": "Organization: Wolfi",
+      "supplier": "Organization: chainguard",
+      "sourceInfo": "acquired package info from go module information: usr/bin/cloudflared",
+      "copyrightText": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceLocator": "pkg:golang/golang.org/x/sys@v0.45.0",
+          "referenceType": "purl"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-Package-go-module-golang.org-x-term-a2f507b0efba57e2",
+      "name": "golang.org/x/term",
+      "versionInfo": "v0.43.0",
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
+      "downloadLocation": "NOASSERTION",
+      "originator": "Organization: Wolfi",
+      "supplier": "Organization: chainguard",
+      "sourceInfo": "acquired package info from go module information: usr/bin/cloudflared",
+      "copyrightText": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceLocator": "pkg:golang/golang.org/x/term@v0.43.0",
+          "referenceType": "purl"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-Package-go-module-golang.org-x-text-21fdd1c67b441188",
+      "name": "golang.org/x/text",
+      "versionInfo": "v0.37.0",
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
+      "downloadLocation": "NOASSERTION",
+      "originator": "Organization: Wolfi",
+      "supplier": "Organization: chainguard",
+      "sourceInfo": "acquired package info from go module information: usr/bin/cloudflared",
+      "copyrightText": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "SECURITY",
+          "referenceLocator": "cpe:2.3:a:golang:text:v0.37.0:*:*:*:*:*:*:*",
+          "referenceType": "cpe23Type"
+        },
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceLocator": "pkg:golang/golang.org/x/text@v0.37.0",
+          "referenceType": "purl"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-Package-go-module-google.golang.org-genproto-googleapis-api-85525878a819864b",
+      "name": "google.golang.org/genproto/googleapis/api",
+      "versionInfo": "v0.0.0-20260209200024-4cfbd4190f57",
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
+      "downloadLocation": "NOASSERTION",
+      "originator": "Organization: Wolfi",
+      "supplier": "Organization: chainguard",
+      "sourceInfo": "acquired package info from go module information: usr/bin/cloudflared",
+      "copyrightText": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceLocator": "pkg:golang/google.golang.org/genproto/googleapis/api@v0.0.0-20260209200024-4cfbd4190f57",
+          "referenceType": "purl"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-Package-go-module-google.golang.org-genproto-googleapis-rpc-24e0f36c67fb91ce",
+      "name": "google.golang.org/genproto/googleapis/rpc",
+      "versionInfo": "v0.0.0-20260209200024-4cfbd4190f57",
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
+      "downloadLocation": "NOASSERTION",
+      "originator": "Organization: Wolfi",
+      "supplier": "Organization: chainguard",
+      "sourceInfo": "acquired package info from go module information: usr/bin/cloudflared",
+      "copyrightText": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceLocator": "pkg:golang/google.golang.org/genproto/googleapis/rpc@v0.0.0-20260209200024-4cfbd4190f57",
+          "referenceType": "purl"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-Package-go-module-google.golang.org-grpc-b7c5386807d8ea9b",
+      "name": "google.golang.org/grpc",
+      "versionInfo": "v1.79.3",
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
+      "downloadLocation": "NOASSERTION",
+      "originator": "Organization: Wolfi",
+      "supplier": "Organization: chainguard",
+      "sourceInfo": "acquired package info from go module information: usr/bin/cloudflared",
+      "copyrightText": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceLocator": "pkg:golang/google.golang.org/grpc@v1.79.3",
+          "referenceType": "purl"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-Package-go-module-google.golang.org-protobuf-5557e72a84af2e88",
+      "name": "google.golang.org/protobuf",
+      "versionInfo": "v1.36.11",
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
+      "downloadLocation": "NOASSERTION",
+      "originator": "Organization: Wolfi",
+      "supplier": "Organization: chainguard",
+      "sourceInfo": "acquired package info from go module information: usr/bin/cloudflared",
+      "copyrightText": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceLocator": "pkg:golang/google.golang.org/protobuf@v1.36.11",
+          "referenceType": "purl"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-Package-go-module-gopkg.in-natefinch-lumberjack.v2-2aabf3a5914169c1",
+      "name": "gopkg.in/natefinch/lumberjack.v2",
+      "versionInfo": "v2.0.0",
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
+      "downloadLocation": "NOASSERTION",
+      "originator": "Organization: Wolfi",
+      "supplier": "Organization: chainguard",
+      "sourceInfo": "acquired package info from go module information: usr/bin/cloudflared",
+      "copyrightText": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceLocator": "pkg:golang/gopkg.in/natefinch/lumberjack.v2@v2.0.0",
+          "referenceType": "purl"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-Package-go-module-gopkg.in-yaml.v2-637ed1b41f3b07b5",
+      "name": "gopkg.in/yaml.v2",
+      "versionInfo": "v2.4.0",
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
+      "downloadLocation": "NOASSERTION",
+      "originator": "Organization: Wolfi",
+      "supplier": "Organization: chainguard",
+      "sourceInfo": "acquired package info from go module information: usr/bin/cloudflared",
+      "copyrightText": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceLocator": "pkg:golang/gopkg.in/yaml.v2@v2.4.0",
+          "referenceType": "purl"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-Package-go-module-gopkg.in-yaml.v3-5d722eab09c4f422",
+      "name": "gopkg.in/yaml.v3",
+      "versionInfo": "v3.0.1",
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
+      "downloadLocation": "NOASSERTION",
+      "originator": "Organization: Wolfi",
+      "supplier": "Organization: chainguard",
+      "sourceInfo": "acquired package info from go module information: usr/bin/cloudflared",
+      "copyrightText": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "SECURITY",
+          "referenceLocator": "cpe:2.3:a:yaml_project:yaml:v3.0.1:*:*:*:*:go:*:*",
+          "referenceType": "cpe23Type"
+        },
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceLocator": "pkg:golang/gopkg.in/yaml.v3@v3.0.1",
+          "referenceType": "purl"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-Package-go-module-nhooyr.io-websocket-380b3b70920c6dde",
+      "name": "nhooyr.io/websocket",
+      "versionInfo": "v1.8.7",
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
+      "downloadLocation": "NOASSERTION",
+      "originator": "Organization: Wolfi",
+      "supplier": "Organization: chainguard",
+      "sourceInfo": "acquired package info from go module information: usr/bin/cloudflared",
+      "copyrightText": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceLocator": "pkg:golang/nhooyr.io/websocket@v1.8.7",
+          "referenceType": "purl"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-Package-go-module-stdlib-815e305d94b9a5f8",
+      "name": "stdlib",
+      "versionInfo": "go1.26.4",
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "BSD-3-Clause",
+      "downloadLocation": "NOASSERTION",
+      "originator": "Organization: Wolfi",
+      "supplier": "Organization: chainguard",
+      "sourceInfo": "acquired package info from go module information: usr/bin/cloudflared",
+      "copyrightText": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceLocator": "pkg:golang/stdlib@1.26.4",
+          "referenceType": "purl"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-Package-go-module-zombiezen.com-go-capnproto2-237beb69ea04abb4",
+      "name": "zombiezen.com/go/capnproto2",
+      "versionInfo": "v2.18.0+incompatible",
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
+      "downloadLocation": "NOASSERTION",
+      "originator": "Organization: Wolfi",
+      "supplier": "Organization: chainguard",
+      "sourceInfo": "acquired package info from go module information: usr/bin/cloudflared",
+      "copyrightText": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceLocator": "pkg:golang/zombiezen.com/go/capnproto2@v2.18.0%2Bincompatible",
+          "referenceType": "purl"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-DocumentRoot-Directory-cloudflared",
+      "name": "cloudflared",
+      "versionInfo": "2026.5.2-r2",
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
+      "downloadLocation": "NOASSERTION",
+      "originator": "Organization: Wolfi",
+      "supplier": "Organization: chainguard",
+      "copyrightText": "NOASSERTION",
+      "primaryPackagePurpose": "FILE"
+    },
+    {
+      "SPDXID": "SPDXRef-Package-apk-tzdata-2026b-r0",
+      "name": "tzdata",
+      "versionInfo": "2026b-r0",
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "CC-PDDC",
+      "downloadLocation": "NOASSERTION",
+      "originator": "Organization: Wolfi",
+      "supplier": "Organization: Wolfi",
+      "copyrightText": "NOASSERTION",
+      "primaryPackagePurpose": "APPLICATION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceLocator": "pkg:apk/wolfi/tzdata@2026b-r0?arch=x86_64\u0026distro=wolfi",
+          "referenceType": "purl"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-Package-Melange-tzdata.yaml-368725c2df38bcaecdd408b6bd76c71f0d1efef0",
+      "name": "tzdata.yaml",
+      "versionInfo": "368725c2df38bcaecdd408b6bd76c71f0d1efef0",
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "Apache-2.0",
+      "downloadLocation": "NOASSERTION",
+      "originator": "Organization: Wolfi",
+      "supplier": "Organization: Wolfi",
+      "primaryPackagePurpose": "INSTALL",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceLocator": "pkg:github/chainguard-dev/stereo@368725c2df38bcaecdd408b6bd76c71f0d1efef0#tzdata.yaml",
+          "referenceType": "purl"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-Package-Source-github.com-eggert-tz-2026b-48c25a1ba86cb602990c0573aba7795417931bb4-0",
+      "name": "tz",
+      "versionInfo": "2026b",
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "CC-PDDC",
+      "downloadLocation": "https://github.com/eggert/tz/archive/48c25a1ba86cb602990c0573aba7795417931bb4.tar.gz",
+      "originator": "Organization: Eggert",
+      "supplier": "Organization: Eggert",
+      "primaryPackagePurpose": "SOURCE",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceLocator": "pkg:github/eggert/tz@2026b",
+          "referenceType": "purl"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-Package-apk-tzdata-1a822b7e4aebafc9",
+      "name": "tzdata",
+      "versionInfo": "2026b-r0",
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "CC-PDDC",
+      "description": "Timezone data provided by IANA",
+      "downloadLocation": "NOASSERTION",
+      "originator": "Organization: Wolfi",
+      "supplier": "Organization: chainguard",
+      "sourceInfo": "acquired package info from APK DB: /.PKGINFO",
+      "copyrightText": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "SECURITY",
+          "referenceLocator": "cpe:2.3:a:tzdata:tzdata:2026b-r0:*:*:*:*:*:*:*",
+          "referenceType": "cpe23Type"
+        },
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceLocator": "pkg:apk/wolfi/tzdata@2026b-r0?arch=x86_64\u0026origin=tzdata",
+          "referenceType": "purl"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-DocumentRoot-Directory-tzdata",
+      "name": "tzdata",
+      "versionInfo": "2026b-r0",
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
+      "downloadLocation": "NOASSERTION",
+      "originator": "Organization: Wolfi",
+      "supplier": "Organization: chainguard",
+      "copyrightText": "NOASSERTION",
+      "primaryPackagePurpose": "FILE"
+    }
+  ],
+  "relationships": [
+    {
+      "spdxElementId": "SPDXRef-Package-Image-sha256-5c6b03daaed2ba8b625f193c1f313a1c94f551ed43001e80895ecc668a74c483",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-Package-ImageLayer-sha256-f5c985d06117af02f9a5c0acc1c8e0c4a4217113156914613e1571aec2149a6f"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-apk-wolfi-baselayout-20230201-r29",
+      "relationshipType": "DESCRIBED_BY",
+      "relatedSpdxElement": "SPDXRef-Package-Melange-wolfi-baselayout.yaml-35e7b4713442869116936fae3fe8cf7c69bc9054"
+    },
+    {
+      "spdxElementId": "SPDXRef-DocumentRoot-Directory-wolfi-baselayout",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-Package-apk-wolfi-baselayout-88b07837a3ad9a7f"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-apk-wolfi-baselayout-20230201-r29",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-DocumentRoot-Directory-wolfi-baselayout"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-Image-sha256-5c6b03daaed2ba8b625f193c1f313a1c94f551ed43001e80895ecc668a74c483",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-Package-apk-wolfi-baselayout-20230201-r29"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-apk-ca-certificates-bundle-20260413-r0",
+      "relationshipType": "DESCRIBED_BY",
+      "relatedSpdxElement": "SPDXRef-Package-Melange-ca-certificates.yaml-5fb1c6869c186cb9b385b875141643409c440ac2"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-apk-ca-certificates-bundle-20260413-r0",
+      "relationshipType": "GENERATED_FROM",
+      "relatedSpdxElement": "SPDXRef-Package-Source-gitlab.alpinelinux.org-alpine-ca-certificates-20260413-721ff6606b8c145755691d6cf87088ae7ff3d346-0"
+    },
+    {
+      "spdxElementId": "SPDXRef-DocumentRoot-Directory-ca-certificates-bundle",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-Package-apk-ca-certificates-bundle-78142317e3a0ac94"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-apk-ca-certificates-bundle-20260413-r0",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-DocumentRoot-Directory-ca-certificates-bundle"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-Image-sha256-5c6b03daaed2ba8b625f193c1f313a1c94f551ed43001e80895ecc668a74c483",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-Package-apk-ca-certificates-bundle-20260413-r0"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-apk-cloudflared-2026.5.2-r2",
+      "relationshipType": "DESCRIBED_BY",
+      "relatedSpdxElement": "SPDXRef-Package-Melange-cloudflared.yaml-58295af2d77fac8ca7abc66bd5e852eb0a6c9038"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-apk-cloudflared-2026.5.2-r2",
+      "relationshipType": "GENERATED_FROM",
+      "relatedSpdxElement": "SPDXRef-Package-Source-github.com-cloudflare-cloudflared-2026.5.2-0e84636de9450d9e73c1e28932ed2bd62cb33e10-0"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-apk-cloudflared-4ec4ffa929ea4a89",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-pkg-errors-0444178e438015c8"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-apk-cloudflared-4ec4ffa929ea4a89",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-russross-blackfriday-v2-04ec4bb516a9afed"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-apk-cloudflared-4ec4ffa929ea4a89",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-google-uuid-0dfefce4bc8ecc70"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-apk-cloudflared-4ec4ffa929ea4a89",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-gobwas-pool-1075566c413702ee"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-apk-cloudflared-4ec4ffa929ea4a89",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-grpc-ecosystem-grpc-gateway-v2-1a8852bfaf418b48"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-apk-cloudflared-4ec4ffa929ea4a89",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-prometheus-procfs-1c1dcfef7f1d8b16"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-apk-cloudflared-4ec4ffa929ea4a89",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-gobwas-httphead-21b9a1342964efeb"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-apk-cloudflared-4ec4ffa929ea4a89",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-Package-go-module-golang.org-x-text-21fdd1c67b441188"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-apk-cloudflared-4ec4ffa929ea4a89",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-Package-go-module-zombiezen.com-go-capnproto2-237beb69ea04abb4"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-apk-cloudflared-4ec4ffa929ea4a89",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-Package-go-module-google.golang.org-genproto-googleapis-rpc-24e0f36c67fb91ce"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-apk-cloudflared-4ec4ffa929ea4a89",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-Package-go-module-gopkg.in-natefinch-lumberjack.v2-2aabf3a5914169c1"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-apk-cloudflared-4ec4ffa929ea4a89",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-Package-go-module-go.opentelemetry.io-auto-sdk-2c005e4982d664b1"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-apk-cloudflared-4ec4ffa929ea4a89",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-tklauser-go-sysconf-32d0a747c85b412e"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-apk-cloudflared-4ec4ffa929ea4a89",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-coreos-go-systemd-v22-36175fc850a90f9d"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-apk-cloudflared-4ec4ffa929ea4a89",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-go-chi-cors-3759383f4ed249c7"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-apk-cloudflared-4ec4ffa929ea4a89",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-Package-go-module-nhooyr.io-websocket-380b3b70920c6dde"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-apk-cloudflared-4ec4ffa929ea4a89",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-prometheus-common-3a9392344e8a4029"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-apk-cloudflared-4ec4ffa929ea4a89",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-chungthuang-quic-go-3baccafdc70d47ab"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-apk-cloudflared-4ec4ffa929ea4a89",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-klauspost-compress-439c944ae5e7229d"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-apk-cloudflared-4ec4ffa929ea4a89",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-json-iterator-go-513adc8058f2d1f1"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-apk-cloudflared-4ec4ffa929ea4a89",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-go-logr-stdr-5372b9ee3e7c623d"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-apk-cloudflared-4ec4ffa929ea4a89",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-Package-go-module-google.golang.org-protobuf-5557e72a84af2e88"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-apk-cloudflared-4ec4ffa929ea4a89",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-mattn-go-isatty-58453c808d39dc05"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-apk-cloudflared-4ec4ffa929ea4a89",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-cpuguy83-go-md2man-v2-5a01df0e5b4855ba"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-apk-cloudflared-4ec4ffa929ea4a89",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-gorilla-websocket-5b2746374e14790d"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-apk-cloudflared-4ec4ffa929ea4a89",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-Package-go-module-gopkg.in-yaml.v3-5d722eab09c4f422"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-apk-cloudflared-4ec4ffa929ea4a89",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-modern-go-concurrent-5efd4eddbab6f8b2"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-apk-cloudflared-4ec4ffa929ea4a89",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-Package-go-module-gopkg.in-yaml.v2-637ed1b41f3b07b5"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-apk-cloudflared-4ec4ffa929ea4a89",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-modern-go-reflect2-68e7a32a229533df"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-apk-cloudflared-4ec4ffa929ea4a89",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-Package-go-module-go.opentelemetry.io-otel-exporters-otlp-otlptrace-6ff326a91c61cc53"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-apk-cloudflared-4ec4ffa929ea4a89",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-Package-go-module-go.opentelemetry.io-otel-metric-74b40c1323ca97f2"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-apk-cloudflared-4ec4ffa929ea4a89",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-go-jose-go-jose-v4-74d8028d3f364fdd"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-apk-cloudflared-4ec4ffa929ea4a89",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-Package-go-module-go.opentelemetry.io-contrib-propagators-7637623a3e1460c4"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-apk-cloudflared-4ec4ffa929ea4a89",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-mitchellh-go-homedir-7b88ce0c168a9705"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-apk-cloudflared-4ec4ffa929ea4a89",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-Package-go-module-go.opentelemetry.io-otel-sdk-7e95fa12ea230e1d"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-apk-cloudflared-4ec4ffa929ea4a89",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-getsentry-sentry-go-7f3cf1a9e99dcdc0"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-apk-cloudflared-4ec4ffa929ea4a89",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-cloudflare-backoff-8040c1f70ae2b5e2"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-apk-cloudflared-4ec4ffa929ea4a89",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-Package-go-module-stdlib-815e305d94b9a5f8"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-apk-cloudflared-4ec4ffa929ea4a89",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-go-logr-logr-834baa90dbe0a459"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-apk-cloudflared-4ec4ffa929ea4a89",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-Package-go-module-go.opentelemetry.io-proto-otlp-84488d122c03fe18"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-apk-cloudflared-4ec4ffa929ea4a89",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-Package-go-module-google.golang.org-genproto-googleapis-api-85525878a819864b"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-apk-cloudflared-4ec4ffa929ea4a89",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-Package-go-module-golang.org-x-sys-86e8908615bfee9f"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-apk-cloudflared-4ec4ffa929ea4a89",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-Package-go-module-golang.org-x-net-87b36e290d917341"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-apk-cloudflared-4ec4ffa929ea4a89",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-munnerz-goautoneg-8c51513b1734d0c3"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-apk-cloudflared-4ec4ffa929ea4a89",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-Package-go-module-go.opentelemetry.io-otel-8ca3dc6eca02b1f4"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-apk-cloudflared-4ec4ffa929ea4a89",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-Package-go-module-go.uber.org-automaxprocs-8ced14cec5059442"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-apk-cloudflared-4ec4ffa929ea4a89",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-coreos-go-oidc-v3-90392f011e279899"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-apk-cloudflared-4ec4ffa929ea4a89",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-mattn-go-colorable-90b0195fe1d098d6"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-apk-cloudflared-4ec4ffa929ea4a89",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-fsnotify-fsnotify-946dbd0b5ee9b0e2"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-apk-cloudflared-4ec4ffa929ea4a89",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-go-chi-chi-v5-988817038e2292b3"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-apk-cloudflared-4ec4ffa929ea4a89",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-shirou-gopsutil-v4-9e0a03768a2112f5"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-apk-cloudflared-4ec4ffa929ea4a89",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-Package-go-module-golang.org-x-term-a2f507b0efba57e2"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-apk-cloudflared-4ec4ffa929ea4a89",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-Package-go-module-golang.org-x-oauth2-b5b32c9c676d538c"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-apk-cloudflared-4ec4ffa929ea4a89",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-Package-go-module-golang.org-x-sync-b654a527b3f2455c"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-apk-cloudflared-4ec4ffa929ea4a89",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-Package-go-module-google.golang.org-grpc-b7c5386807d8ea9b"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-apk-cloudflared-4ec4ffa929ea4a89",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-Package-go-module-golang.org-x-crypto-b94cb15ff3530925"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-apk-cloudflared-4ec4ffa929ea4a89",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-Package-go-module-go.opentelemetry.io-otel-trace-b9788293759b31d5"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-apk-cloudflared-4ec4ffa929ea4a89",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-gobwas-ws-b9f397bff9684179"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-apk-cloudflared-4ec4ffa929ea4a89",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-google-gopacket-bd832e9336c586eb"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-apk-cloudflared-4ec4ffa929ea4a89",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-facebookgo-grace-be9daa060d117ce1"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-apk-cloudflared-4ec4ffa929ea4a89",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-tklauser-numcpus-c14026c3d1b4ff6c"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-apk-cloudflared-4ec4ffa929ea4a89",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-rs-zerolog-c3cca812829827f1"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-apk-cloudflared-4ec4ffa929ea4a89",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-ipostelnik-cli-v2-c837f27a06a9c42c"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-apk-cloudflared-4ec4ffa929ea4a89",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-prometheus-client-golang-c9a835f003085821"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-apk-cloudflared-4ec4ffa929ea4a89",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-BurntSushi-toml-d0ad643d33834789"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-apk-cloudflared-4ec4ffa929ea4a89",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-prometheus-client-model-d128a4935e1b7d0e"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-apk-cloudflared-4ec4ffa929ea4a89",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-cloudflare-cloudflared-dbd7622e50c83452"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-apk-cloudflared-4ec4ffa929ea4a89",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-beorn7-perks-df4b102abfbf1dae"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-apk-cloudflared-4ec4ffa929ea4a89",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-cespare-xxhash-v2-ea37ba08fd4b1aa1"
+    },
+    {
+      "spdxElementId": "SPDXRef-DocumentRoot-Directory-cloudflared",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-Package-apk-cloudflared-4ec4ffa929ea4a89"
+    },
+    {
+      "spdxElementId": "SPDXRef-DocumentRoot-Directory-cloudflared",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-BurntSushi-toml-d0ad643d33834789"
+    },
+    {
+      "spdxElementId": "SPDXRef-DocumentRoot-Directory-cloudflared",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-beorn7-perks-df4b102abfbf1dae"
+    },
+    {
+      "spdxElementId": "SPDXRef-DocumentRoot-Directory-cloudflared",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-cespare-xxhash-v2-ea37ba08fd4b1aa1"
+    },
+    {
+      "spdxElementId": "SPDXRef-DocumentRoot-Directory-cloudflared",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-chungthuang-quic-go-3baccafdc70d47ab"
+    },
+    {
+      "spdxElementId": "SPDXRef-DocumentRoot-Directory-cloudflared",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-cloudflare-backoff-8040c1f70ae2b5e2"
+    },
+    {
+      "spdxElementId": "SPDXRef-DocumentRoot-Directory-cloudflared",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-cloudflare-cloudflared-dbd7622e50c83452"
+    },
+    {
+      "spdxElementId": "SPDXRef-DocumentRoot-Directory-cloudflared",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-coreos-go-oidc-v3-90392f011e279899"
+    },
+    {
+      "spdxElementId": "SPDXRef-DocumentRoot-Directory-cloudflared",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-coreos-go-systemd-v22-36175fc850a90f9d"
+    },
+    {
+      "spdxElementId": "SPDXRef-DocumentRoot-Directory-cloudflared",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-cpuguy83-go-md2man-v2-5a01df0e5b4855ba"
+    },
+    {
+      "spdxElementId": "SPDXRef-DocumentRoot-Directory-cloudflared",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-facebookgo-grace-be9daa060d117ce1"
+    },
+    {
+      "spdxElementId": "SPDXRef-DocumentRoot-Directory-cloudflared",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-fsnotify-fsnotify-946dbd0b5ee9b0e2"
+    },
+    {
+      "spdxElementId": "SPDXRef-DocumentRoot-Directory-cloudflared",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-getsentry-sentry-go-7f3cf1a9e99dcdc0"
+    },
+    {
+      "spdxElementId": "SPDXRef-DocumentRoot-Directory-cloudflared",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-go-chi-chi-v5-988817038e2292b3"
+    },
+    {
+      "spdxElementId": "SPDXRef-DocumentRoot-Directory-cloudflared",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-go-chi-cors-3759383f4ed249c7"
+    },
+    {
+      "spdxElementId": "SPDXRef-DocumentRoot-Directory-cloudflared",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-go-jose-go-jose-v4-74d8028d3f364fdd"
+    },
+    {
+      "spdxElementId": "SPDXRef-DocumentRoot-Directory-cloudflared",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-go-logr-logr-834baa90dbe0a459"
+    },
+    {
+      "spdxElementId": "SPDXRef-DocumentRoot-Directory-cloudflared",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-go-logr-stdr-5372b9ee3e7c623d"
+    },
+    {
+      "spdxElementId": "SPDXRef-DocumentRoot-Directory-cloudflared",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-gobwas-httphead-21b9a1342964efeb"
+    },
+    {
+      "spdxElementId": "SPDXRef-DocumentRoot-Directory-cloudflared",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-gobwas-pool-1075566c413702ee"
+    },
+    {
+      "spdxElementId": "SPDXRef-DocumentRoot-Directory-cloudflared",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-gobwas-ws-b9f397bff9684179"
+    },
+    {
+      "spdxElementId": "SPDXRef-DocumentRoot-Directory-cloudflared",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-google-gopacket-bd832e9336c586eb"
+    },
+    {
+      "spdxElementId": "SPDXRef-DocumentRoot-Directory-cloudflared",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-google-uuid-0dfefce4bc8ecc70"
+    },
+    {
+      "spdxElementId": "SPDXRef-DocumentRoot-Directory-cloudflared",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-gorilla-websocket-5b2746374e14790d"
+    },
+    {
+      "spdxElementId": "SPDXRef-DocumentRoot-Directory-cloudflared",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-grpc-ecosystem-grpc-gateway-v2-1a8852bfaf418b48"
+    },
+    {
+      "spdxElementId": "SPDXRef-DocumentRoot-Directory-cloudflared",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-ipostelnik-cli-v2-c837f27a06a9c42c"
+    },
+    {
+      "spdxElementId": "SPDXRef-DocumentRoot-Directory-cloudflared",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-json-iterator-go-513adc8058f2d1f1"
+    },
+    {
+      "spdxElementId": "SPDXRef-DocumentRoot-Directory-cloudflared",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-klauspost-compress-439c944ae5e7229d"
+    },
+    {
+      "spdxElementId": "SPDXRef-DocumentRoot-Directory-cloudflared",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-mattn-go-colorable-90b0195fe1d098d6"
+    },
+    {
+      "spdxElementId": "SPDXRef-DocumentRoot-Directory-cloudflared",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-mattn-go-isatty-58453c808d39dc05"
+    },
+    {
+      "spdxElementId": "SPDXRef-DocumentRoot-Directory-cloudflared",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-mitchellh-go-homedir-7b88ce0c168a9705"
+    },
+    {
+      "spdxElementId": "SPDXRef-DocumentRoot-Directory-cloudflared",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-modern-go-concurrent-5efd4eddbab6f8b2"
+    },
+    {
+      "spdxElementId": "SPDXRef-DocumentRoot-Directory-cloudflared",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-modern-go-reflect2-68e7a32a229533df"
+    },
+    {
+      "spdxElementId": "SPDXRef-DocumentRoot-Directory-cloudflared",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-munnerz-goautoneg-8c51513b1734d0c3"
+    },
+    {
+      "spdxElementId": "SPDXRef-DocumentRoot-Directory-cloudflared",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-pkg-errors-0444178e438015c8"
+    },
+    {
+      "spdxElementId": "SPDXRef-DocumentRoot-Directory-cloudflared",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-prometheus-client-golang-c9a835f003085821"
+    },
+    {
+      "spdxElementId": "SPDXRef-DocumentRoot-Directory-cloudflared",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-prometheus-client-model-d128a4935e1b7d0e"
+    },
+    {
+      "spdxElementId": "SPDXRef-DocumentRoot-Directory-cloudflared",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-prometheus-common-3a9392344e8a4029"
+    },
+    {
+      "spdxElementId": "SPDXRef-DocumentRoot-Directory-cloudflared",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-prometheus-procfs-1c1dcfef7f1d8b16"
+    },
+    {
+      "spdxElementId": "SPDXRef-DocumentRoot-Directory-cloudflared",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-rs-zerolog-c3cca812829827f1"
+    },
+    {
+      "spdxElementId": "SPDXRef-DocumentRoot-Directory-cloudflared",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-russross-blackfriday-v2-04ec4bb516a9afed"
+    },
+    {
+      "spdxElementId": "SPDXRef-DocumentRoot-Directory-cloudflared",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-shirou-gopsutil-v4-9e0a03768a2112f5"
+    },
+    {
+      "spdxElementId": "SPDXRef-DocumentRoot-Directory-cloudflared",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-tklauser-go-sysconf-32d0a747c85b412e"
+    },
+    {
+      "spdxElementId": "SPDXRef-DocumentRoot-Directory-cloudflared",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-tklauser-numcpus-c14026c3d1b4ff6c"
+    },
+    {
+      "spdxElementId": "SPDXRef-DocumentRoot-Directory-cloudflared",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-Package-go-module-go.opentelemetry.io-auto-sdk-2c005e4982d664b1"
+    },
+    {
+      "spdxElementId": "SPDXRef-DocumentRoot-Directory-cloudflared",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-Package-go-module-go.opentelemetry.io-contrib-propagators-7637623a3e1460c4"
+    },
+    {
+      "spdxElementId": "SPDXRef-DocumentRoot-Directory-cloudflared",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-Package-go-module-go.opentelemetry.io-otel-8ca3dc6eca02b1f4"
+    },
+    {
+      "spdxElementId": "SPDXRef-DocumentRoot-Directory-cloudflared",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-Package-go-module-go.opentelemetry.io-otel-exporters-otlp-otlptrace-6ff326a91c61cc53"
+    },
+    {
+      "spdxElementId": "SPDXRef-DocumentRoot-Directory-cloudflared",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-Package-go-module-go.opentelemetry.io-otel-metric-74b40c1323ca97f2"
+    },
+    {
+      "spdxElementId": "SPDXRef-DocumentRoot-Directory-cloudflared",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-Package-go-module-go.opentelemetry.io-otel-sdk-7e95fa12ea230e1d"
+    },
+    {
+      "spdxElementId": "SPDXRef-DocumentRoot-Directory-cloudflared",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-Package-go-module-go.opentelemetry.io-otel-trace-b9788293759b31d5"
+    },
+    {
+      "spdxElementId": "SPDXRef-DocumentRoot-Directory-cloudflared",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-Package-go-module-go.opentelemetry.io-proto-otlp-84488d122c03fe18"
+    },
+    {
+      "spdxElementId": "SPDXRef-DocumentRoot-Directory-cloudflared",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-Package-go-module-go.uber.org-automaxprocs-8ced14cec5059442"
+    },
+    {
+      "spdxElementId": "SPDXRef-DocumentRoot-Directory-cloudflared",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-Package-go-module-golang.org-x-crypto-b94cb15ff3530925"
+    },
+    {
+      "spdxElementId": "SPDXRef-DocumentRoot-Directory-cloudflared",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-Package-go-module-golang.org-x-net-87b36e290d917341"
+    },
+    {
+      "spdxElementId": "SPDXRef-DocumentRoot-Directory-cloudflared",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-Package-go-module-golang.org-x-oauth2-b5b32c9c676d538c"
+    },
+    {
+      "spdxElementId": "SPDXRef-DocumentRoot-Directory-cloudflared",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-Package-go-module-golang.org-x-sync-b654a527b3f2455c"
+    },
+    {
+      "spdxElementId": "SPDXRef-DocumentRoot-Directory-cloudflared",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-Package-go-module-golang.org-x-sys-86e8908615bfee9f"
+    },
+    {
+      "spdxElementId": "SPDXRef-DocumentRoot-Directory-cloudflared",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-Package-go-module-golang.org-x-term-a2f507b0efba57e2"
+    },
+    {
+      "spdxElementId": "SPDXRef-DocumentRoot-Directory-cloudflared",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-Package-go-module-golang.org-x-text-21fdd1c67b441188"
+    },
+    {
+      "spdxElementId": "SPDXRef-DocumentRoot-Directory-cloudflared",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-Package-go-module-google.golang.org-genproto-googleapis-api-85525878a819864b"
+    },
+    {
+      "spdxElementId": "SPDXRef-DocumentRoot-Directory-cloudflared",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-Package-go-module-google.golang.org-genproto-googleapis-rpc-24e0f36c67fb91ce"
+    },
+    {
+      "spdxElementId": "SPDXRef-DocumentRoot-Directory-cloudflared",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-Package-go-module-google.golang.org-grpc-b7c5386807d8ea9b"
+    },
+    {
+      "spdxElementId": "SPDXRef-DocumentRoot-Directory-cloudflared",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-Package-go-module-google.golang.org-protobuf-5557e72a84af2e88"
+    },
+    {
+      "spdxElementId": "SPDXRef-DocumentRoot-Directory-cloudflared",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-Package-go-module-gopkg.in-natefinch-lumberjack.v2-2aabf3a5914169c1"
+    },
+    {
+      "spdxElementId": "SPDXRef-DocumentRoot-Directory-cloudflared",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-Package-go-module-gopkg.in-yaml.v2-637ed1b41f3b07b5"
+    },
+    {
+      "spdxElementId": "SPDXRef-DocumentRoot-Directory-cloudflared",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-Package-go-module-gopkg.in-yaml.v3-5d722eab09c4f422"
+    },
+    {
+      "spdxElementId": "SPDXRef-DocumentRoot-Directory-cloudflared",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-Package-go-module-nhooyr.io-websocket-380b3b70920c6dde"
+    },
+    {
+      "spdxElementId": "SPDXRef-DocumentRoot-Directory-cloudflared",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-Package-go-module-stdlib-815e305d94b9a5f8"
+    },
+    {
+      "spdxElementId": "SPDXRef-DocumentRoot-Directory-cloudflared",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-Package-go-module-zombiezen.com-go-capnproto2-237beb69ea04abb4"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-apk-cloudflared-2026.5.2-r2",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-DocumentRoot-Directory-cloudflared"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-Image-sha256-5c6b03daaed2ba8b625f193c1f313a1c94f551ed43001e80895ecc668a74c483",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-Package-apk-cloudflared-2026.5.2-r2"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-apk-tzdata-2026b-r0",
+      "relationshipType": "DESCRIBED_BY",
+      "relatedSpdxElement": "SPDXRef-Package-Melange-tzdata.yaml-368725c2df38bcaecdd408b6bd76c71f0d1efef0"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-apk-tzdata-2026b-r0",
+      "relationshipType": "GENERATED_FROM",
+      "relatedSpdxElement": "SPDXRef-Package-Source-github.com-eggert-tz-2026b-48c25a1ba86cb602990c0573aba7795417931bb4-0"
+    },
+    {
+      "spdxElementId": "SPDXRef-DocumentRoot-Directory-tzdata",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-Package-apk-tzdata-1a822b7e4aebafc9"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-apk-tzdata-2026b-r0",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-DocumentRoot-Directory-tzdata"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-Image-sha256-5c6b03daaed2ba8b625f193c1f313a1c94f551ed43001e80895ecc668a74c483",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-Package-apk-tzdata-2026b-r0"
+    }
+  ]
+}

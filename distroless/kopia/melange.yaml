@@ -1,0 +1,76 @@
+package:
+  name: kopia
+  version: "0.23.1" # renovate: datasource=github-releases depName=kopia/kopia extractVersion=^v(?<version>.*)$
+  epoch: 0
+  description: Cross-platform backup tool — fast incremental backups, client-side end-to-end encryption, compression, and dedup.
+  copyright:
+    - license: Apache-2.0
+
+environment:
+  contents:
+    # When running `melange build` locally / in this workflow, the apk
+    # repository set isn't inherited from Wolfi's CI infrastructure —
+    # we have to spell it out per recipe. Mirror the apko.yaml's repo
+    # + keyring so the build environment can resolve packages.
+    repositories:
+      - https://packages.wolfi.dev/os
+    keyring:
+      - https://packages.wolfi.dev/os/wolfi-signing.rsa.pub
+    packages:
+      - build-base
+      - busybox
+      - ca-certificates-bundle
+      - git
+      - go-1.26
+
+pipeline:
+  # No expected-commit: Renovate bumps package.version and the tag
+  # template follows automatically — a commit pin would go stale on every
+  # bump and Renovate can't resolve peeled tag commits reliably. Checkout
+  # by release tag over HTTPS matches the supply-chain posture of the
+  # apps/ track (which curls upstream tarballs by version, unchecksummed).
+  # Revisit commit pinning if a bot-app token ever lands (see
+  # distroless/README.md).
+  - uses: git-checkout
+    with:
+      repository: https://github.com/kopia/kopia
+      tag: v${{package.version}}
+
+  - runs: |
+      # Default build (no `nohtmlui` tag) embeds the full web UI: kopia
+      # vendors the prebuilt UI assets as a regular Go module
+      # (github.com/kopia/htmluibuild), so no node toolchain is needed and
+      # the distroless image keeps functionality parity with apps/kopia.
+      mkdir -p "${{targets.destdir}}/usr/bin"
+      LDFLAGS="-s -w \
+        -X github.com/kopia/kopia/repo.BuildVersion=${{package.version}} \
+        -X github.com/kopia/kopia/repo.BuildGitHash=$(git rev-parse HEAD) \
+        -X github.com/kopia/kopia/repo.BuildInfo=${{package.version}}-distroless"
+      CGO_ENABLED=0 go build \
+        -trimpath \
+        -ldflags "$LDFLAGS" \
+        -o "${{targets.destdir}}/usr/bin/kopia" \
+        .
+
+  - uses: strip
+
+test:
+  # `melange test` builds a separate sandbox from the build environment,
+  # so it needs its own repository config too — otherwise the test guest
+  # fails with `must provide at least one repository`. busybox provides
+  # /bin/sh for executing the `runs:` script — without it the sandbox
+  # fails with `bwrap: execvp /bin/sh: No such file or directory`.
+  # Wolfi's CI provides these implicitly for in-tree recipes; ours has
+  # to spell them out.
+  environment:
+    contents:
+      repositories:
+        - https://packages.wolfi.dev/os
+      keyring:
+        - https://packages.wolfi.dev/os/wolfi-signing.rsa.pub
+      packages:
+        - busybox
+        - ca-certificates-bundle
+  pipeline:
+    - runs: |
+        kopia --version

@@ -1,0 +1,50 @@
+contents:
+  repositories:
+    - https://packages.wolfi.dev/os
+  keyring:
+    - https://packages.wolfi.dev/os/wolfi-signing.rsa.pub
+  packages:
+    - wolfi-baselayout
+    - ca-certificates-bundle
+    - tzdata
+    # Built by the melange.yaml next to this file (Wolfi doesn't ship
+    # tqm). Version is Renovate-managed there.
+    - tqm
+
+accounts:
+  groups:
+    - groupname: nonroot
+      gid: 65532
+  users:
+    - username: nonroot
+      uid: 65532
+      gid: 65532
+  run-as: "65532"
+
+# No `cmd:` — orchestrator owns the subcommand (`clean`, `retag`,
+# `orphan`, ...), same idiom as kopia. tqm resolves its config file
+# relative to $HOME, so HOME points at the repo-standard /config volume:
+# tqm reads /config/.config/tqm/config.yaml, or pass --config explicitly.
+entrypoint:
+  command: /usr/bin/tqm
+
+environment:
+  LANG: C.UTF-8
+  HOME: /config
+
+paths:
+  - path: /config
+    type: directory
+    uid: 65532
+    gid: 65532
+    permissions: 0o755
+
+archs:
+  - x86_64
+  - aarch64
+
+annotations:
+  org.opencontainers.image.source: https://github.com/00o-sh/containers
+  org.opencontainers.image.url: https://github.com/autobrr/tqm
+  org.opencontainers.image.licenses: MIT
+  org.opencontainers.image.description: tqm torrent queue manager (distroless / Wolfi)

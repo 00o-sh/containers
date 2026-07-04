@@ -2,17 +2,40 @@
 
 Live working log. Future Claude: **read this first**, then update it as you go (mark items resolved, add new threads, prune stale ones). If this file contradicts the repo, trust the repo and fix the file.
 
-**Last updated:** 2026-07-04 (session: helm postUpgradeTasks fix merged; upstream sync PR #122)
+**Last updated:** 2026-07-04 (session: distroless plan + Wave 0/1/2 implementation on PR #123; merged main's upstream sync #122 into the branch)
 
 ---
 
 ## Current branch
 
-`chore/upstream-sync-2026-07-04` (PR #122) — merges upstream `home-operations/containers` (189 commits, 169 files). Resolves 23 conflicts preserving fork divergences; supersedes the un-resolvable cross-fork PR #121 (its head is upstream's `main`). See thread #12 for the full resolution log.
-
-Prior: `chore/apps-cve-gate-report-only` (PRs #22 + #25 + #21) merged. Apps/ CVE gate is report-only (Grype `fail-build: false`, Trivy `exit-code: "0"`); distroless gate stays strict.
+`claude/distroless-images-ci-plan-9ke00v` (PR #123) — the fleet-wide distroless plan (`docs/distroless-plan.md`) plus its Wave 0 groundwork and first three images, implemented in the same PR at the operator's request to take full lead. Rebased-by-merge on main after the upstream sync (#122, thread #12) landed mid-flight: tests ported to the renamed `tests` helper package, kopia bumped to 0.23.1, trivy-action cache disabled (thread #15).
 
 ## Open threads
+
+### 14. Fleet-wide distroless migration — plan + Waves 0–2 partial (PR #123)
+
+`docs/distroless-plan.md` is the source of truth (audit of all 36 apps against live Wolfi APKINDEX, wave ordering, exemptions). Landed in this PR beyond the doc:
+
+- **Wave 0 CI groundwork**: `.renovaterc.json5` — apko floor-pin matchString (`- pkg>=X # renovate:`), `extractVersion` support on the melange/apko manager, distroless packageRules (release-style commits, labels, automerge with `ignoreTests: false`). `distroless-build.yaml` — boot-smoke warn→**fail**, `--repository-append` on melange test (PR #21's fix), cron-failure job that files/updates an issue. `distroless/README.md` — conventions, templates, melange gotchas (PR #21's four lessons), exemptions.
+- **Images**: `k8s-sidecar` (apko-only, Wolfi pkg, venv import smoke; SCRIPT-shell-hook parity caveat flagged in recipe), `kopia` (melange, revived from PR #21 — **with web UI**, see below), `tqm` and `smartctl-exporter` (melange Go builds with in-recipe x/ module security bumps). Floor pin retro-fitted on `cloudflared`. Upstream sync removed apps/tqm + apps/webhook — tqm-distroless is now the only tqm image here; webhook dropped from the plan.
+- **Key design decision — no expected-commit/expected-sha256** in melange recipes: nothing can refresh them on Renovate bumps (Mend cloud blocks postUpgradeTasks; `GITHUB_TOKEN` pushes don't trigger CI so a fixup bot wedges automerge; Renovate digest-capture resolves annotated tags to the tag object, not the peeled commit melange checks — PR #21 had exactly this bug: `dd5b7ba9` is the v0.23.0 tag object, peeled commit is `981d5f95`). Tag-follows-version (`tag: v${{package.version}}`) keeps bumps green; posture matches apps/' unchecksummed tarball curls. Plan §2b/§2c has the full rationale.
+- **Operator directive (2026-07-04): feature parity is mandatory — no functionality lost, ever.** Kopia's `nohtmlui` shortcut from PR #21 violated it; the web UI is embedded via the `htmluibuild` Go module (no node toolchain needed) and the image defaults to server mode on 51515 exactly like apps/kopia (args override → CLI passthrough). Principle recorded in distroless/README.md conventions + plan §4.0. Applies to every future wave (e.g. sabnzbd must build unrar, stash keeps python scrapers).
+- **Local verification done**: apko builds for k8s-sidecar + cloudflared (floor-pin syntax confirmed against real resolver), structure assertions replicated, k8s-sidecar boot smoke green via testcontainers, tqm + kopia go-build commands validated against real checkouts.
+
+**Next after merge**: verify Renovate Dependency Dashboard lists the four new anchors (cloudflared, k8s-sidecar floors; kopia, tqm versions); then wave 2 continuation (webhook, smartctl-exporter, stash, nzbget, transmission, postgres-init Go shim) one PR each per plan §5; cni-plugins deferred pending Go copy-shim design.
+
+### 16. First full distroless gate run — findings and fixes (PR #123, second iteration)
+
+First CI run with real (uncorrupted) scanner DBs. kopia: fully green both arches (melange path + web-UI smoke proven). Three images red, all diagnosed by local reproduction:
+
+- **tqm**: 20 Grype findings, all in upstream-pinned `golang.org/x/crypto v0.51.0` and `x/net v0.54.0`. Fixed by patch-level `go get` bumps in the melange build (verified locally: builds, runs, scans clean). This is the standing pattern for melange-built Go apps: bump flagged modules in-recipe, drop when upstream catches up.
+- **cloudflared** (Grype 2 / Trivy 1) and **k8s-sidecar** (Grype 2): both are *Wolfi advisory-ahead-of-package* — the advisory names a fixed apk (cloudflared 2026.6.1-r2, k8s-sidecar 2.7.3-r3) that isn't in the APKINDEX yet. Time-bounded ignores added (expire 2026-08-01) with a new "advisory-ahead-of-package" section in `.grype.yaml`/`.trivyignore.yaml`; the daily cron self-heals these the moment Wolfi publishes, after which the entries are prunable no-ops.
+
+### 15. Poisoned trivy-action DB cache broke all distroless builds on main (fixed in #123)
+
+All Distroless Build runs on main went red starting 2026-07-04 ~05:10 (pushes f36076b, 1da6d4d; schedule b160f75): the Trivy step exits 1 within ~80 ms of "Running Trivy with options", no findings, no error output. Diagnosis: trivy-action's built-in DB cache uses a repo-wide per-UTC-day key (`cache-trivy-<date>`); the workflow runs with `cancel-in-progress: true`, and a run cancelled mid-DB-write saved a ~914 MB corrupt cache that every later run that day restored. Reproduced the exact scan locally (trivy v0.70.0, same flags/ignorefile/image, fresh DB) → exit 0, clean. Fix: `cache: "false"` on the trivy-action step in `distroless-build.yaml` (inline comment documents the incident). DB re-downloads from mirror.gcr.io in seconds. If the same signature ever reappears (instant Trivy exit 1, no output): suspect a shared cache first, and note the corrupt entry also self-expires at the next UTC day rollover.
+
+Related, unresolved: `Release` workflow hit `startup_failure` on main push f36076b (05:10) — apps/ track, not investigated yet; check whether it recurs on the next apps/ push.
 
 ### 1. CVE gate softened to CRITICAL on apps/ (resolved in #13)
 

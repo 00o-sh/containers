@@ -92,3 +92,13 @@ ignore:
   # an older version of these modules.
   - vulnerability: GHSA-v778-237x-gjrc  # golang.org/x/crypto (home-assistant) — expires: 2026-08-19
   - vulnerability: GHSA-p77j-4mvh-x3m3  # google.golang.org/grpc (actions-runner, opentofu-runner) — expires: 2026-08-19
+
+  # ─── Wolfi advisory-ahead-of-package (distroless track) ─────────
+  # Wolfi publishes the security advisory (with the fixed apk version)
+  # before the rebuilt apk lands in the APKINDEX. Until the package is
+  # actually pullable, the distroless gate would block on findings we
+  # can't act on. Short-fused: the daily cron picks the fixed apk up
+  # automatically the moment Wolfi publishes it, making these no-ops.
+  - vulnerability: CVE-2026-41178       # cloudflared < 2026.6.1; Wolfi apk 2026.6.1-r2 not yet in APKINDEX (checked 2026-07-04) — expires: 2026-08-01
+  - vulnerability: GHSA-5wrp-cwcj-q835  # alias of CVE-2026-41178 (cloudflared) — expires: 2026-08-01
+  - vulnerability: GHSA-537c-gmf6-5ccf  # python `cryptography` 48.0.0 inside Wolfi's k8s-sidecar venv; fixed in k8s-sidecar 2.7.3-r3, not yet in APKINDEX (checked 2026-07-04) — expires: 2026-08-01

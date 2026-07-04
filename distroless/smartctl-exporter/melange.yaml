@@ -1,0 +1,68 @@
+package:
+  name: smartctl-exporter
+  version: "0.14.0" # renovate: datasource=github-releases depName=prometheus-community/smartctl_exporter extractVersion=^v(?<version>.*)$
+  epoch: 0
+  description: Prometheus exporter for S.M.A.R.T. disk metrics via smartctl.
+  copyright:
+    - license: Apache-2.0
+
+environment:
+  contents:
+    repositories:
+      - https://packages.wolfi.dev/os
+    keyring:
+      - https://packages.wolfi.dev/os/wolfi-signing.rsa.pub
+    packages:
+      - build-base
+      - busybox
+      - ca-certificates-bundle
+      - git
+      - go-1.26
+
+pipeline:
+  # No expected-commit — same rationale as distroless/kopia/melange.yaml:
+  # tag-follows-version keeps Renovate bumps green end-to-end.
+  - uses: git-checkout
+    with:
+      repository: https://github.com/prometheus-community/smartctl_exporter
+      tag: v${{package.version}}
+
+  - runs: |
+      # Security floor: upstream v0.14.0 pins x/crypto v0.33.0, x/net
+      # v0.35.0 and x/oauth2 v0.25.0, which carry HIGH+ fixable
+      # advisories that fail the CVE gate. Patch/minor bumps of the x/
+      # modules only — verified: builds, --version works, /metrics
+      # serves 200, grype scan clean. Drop when upstream's go.mod
+      # catches up; re-bump if the gate fires on a new advisory.
+      go get golang.org/x/crypto@v0.52.0 golang.org/x/net@v0.55.0 golang.org/x/oauth2@v0.27.0
+      go mod tidy
+
+  - runs: |
+      # ldflags mirror upstream's promu config so --version reports the
+      # real version instead of empty strings.
+      mkdir -p "${{targets.destdir}}/usr/bin"
+      LDFLAGS="-s -w \
+        -X github.com/prometheus/common/version.Version=${{package.version}} \
+        -X github.com/prometheus/common/version.Revision=$(git rev-parse HEAD) \
+        -X github.com/prometheus/common/version.Branch=HEAD"
+      CGO_ENABLED=0 go build \
+        -trimpath \
+        -ldflags "$LDFLAGS" \
+        -o "${{targets.destdir}}/usr/bin/smartctl_exporter" \
+        .
+
+  - uses: strip
+
+test:
+  environment:
+    contents:
+      repositories:
+        - https://packages.wolfi.dev/os
+      keyring:
+        - https://packages.wolfi.dev/os/wolfi-signing.rsa.pub
+      packages:
+        - busybox
+        - ca-certificates-bundle
+  pipeline:
+    - runs: |
+        smartctl_exporter --version
