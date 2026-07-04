@@ -123,4 +123,6 @@ test:
         transmission-remote --version
         transmission-init --version
         test -f /usr/share/transmission/public_html/index.html
-        unrar | head -1 | grep -qi unrar
+        # unrar's usage banner starts with a blank line — grep the whole
+        # output, not just line 1 (first CI run failed exactly there).
+        unrar | grep -qi unrar
