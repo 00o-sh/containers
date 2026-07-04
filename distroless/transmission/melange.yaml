@@ -123,6 +123,9 @@ test:
         transmission-remote --version
         transmission-init --version
         test -f /usr/share/transmission/public_html/index.html
-        # unrar's usage banner starts with a blank line — grep the whole
-        # output, not just line 1 (first CI run failed exactly there).
-        unrar | grep -qi unrar
+        # No pipes here: melange test runs with pipefail, and grep -q
+        # closing the pipe early kills unrar with SIGPIPE (exit 141 —
+        # exactly how CI run 2 failed; run 1 tripped on the banner's
+        # leading blank line instead). Capture to a file, then grep.
+        unrar > /tmp/unrar-usage.txt 2>&1 || true
+        grep -qi unrar /tmp/unrar-usage.txt
