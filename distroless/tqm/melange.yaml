@@ -1,0 +1,57 @@
+package:
+  name: tqm
+  version: "1.20.0" # renovate: datasource=github-releases depName=autobrr/tqm extractVersion=^v(?<version>.*)$
+  epoch: 0
+  description: Torrent queue manager — automated cleanup, retagging, and orphan handling for torrent clients.
+  copyright:
+    - license: MIT
+
+environment:
+  contents:
+    repositories:
+      - https://packages.wolfi.dev/os
+    keyring:
+      - https://packages.wolfi.dev/os/wolfi-signing.rsa.pub
+    packages:
+      - build-base
+      - busybox
+      - ca-certificates-bundle
+      - git
+      - go-1.26
+
+pipeline:
+  # No expected-commit — same rationale as distroless/kopia/melange.yaml:
+  # tag-follows-version keeps Renovate bumps green end-to-end.
+  - uses: git-checkout
+    with:
+      repository: https://github.com/autobrr/tqm
+      tag: v${{package.version}}
+
+  - runs: |
+      # ldflags mirror upstream's .goreleaser.yml so `tqm version`
+      # reports the real version instead of "dev".
+      mkdir -p "${{targets.destdir}}/usr/bin"
+      LDFLAGS="-s -w \
+        -X github.com/autobrr/tqm/pkg/runtime.Version=v${{package.version}} \
+        -X github.com/autobrr/tqm/pkg/runtime.GitCommit=$(git rev-parse --short HEAD)"
+      CGO_ENABLED=0 go build \
+        -trimpath \
+        -ldflags "$LDFLAGS" \
+        -o "${{targets.destdir}}/usr/bin/tqm" \
+        ./cmd/tqm
+
+  - uses: strip
+
+test:
+  environment:
+    contents:
+      repositories:
+        - https://packages.wolfi.dev/os
+      keyring:
+        - https://packages.wolfi.dev/os/wolfi-signing.rsa.pub
+      packages:
+        - busybox
+        - ca-certificates-bundle
+  pipeline:
+    - runs: |
+        tqm version

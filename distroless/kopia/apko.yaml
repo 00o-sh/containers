@@ -1,0 +1,65 @@
+contents:
+  repositories:
+    - https://packages.wolfi.dev/os
+  keyring:
+    - https://packages.wolfi.dev/os/wolfi-signing.rsa.pub
+  packages:
+    - wolfi-baselayout
+    - ca-certificates-bundle
+    - tzdata
+    # Built by the melange.yaml next to this file (Wolfi doesn't ship
+    # kopia). Version is Renovate-managed there; apko consumes whatever
+    # the local build produced.
+    - kopia
+
+accounts:
+  groups:
+    - groupname: nonroot
+      gid: 65532
+  users:
+    - username: nonroot
+      uid: 65532
+      gid: 65532
+  run-as: "65532"
+
+# Functionality parity with apps/kopia, whose entrypoint.sh defaulted to
+# web-server mode (KOPIA_WEB_ENABLED=true, port 51515): the default cmd
+# reproduces that server invocation, web UI included. Passing any args
+# replaces cmd and gives plain CLI passthrough — the exact behavior of
+# entrypoint.sh's else-branch, minus the shell. The port moves from the
+# KOPIA_WEB_PORT env (a shell-script substitution) to a cmd arg; override
+# args to change it (README §Passing Arguments).
+entrypoint:
+  command: /usr/bin/kopia
+
+cmd: server start --insecure --address 0.0.0.0:51515 --allow-extremely-dangerous-unauthenticated-server-on-the-network
+
+environment:
+  LANG: C.UTF-8
+  # Preserve the operational defaults the Alpine image set as ENVs.
+  # These are all overridable at runtime and don't require a shell.
+  KOPIA_CHECK_FOR_UPDATES: "false"
+  KOPIA_CONFIG_PATH: /config/repository.config
+  KOPIA_CACHE_DIRECTORY: /config/cache
+  KOPIA_LOG_DIR: /config/logs
+  KOPIA_PERSIST_CREDENTIALS_ON_CONNECT: "false"
+
+paths:
+  # Writable /config for the nonroot user — the hardcoded data volume
+  # path per repo convention (README §Configuration Volume). Kopia's
+  # config/cache/log ENVs above all point beneath it.
+  - path: /config
+    type: directory
+    uid: 65532
+    gid: 65532
+    permissions: 0o755
+
+archs:
+  - x86_64
+  - aarch64
+
+annotations:
+  org.opencontainers.image.source: https://github.com/00o-sh/containers
+  org.opencontainers.image.url: https://github.com/kopia/kopia
+  org.opencontainers.image.licenses: Apache-2.0
+  org.opencontainers.image.description: Kopia backup tool with embedded web UI (distroless / Wolfi)

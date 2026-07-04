@@ -163,10 +163,16 @@ jobs:
         if: steps.melange.outputs.present == 'true'
         # Test runs in a sandbox where extra tools (busybox, etc.) are allowed.
         # The final apko image stays bare.
+        # --repository-append mirrors the apko build step below — the test
+        # sandbox needs to find the just-built apk in our local packages/
+        # dir, otherwise apk can't resolve the package-under-test (e.g.
+        # `nothing provides "kopia"`). The recipe still declares Wolfi as
+        # its base repo; this flag appends the local override.
         run: |
           melange test "distroless/${{ matrix.image }}/melange.yaml" \
             --arch "${{ matrix.arch }}" \
             --keyring-append melange.rsa.pub \
+            --repository-append "${{ github.workspace }}/packages" \
             --source-dir packages
 
       - name: apko build
@@ -254,11 +260,17 @@ jobs:
         run: |-
           go test -v ./distroless/${{ matrix.image }}/...
 
-      - name: Warn if no boot smoke for ${{ matrix.image }}
+      - name: Fail if no boot smoke for ${{ matrix.image }}
+        # Boot smoke is mandatory: it's the runtime half of the update gate
+        # (structure assertions above are the static half). Without it a
+        # Renovate/Wolfi version bump could publish an image that builds
+        # but doesn't run. Every distroless image ships a container_test.go
+        # next to its apko.yaml — see distroless/README.md for the template.
         if: hashFiles(format('distroless/{0}/container_test.go', matrix.image)) == ''
         shell: bash
         run: |
-          echo "::warning::No distroless/${{ matrix.image }}/container_test.go found; skipping boot smoke. Drop a Go test next to apko.yaml to enable."
+          echo "::error::No distroless/${{ matrix.image }}/container_test.go found. Boot smoke is mandatory — add a Go test next to apko.yaml (template in distroless/README.md)."
+          exit 1
 
       - name: Compute Grype cache key
         id: grype-key
@@ -591,3 +603,33 @@ jobs:
             #### Size diff vs `:rolling`
 
             ${{ steps.size_diff.outputs.size-diff-markdown || '_No baseline yet — first build of this image. Subsequent PRs will compare against `:rolling`._' }}
+
+  alert-on-scheduled-failure:
+    # The 02:00 daily rebuild pulls fresh Wolfi packages with no PR in the
+    # loop — if a Wolfi bump breaks a build/boot smoke/CVE gate, the only
+    # signal is a failed run buried in the Actions tab. Surface it as an
+    # issue so the breakage is visible (and auto-comment on re-failures
+    # instead of piling up duplicates).
+    name: Alert on scheduled failure
+    needs: [discover, build, manifest]
+    if: always() && github.event_name == 'schedule' && contains(needs.*.result, 'failure')
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+    steps:
+      - name: File or update failure issue
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          set -euo pipefail
+          title="Nightly distroless build failed"
+          body="The scheduled distroless rebuild failed. A Wolfi package update likely broke a build, boot smoke, or CVE gate — nothing was published for the failing image(s). See the run log: ${RUN_URL}"
+          existing=$(gh issue list --state open --search "\"$title\" in:title" --json number --jq '.[0].number // empty')
+          if [ -n "$existing" ]; then
+            gh issue comment "$existing" --body "Still failing: ${RUN_URL}"
+          else
+            gh issue create --title "$title" --body "$body"
+          fi

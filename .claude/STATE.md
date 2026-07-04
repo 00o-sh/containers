@@ -2,23 +2,27 @@
 
 Live working log. Future Claude: **read this first**, then update it as you go (mark items resolved, add new threads, prune stale ones). If this file contradicts the repo, trust the repo and fix the file.
 
-**Last updated:** 2026-07-04 (session: fleet-wide distroless migration plan authored)
+**Last updated:** 2026-07-04 (session: distroless plan + Wave 0/1/2 implementation on one PR)
 
 ---
 
 ## Current branch
 
-`claude/distroless-images-ci-plan-9ke00v` — adds `docs/distroless-plan.md`, the full plan for giving every apps/ image a distroless equivalent with Renovate-update validation in CI.
+`claude/distroless-images-ci-plan-9ke00v` (PR #123) — the fleet-wide distroless plan (`docs/distroless-plan.md`) plus its Wave 0 groundwork and first three images, implemented in the same PR at the operator's request to take full lead.
 
 ## Open threads
 
-### 12. Fleet-wide distroless migration plan (this PR)
+### 12. Fleet-wide distroless migration — plan + Waves 0–2 partial (PR #123)
 
-`docs/distroless-plan.md` is the source of truth. Summary: 36 apps audited against the live Wolfi APKINDEX (2026-07-04). 3 are Wolfi-shipped (apko-only), ~9 are single-binary melange source builds, 7 are .NET/JVM prebuilt-fetch, 8 are Python/Node venv-pattern recipes, 4 are hard cases needing spikes (qbittorrent×2, deluge, home-assistant), 6 are exempt with rationale (busybox, actions-runner, esphome, plex×2, emby).
+`docs/distroless-plan.md` is the source of truth (audit of all 36 apps against live Wolfi APKINDEX, wave ordering, exemptions). Landed in this PR beyond the doc:
 
-Update-validation design: floor pins (`pkg>=X # renovate:`) in apko.yaml for Wolfi-shipped apps; `git-checkout` + `expected-commit` with a digest-capturing Renovate regex for source builds; a sha256-fixup workflow for prebuilt fetches. All routes end in a PR gated by the existing build+assert+smoke+scan pipeline with automerge-on-green. Wave 0 (CI groundwork: renovate manager extensions, boot-smoke warn→fail flip, cron-failure issue alerting, templates) precedes any new image.
+- **Wave 0 CI groundwork**: `.renovaterc.json5` — apko floor-pin matchString (`- pkg>=X # renovate:`), `extractVersion` support on the melange/apko manager, distroless packageRules (release-style commits, labels, automerge with `ignoreTests: false`). `distroless-build.yaml` — boot-smoke warn→**fail**, `--repository-append` on melange test (PR #21's fix), cron-failure job that files/updates an issue. `distroless/README.md` — conventions, templates, melange gotchas (PR #21's four lessons), exemptions.
+- **Images**: `k8s-sidecar` (apko-only, Wolfi pkg, venv import smoke; SCRIPT-shell-hook parity caveat flagged in recipe), `kopia` (melange, revived from PR #21 — **with web UI**, see below), `tqm` (melange, ldflags mirror upstream goreleaser). Floor pin retro-fitted on `cloudflared`.
+- **Key design decision — no expected-commit/expected-sha256** in melange recipes: nothing can refresh them on Renovate bumps (Mend cloud blocks postUpgradeTasks; `GITHUB_TOKEN` pushes don't trigger CI so a fixup bot wedges automerge; Renovate digest-capture resolves annotated tags to the tag object, not the peeled commit melange checks — PR #21 had exactly this bug: `dd5b7ba9` is the v0.23.0 tag object, peeled commit is `981d5f95`). Tag-follows-version (`tag: v${{package.version}}`) keeps bumps green; posture matches apps/' unchecksummed tarball curls. Plan §2b/§2c has the full rationale.
+- **Operator directive (2026-07-04): feature parity is mandatory — no functionality lost, ever.** Kopia's `nohtmlui` shortcut from PR #21 violated it; the web UI is embedded via the `htmluibuild` Go module (no node toolchain needed) and the image defaults to server mode on 51515 exactly like apps/kopia (args override → CLI passthrough). Principle recorded in distroless/README.md conventions + plan §4.0. Applies to every future wave (e.g. sabnzbd must build unrar, stash keeps python scrapers).
+- **Local verification done**: apko builds for k8s-sidecar + cloudflared (floor-pin syntax confirmed against real resolver), structure assertions replicated, k8s-sidecar boot smoke green via testcontainers, tqm + kopia go-build commands validated against real checkouts.
 
-Next action after this merges: Wave 0 PRs, then revive PR #21 (kopia) as the first melange image.
+**Next after merge**: verify Renovate Dependency Dashboard lists the four new anchors (cloudflared, k8s-sidecar floors; kopia, tqm versions); then wave 2 continuation (webhook, smartctl-exporter, stash, nzbget, transmission, postgres-init Go shim) one PR each per plan §5; cni-plugins deferred pending Go copy-shim design.
 
 ### 1. CVE gate softened to CRITICAL on apps/ (resolved in #13)
 
