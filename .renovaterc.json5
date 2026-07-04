@@ -83,9 +83,7 @@
     plex: {
       defaultRegistryUrlTemplate: "https://plex.tv/api/downloads/5.json",
       format: "json",
-      transformTemplates: [
-        '{"releases":[{"version": computer.Linux.version}]}',
-      ],
+      transformTemplates: ['{"releases":[{"version": computer.Linux.version}]}'],
     },
   },
   packageRules: [
@@ -127,6 +125,14 @@
       semanticCommitScope: "distroless",
     },
     {
+      description: [
+        "Group the Go version: the go.mod directive (gomod) and the mise toolchain pin bump together in one PR",
+      ],
+      matchManagers: ["gomod", "mise"],
+      matchDepNames: ["go"],
+      groupName: "golang",
+    },
+    {
       description: ["Release Rules for App Updates"],
       addLabels: ["app/{{parentDir}}"],
       additionalBranchPrefix: "{{parentDir}}-",
@@ -147,27 +153,27 @@
       description: ["Allowed Ubuntu Version for Base Images"],
       matchDatasources: ["docker"],
       matchPackageNames: ["/ubuntu/"],
-      allowedVersions: "/24\\.04/",
+      allowedVersions: "/26\\.04/",
     },
     {
       description: ["Allowed Alpine Version for Base Images"],
       matchDatasources: ["docker"],
       matchFileNames: ["**/Dockerfile"],
       matchPackageNames: ["/alpine/"],
-      allowedVersions: "/3\\.23/",
+      allowedVersions: "/3\\.24/",
     },
     {
       description: ["Allowed Alpine Version for Postgres Base Images"],
       matchDatasources: ["docker"],
       matchPackageNames: ["/postgres/"],
-      allowedVersions: "/alpine3\\.23/",
+      allowedVersions: "/alpine3\\.24/",
     },
     {
       description: ["Allowed Python Version for Alpine Base Images"],
       matchDatasources: ["docker"],
       matchFileNames: ["**/Dockerfile"],
       matchPackageNames: ["/python/"],
-      allowedVersions: "/3\\.14-alpine3\\.23/",
+      allowedVersions: "/3\\.14-alpine3\\.24/",
     },
     {
       description: ["Allowed Python Version for Debian Base Images"],
@@ -188,7 +194,7 @@
       matchDatasources: ["docker"],
       matchFileNames: ["apps/nzbhydra2/Dockerfile"],
       matchPackageNames: ["/amazoncorretto/"],
-      allowedVersions: "/17-alpine3\\.22/",
+      allowedVersions: "/17-alpine3\\.24/",
     },
   ],
 }

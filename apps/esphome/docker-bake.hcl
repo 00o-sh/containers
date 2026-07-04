@@ -6,15 +6,11 @@ variable "APP" {
 
 variable "VERSION" {
   // renovate: datasource=pypi depName=esphome
-  default = "2026.5.3"
+  default = "2026.6.4"
 }
 
 variable "SOURCE" {
   default = "https://github.com/esphome/esphome"
-}
-
-variable "FLAVOR" {
-  default = "debian"
 }
 
 group "default" {

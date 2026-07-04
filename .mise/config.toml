@@ -3,20 +3,27 @@ experimental = true
 unix_default_inline_shell_args = "bash -c -o errexit -o pipefail -o nounset"
 
 [tools]
+gh = "2.96.0"
+go = "1.26.4"
+hadolint = "2.14.0"
+jq = "1.8.2"
+lefthook = "2.1.9"
+node = "26.4.0"
+oxfmt = "0.57.0"
+regctl = "0.11.5"
+shellcheck = "0.11.0"
+yq = "4.53.3"
+zizmor = "1.26.1"
+# Fork additions — the distroless toolchain (apko/melange build Wolfi images,
+# grype scans, cosign signs) plus local-dev conveniences. Kept as aqua: specs
+# so the .renovaterc.json5 distroless-grouping packageRule (which matches
+# anchore/grype, chainguard-dev/apko, chainguard-dev/melange, sigstore/cosign)
+# keeps grouping their updates.
 "aqua:anchore/grype" = "0.115.0"
 "aqua:chainguard-dev/apko" = "1.2.15"
 "aqua:chainguard-dev/melange" = "0.52.1"
-"aqua:cli/cli" = "2.95.0"
-"aqua:evilmartians/lefthook" = "2.1.9"
-"aqua:jqlang/jq" = "1.8.1"
-"aqua:koalaman/shellcheck" = "0.11.0"
-"aqua:mikefarah/yq" = "4.53.2"
 "aqua:sigstore/cosign" = "3.1.1"
 "aqua:tmux/tmux-builds" = "3.6a"
-"aqua:zizmorcore/zizmor" = "1.26.1"
-claude-code = "latest"
-"go" = "1.26.4"
-"node" = "24.18.0"
 
 [tasks.local-build]
 description = "Build and test an app locally"
@@ -25,7 +32,7 @@ usage = '''
 arg "<app>"
 '''
 run = '''
-rsync -aqIP {{config_root}}/include/ {{config_root}}/apps/"$usage_app"/ .
+rsync -aqIP {{config_root}}/apps/"$usage_app"/ .
 docker buildx bake --no-cache --metadata-file docker-bake.json --set=*.output=type=docker --load
 TEST_IMAGE="$(jq -r '."image-local"."image.name" | sub("^docker.io/library/"; "")' docker-bake.json)" go test -v {{config_root}}/apps/"$usage_app"/...
 '''
@@ -42,13 +49,9 @@ run = 'gh workflow run release.yaml -f app="$usage_app" -f release="${usage_rele
 hide = true
 run = '''
 find "{{config_root}}/apps" -mindepth 1 -maxdepth 1 -type d -printf "%f\n" | while IFS= read -r app; do
-    yq -i ". += [{\"name\": \"app/$app\", \"color\": \"027fa0\"}]" {{config_root}}/.github/labels.yaml
     yq -i ". += {\"app/$app\": [{\"changed-files\": [{\"any-glob-to-any-file\": [\"apps/$app/**\"]}]}]}" {{config_root}}/.github/labeler.yaml
 done
 '''
 
 [hooks]
-postinstall = [
-  "mkdir -p {{config_root}}/.cache",
-  "lefthook install"
-]
+postinstall = ["mkdir -p {{config_root}}/.cache", "lefthook install"]

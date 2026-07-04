@@ -1,7 +1,8 @@
 # syntax=docker/dockerfile:1
 
-FROM docker.io/library/alpine:3.23
+FROM docker.io/library/alpine:3.24
 ARG VERSION
+# hadolint ignore=DL3002
 USER root
 RUN \
     apk add --no-cache \

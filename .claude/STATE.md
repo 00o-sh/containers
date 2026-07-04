@@ -2,13 +2,15 @@
 
 Live working log. Future Claude: **read this first**, then update it as you go (mark items resolved, add new threads, prune stale ones). If this file contradicts the repo, trust the repo and fix the file.
 
-**Last updated:** 2026-05-19 (session: apps/ CVE gate set to report-only on both Grype + Trivy)
+**Last updated:** 2026-07-04 (session: helm postUpgradeTasks fix merged; upstream sync PR #122)
 
 ---
 
 ## Current branch
 
-`chore/apps-cve-gate-report-only`. PRs #22 + #25 merged. PR #21 (kopia) rebased on top, MERGEABLE, CI running. This PR disables the apps/ CVE gate entirely (Grype `fail-build: false`, Trivy `exit-code: "0"`) — distroless gate stays strict.
+`chore/upstream-sync-2026-07-04` (PR #122) — merges upstream `home-operations/containers` (189 commits, 169 files). Resolves 23 conflicts preserving fork divergences; supersedes the un-resolvable cross-fork PR #121 (its head is upstream's `main`). See thread #12 for the full resolution log.
+
+Prior: `chore/apps-cve-gate-report-only` (PRs #22 + #25 + #21) merged. Apps/ CVE gate is report-only (Grype `fail-build: false`, Trivy `exit-code: "0"`); distroless gate stays strict.
 
 ## Open threads
 
@@ -159,6 +161,29 @@ All three are dormant on the operator's cluster (only `cloudflared-distroless` c
 `chore/mise-dev-tools`, `feat/apps-cve-scan`, `feat/apps-flavor-suffix`, `feat/distroless-cloudflared-pilot`, `feat/distroless-cve-visibility`, `feat/distroless-image-suffix-and-cosign-digest`, `feat/distroless-sandbox-and-attest`, `feat/vuln-scan-distroless`, `fix/distroless-version-from-sbom`, `fix/vuln-scan-tolerate-missing`, `fix/vuln-scan-outcome-guard`, plus `fix/bot-app-trigger-bypass` and `fix/apps-cve-gate-critical` (this session's PRs, now merged).
 
 Confirm before deleting any (the operator may use them as historical reference points).
+
+### 12. Upstream sync — PR #122 (this session)
+
+Merge of `home-operations/containers` main (behind auto-PR #121; #121 can't be conflict-resolved because its head is upstream's `main`). Landed on `chore/upstream-sync-2026-07-04` → PR #122 into the fork's main.
+
+**Conflict resolutions (23 files):**
+
+- App version bumps (11 `docker-bake.hcl`) + `go.mod`/`go.sum` → took upstream (`go build ./...` passes, `go mod tidy` no-op).
+- `apps/tqm` → accepted upstream deletion. `label-sync.yaml` → accepted deletion (no refs). `app-size-diff` action → **kept** (live dep of fork-only `distroless-build.yaml`).
+- `include/.dockerignore` → deleted with upstream (whole `include/` mechanism gone); dropped the now-dead include-rsync step from `app-builder.yaml` and the include rsync from the mise `local-build` task.
+- `app-builder.yaml` → kept fork version (CVE scan job, report-only gate, SARIF, sticky comment, `image_name`/FLAVOR naming, size-diff, bot fallback); only delta vs fork is the include-step removal. **Upstream's app-builder refactor (APP/REPO_OWNER env-vars, `type=docker` non-release builds) was NOT taken** — conflicts with fork jobs; cherry-pick later if wanted.
+- `labeler.yaml`, `retry-release.yaml` → kept neutered triggers (`workflow_dispatch` only). `pull-request.yaml` → kept fork perms + `secrets: inherit`. `vulnerability-scan.yaml` → kept `steps.scan.outcome` guard.
+- `.renovaterc.json5` → kept repology-disable + distroless-grouping + helm postUpgradeTasks; added upstream's golang-grouping rule.
+- `.mise.toml` → `.mise/config.toml` (upstream rename). Tool list unioned: upstream base + fork distroless toolchain (apko/melange/grype/cosign, kept as `aqua:` specs for the Renovate grouping rule) + tmux.
+- `apps/emby/Dockerfile` → took upstream `libexpat1`; fork's `libicu74`/`libssl3t64`/`liblttng-ust1t64` are Ubuntu 24.04 names, won't resolve on upstream's new `ubuntu:26.04` base.
+
+**CI fix (mise lockfile):** upstream's merge introduced `.mise/mise.lock` (the fork had none). CI runs `mise install --locked`, which strictly requires every config tool be pinned in the lock — the unioned `aqua:` tools weren't, so every mise-setup job failed (Go-Vet, Hadolint, all Plan jobs). Regenerated the lock with `mise lock` (all 16 tools, checksummed per-platform; `oxfmt` is npm-backend so version-pinned only). **Dropped `claude-code = "latest"`** from the committed mise config — dev-only tool, pinned to `latest`, and its lock entry had no checksum (google-storage backend). Operator can keep it in a local/global mise config instead.
+
+**Watch:** if future syncs re-add mise tools, re-run `mise lock` before pushing or `--locked` CI fails.
+
+### 13. Helm postUpgradeTasks fix — PR #120 (merged, this session)
+
+Upstream `home-operations/renovate-config` default preset extends `helmPostUpgradeTasks.json5` (runs `helm-docs`/`helm-schema`). Mend-hosted Cloud blocks these (admin-only `allowedCommands` allowlist), flagging an "Artifact update problem" on ~every PR. This repo has no charts. Fixed by overriding `postUpgradeTasks: { commands: [], fileFilters: [] }` in `.renovaterc.json5`.
 
 ## Recently closed (last 7 days)
 
