@@ -12,6 +12,11 @@ Live working log. Future Claude: **read this first**, then update it as you go (
 
 ## Open threads
 
+### 17. Wave 2 continuation post-#129 (current branch)
+
+cloudflared arc closed via #129 (source build shipping 2026.6.1, retry workflow, epoch-99 advisory-collision fix — see PR for the three-incident chain). Current increment: **transmission** — source build (C/cmake + vendored submodules + npm web UI), unrar from rarlab source (sha256-pinned fetch; static side-tool, not the Renovate anchor), 7zip from Wolfi, and a repo-local Go shim replacing the bash+minijinja entrypoint. Key empirical finding: apps/transmission's settings.json.j2 rendered INVALID JSON (verified against the real minijinja engine: unquoted strings, dangling values for unset keys) — the env-config feature never worked; the shim implements it correctly (typed values, unset no-default keys omitted, fail-fast validation). All components pre-validated in local Wolfi containers: daemon 4.1.3 compiles, unrar 7.1.6 compiles, shim renders valid JSON with all semantic checks passing; web-UI (npm) build validated separately. Remaining wave-2 after transmission: stash, nzbget, irqbalance decision.
+
+
 ### 14. Fleet-wide distroless migration — plan + Waves 0–2 partial (PR #123)
 
 `docs/distroless-plan.md` is the source of truth (audit of all 36 apps against live Wolfi APKINDEX, wave ordering, exemptions). Landed in this PR beyond the doc:

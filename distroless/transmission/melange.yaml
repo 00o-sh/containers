@@ -1,0 +1,126 @@
+package:
+  name: transmission
+  version: "4.1.3" # renovate: datasource=github-releases depName=transmission/transmission
+  # Epoch 99 for the same reason as distroless/cloudflared: scanners
+  # match apk packages against distro advisories by name, and a -r0
+  # source build of an already-fixed upstream version can compare
+  # "older" than an advisory's fixed-in "-rN" and false-positive.
+  epoch: 99
+  description: Transmission BitTorrent daemon with web UI, built from source; bundles the env-driven settings shim and unrar/7zip extras.
+  copyright:
+    - license: GPL-2.0-or-later
+
+# Why source-built: Wolfi doesn't ship transmission at all, and
+# apps/transmission consumed Alpine *edge* apks (a moving target with
+# repology tracking disabled on this fork — thread #9). Building from
+# the upstream tag gives Renovate a direct release feed with the full
+# gate. The bundled web UI is built via npm (ENABLE_WEB=ON), matching
+# the functionality of Alpine's transmission-web.
+environment:
+  contents:
+    repositories:
+      - https://packages.wolfi.dev/os
+    keyring:
+      - https://packages.wolfi.dev/os/wolfi-signing.rsa.pub
+    packages:
+      - build-base
+      - busybox
+      - ca-certificates-bundle
+      - cmake
+      - curl-dev
+      - gettext-dev
+      - git
+      - go-1.26
+      - libdeflate-dev
+      - libevent-dev
+      - libpsl-dev
+      - nodejs-24
+      - npm
+      - openssl-dev
+      - python3
+      - samurai
+      - zlib-dev
+
+pipeline:
+  # Checkout into a subdirectory: the workflow mounts this image dir as
+  # the melange workspace (--source-dir convention, because src/ holds
+  # the repo-local settings shim), so the workspace root is not empty.
+  - uses: git-checkout
+    with:
+      repository: https://github.com/transmission/transmission
+      tag: ${{package.version}}
+      destination: transmission-src
+
+  - runs: |
+      # miniupnpc/libnatpmp/dht/libutp are vendored as submodules (not
+      # available as Wolfi packages).
+      cd transmission-src
+      git submodule update --init --recursive --depth 1
+
+  - runs: |
+      # Env-driven settings shim (see src/main.go): renders
+      # /config/settings.json from TRANSMISSION__* vars, then execs the
+      # daemon. Replaces apps/transmission's bash + minijinja-cli
+      # entrypoint, fixing its invalid-JSON rendering along the way.
+      mkdir -p "${{targets.destdir}}/usr/bin"
+      cd src
+      CGO_ENABLED=0 go build \
+        -trimpath \
+        -ldflags "-s -w -X main.version=${{package.version}}" \
+        -o "${{targets.destdir}}/usr/bin/transmission-init" \
+        .
+
+  # unrar for torrent-done tooling parity with apps/transmission (which
+  # copied linuxserver's build). Not in Wolfi; rarlab license permits
+  # redistribution of unmodified-source builds. Static version pin —
+  # slow-moving side tool, bumped manually; NOT the image's Renovate
+  # anchor (that's package.version above), so the frozen sha256 is fine.
+  - uses: fetch
+    with:
+      uri: https://www.rarlab.com/rar/unrarsrc-7.1.6.tar.gz
+      expected-sha256: ca5e1da37dd6fa1b78bb5ed675486413f79e4a917709744aa04b6f93dfd914f0
+      strip-components: 0
+      extract: true
+
+  - runs: |
+      cd unrar
+      make -s -j"$(nproc)"
+      install -Dm755 unrar "${{targets.destdir}}/usr/bin/unrar"
+
+  - runs: |
+      cd transmission-src
+      cmake -B build -G Ninja \
+        -DCMAKE_BUILD_TYPE=Release \
+        -DCMAKE_INSTALL_PREFIX=/usr \
+        -DENABLE_DAEMON=ON \
+        -DENABLE_CLI=ON \
+        -DENABLE_UTILS=ON \
+        -DENABLE_WEB=ON \
+        -DENABLE_GTK=OFF \
+        -DENABLE_QT=OFF \
+        -DENABLE_MAC=OFF \
+        -DENABLE_TESTS=OFF \
+        -DINSTALL_DOC=OFF
+      cmake --build build
+      DESTDIR="${{targets.destdir}}" cmake --install build
+
+  - uses: strip
+
+test:
+  environment:
+    contents:
+      repositories:
+        - https://packages.wolfi.dev/os
+      keyring:
+        - https://packages.wolfi.dev/os/wolfi-signing.rsa.pub
+      packages:
+        - busybox
+        - ca-certificates-bundle
+  pipeline:
+    - runs: |
+        transmission-daemon --version
+        transmission-daemon --version 2>&1 | grep -q "${{package.version}}"
+        transmission-remote --version
+        transmission-init --version
+        test -f /usr/share/transmission/public_html/index.html
+        unrar | head -1 | grep -qi unrar
