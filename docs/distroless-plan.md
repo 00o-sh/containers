@@ -14,7 +14,7 @@ The distroless pipeline (`.github/workflows/distroless-build.yaml`) is already g
 |---|---|
 | `distroless/<app>/apko.yaml` | Image discovered by build matrix, daily 02:00 CVE-rebuild cron, and `vulnerability-scan.yaml` |
 | `distroless/<app>/melange.yaml` (optional) | melange build + `melange test` run before apko; local apk repo appended |
-| `distroless/<app>/container_test.go` | Boot smoke via `testhelpers` runs against the freshly built per-arch image (`TEST_IMAGE` override) |
+| `distroless/<app>/container_test.go` | Boot smoke via the `tests` helper package runs against the freshly built per-arch image (`TEST_IMAGE` override) |
 
 Per-PR gate already in place, per image × {x86_64, aarch64}: apko/melange build → structure assertions (non-root, **no shell binary**, entrypoint set) → boot smoke → Grype + Trivy fail-on-HIGH+-fixable → `:sandbox` multi-arch manifest + provenance attestation + size-diff sticky comment. On merge/cron: release tag set derived from the SBOM's `versionInfo`.
 
@@ -197,7 +197,7 @@ Tally: 2 shipped + 3 + 9 + 7 + 8 + 4 hard + 6 exempt = 39 rows ≈ 36 apps + clo
 
 0. **Feature parity is mandatory** (operator directive, 2026-07-04): the distroless variant must not lose functionality the `apps/` flavor had — no CLI-only builds, no degraded modes. Env-switched `entrypoint.sh` defaults become the image's `cmd:`; args override for the other branch. Where parity is impossible, exempt the app instead of shipping a reduced image.
 1. **`container_test.go` is mandatory.** Flip the existing "Warn if no boot smoke" step in `distroless-build.yaml` to a hard failure (both current images already have tests, so this can land immediately in Wave 0).
-2. **Long-running services get `TestHTTPEndpoint`**, not just `--version` — a Renovate bump that breaks runtime config/migrations only shows up when the service actually serves. CLI tools (`kopia`, `tqm`, `kubectl`, `cloudflared`) keep `TestCommandSucceeds`.
+2. **Long-running services get `RequireHTTPEndpoint`**, not just `--version` — a Renovate bump that breaks runtime config/migrations only shows up when the service actually serves. CLI tools (`kopia`, `tqm`, `kubectl`, `cloudflared`) keep `RequireCommandSucceeds`.
 3. **melange recipes get `test:` blocks** — functional check in the sandbox (where busybox is allowed) before image assembly.
 4. **Structure assertions stay load-bearing** (non-root, no shell, entrypoint). Any exception (irqbalance's root requirement) is an explicit per-image allowlist in the workflow step with an inline rationale comment — never a global soften.
 5. **Writable state:** apps needing `/config` get it created via apko `paths:` with `uid/gid 65532` ownership; the HTTP smoke implicitly verifies the app can write there on first boot.

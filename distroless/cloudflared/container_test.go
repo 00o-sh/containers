@@ -3,10 +3,10 @@ package main
 import (
 	"testing"
 
-	"github.com/home-operations/containers/testhelpers"
+	helpers "github.com/home-operations/containers/tests"
 )
 
 func Test(t *testing.T) {
-	image := testhelpers.GetTestImage("ghcr.io/00o-sh/cloudflared-distroless:rolling")
-	testhelpers.TestCommandSucceeds(t, image, nil, "/usr/bin/cloudflared", "--version")
+	image := helpers.GetTestImage("ghcr.io/00o-sh/cloudflared-distroless:rolling")
+	helpers.RequireCommandSucceeds(t, image, nil, "/usr/bin/cloudflared", "--version")
 }

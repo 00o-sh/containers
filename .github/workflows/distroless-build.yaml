@@ -36,7 +36,7 @@ permissions:
 
 env:
   REGISTRY_NAMESPACE: ghcr.io/${{ github.repository_owner }}
-  MELANGE_VERSION: v0.52.0 # renovate: datasource=github-releases depName=chainguard-dev/melange
+  MELANGE_VERSION: v0.56.0 # renovate: datasource=github-releases depName=chainguard-dev/melange
   # Renovate will pin a digest (`@sha256:...`) on first run via pinDigests.
   APKO_IMAGE: ghcr.io/wolfi-dev/sdk:latest # renovate: datasource=docker depName=ghcr.io/wolfi-dev/sdk
 
@@ -317,6 +317,16 @@ jobs:
           exit-code: "1"
           hide-progress: true
           trivyignores: .trivyignore.yaml
+          # The action's built-in actions/cache for the Trivy DB is
+          # disabled deliberately. Its key is shared repo-wide per UTC day
+          # (cache-trivy-<date>), and this workflow runs with
+          # cancel-in-progress: true — a run cancelled mid-DB-write saves
+          # a corrupt DB that every later run that day restores, making
+          # trivy exit 1 instantly with no findings (2026-07-04 incident:
+          # all main builds red while the identical scan passed with a
+          # fresh DB). The DB download is ~100MB from mirror.gcr.io and
+          # takes seconds; correctness beats the cache here.
+          cache: "false"
 
       - name: Upload Trivy SARIF to Security tab
         if: always() && hashFiles(format('trivy-{0}.sarif', matrix.arch)) != ''

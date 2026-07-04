@@ -3,12 +3,12 @@ package main
 import (
 	"testing"
 
-	"github.com/home-operations/containers/testhelpers"
+	helpers "github.com/home-operations/containers/tests"
 )
 
 func TestVersion(t *testing.T) {
-	image := testhelpers.GetTestImage("ghcr.io/00o-sh/kopia-distroless:rolling")
-	testhelpers.TestCommandSucceeds(t, image, nil, "/usr/bin/kopia", "--version")
+	image := helpers.GetTestImage("ghcr.io/00o-sh/kopia-distroless:rolling")
+	helpers.RequireCommandSucceeds(t, image, nil, "/usr/bin/kopia", "--version")
 }
 
 // The image's default cmd is server mode with the embedded web UI
@@ -19,6 +19,6 @@ func TestVersion(t *testing.T) {
 // runtime). Asserting the 401 proves the server boots, binds 51515,
 // and the UI/auth stack responds — with an empty /config.
 func TestServerUI(t *testing.T) {
-	image := testhelpers.GetTestImage("ghcr.io/00o-sh/kopia-distroless:rolling")
-	testhelpers.TestHTTPEndpoint(t, image, testhelpers.HTTPTestConfig{Port: "51515", StatusCode: 401}, nil)
+	image := helpers.GetTestImage("ghcr.io/00o-sh/kopia-distroless:rolling")
+	helpers.RequireHTTPEndpoint(t, image, helpers.HTTPTestConfig{Port: "51515", StatusCode: 401}, nil)
 }

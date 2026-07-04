@@ -1,6 +1,6 @@
 package:
   name: kopia
-  version: "0.23.0" # renovate: datasource=github-releases depName=kopia/kopia extractVersion=^v(?<version>.*)$
+  version: "0.23.1" # renovate: datasource=github-releases depName=kopia/kopia extractVersion=^v(?<version>.*)$
   epoch: 0
   description: Cross-platform backup tool — fast incremental backups, client-side end-to-end encryption, compression, and dedup.
   copyright:

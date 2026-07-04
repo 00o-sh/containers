@@ -69,20 +69,22 @@ package main
 import (
 	"testing"
 
-	"github.com/home-operations/containers/testhelpers"
+	helpers "github.com/home-operations/containers/tests"
 )
 
 func Test(t *testing.T) {
-	image := testhelpers.GetTestImage("ghcr.io/00o-sh/<app>-distroless:rolling")
-	testhelpers.TestCommandSucceeds(t, image, nil, "/usr/bin/<app>", "--version")
+	image := helpers.GetTestImage("ghcr.io/00o-sh/<app>-distroless:rolling")
+	helpers.RequireCommandSucceeds(t, image, nil, "/usr/bin/<app>", "--version")
 }
 ```
 
 Services — prove it actually serves (catches config/migration breaks that `--version` can't):
 
 ```go
-testhelpers.TestHTTPEndpoint(t, image, testhelpers.HTTPTestConfig{Port: "<port>"}, nil)
+helpers.RequireHTTPEndpoint(t, image, helpers.HTTPTestConfig{Port: "<port>"}, nil)
 ```
+
+Note: `RequireFileExists` execs `test -f` and therefore needs a shell-ful image — it does not work on distroless images; assert file presence some other way (e.g. run the binary itself).
 
 `TEST_IMAGE` overrides the default ref — CI sets it to the just-built `:verify-<arch>` tag; set it locally to test your own build.
 

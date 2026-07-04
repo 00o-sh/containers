@@ -2,17 +2,17 @@
 
 Live working log. Future Claude: **read this first**, then update it as you go (mark items resolved, add new threads, prune stale ones). If this file contradicts the repo, trust the repo and fix the file.
 
-**Last updated:** 2026-07-04 (session: distroless plan + Wave 0/1/2 implementation on one PR)
+**Last updated:** 2026-07-04 (session: distroless plan + Wave 0/1/2 implementation on PR #123; merged main's upstream sync #122 into the branch)
 
 ---
 
 ## Current branch
 
-`claude/distroless-images-ci-plan-9ke00v` (PR #123) — the fleet-wide distroless plan (`docs/distroless-plan.md`) plus its Wave 0 groundwork and first three images, implemented in the same PR at the operator's request to take full lead.
+`claude/distroless-images-ci-plan-9ke00v` (PR #123) — the fleet-wide distroless plan (`docs/distroless-plan.md`) plus its Wave 0 groundwork and first three images, implemented in the same PR at the operator's request to take full lead. Rebased-by-merge on main after the upstream sync (#122, thread #12) landed mid-flight: tests ported to the renamed `tests` helper package, kopia bumped to 0.23.1, trivy-action cache disabled (thread #15).
 
 ## Open threads
 
-### 12. Fleet-wide distroless migration — plan + Waves 0–2 partial (PR #123)
+### 14. Fleet-wide distroless migration — plan + Waves 0–2 partial (PR #123)
 
 `docs/distroless-plan.md` is the source of truth (audit of all 36 apps against live Wolfi APKINDEX, wave ordering, exemptions). Landed in this PR beyond the doc:
 
@@ -23,6 +23,12 @@ Live working log. Future Claude: **read this first**, then update it as you go (
 - **Local verification done**: apko builds for k8s-sidecar + cloudflared (floor-pin syntax confirmed against real resolver), structure assertions replicated, k8s-sidecar boot smoke green via testcontainers, tqm + kopia go-build commands validated against real checkouts.
 
 **Next after merge**: verify Renovate Dependency Dashboard lists the four new anchors (cloudflared, k8s-sidecar floors; kopia, tqm versions); then wave 2 continuation (webhook, smartctl-exporter, stash, nzbget, transmission, postgres-init Go shim) one PR each per plan §5; cni-plugins deferred pending Go copy-shim design.
+
+### 15. Poisoned trivy-action DB cache broke all distroless builds on main (fixed in #123)
+
+All Distroless Build runs on main went red starting 2026-07-04 ~05:10 (pushes f36076b, 1da6d4d; schedule b160f75): the Trivy step exits 1 within ~80 ms of "Running Trivy with options", no findings, no error output. Diagnosis: trivy-action's built-in DB cache uses a repo-wide per-UTC-day key (`cache-trivy-<date>`); the workflow runs with `cancel-in-progress: true`, and a run cancelled mid-DB-write saved a ~914 MB corrupt cache that every later run that day restored. Reproduced the exact scan locally (trivy v0.70.0, same flags/ignorefile/image, fresh DB) → exit 0, clean. Fix: `cache: "false"` on the trivy-action step in `distroless-build.yaml` (inline comment documents the incident). DB re-downloads from mirror.gcr.io in seconds. If the same signature ever reappears (instant Trivy exit 1, no output): suspect a shared cache first, and note the corrupt entry also self-expires at the next UTC day rollover.
+
+Related, unresolved: `Release` workflow hit `startup_failure` on main push f36076b (05:10) — apps/ track, not investigated yet; check whether it recurs on the next apps/ push.
 
 ### 1. CVE gate softened to CRITICAL on apps/ (resolved in #13)
 
@@ -171,6 +177,29 @@ All three are dormant on the operator's cluster (only `cloudflared-distroless` c
 `chore/mise-dev-tools`, `feat/apps-cve-scan`, `feat/apps-flavor-suffix`, `feat/distroless-cloudflared-pilot`, `feat/distroless-cve-visibility`, `feat/distroless-image-suffix-and-cosign-digest`, `feat/distroless-sandbox-and-attest`, `feat/vuln-scan-distroless`, `fix/distroless-version-from-sbom`, `fix/vuln-scan-tolerate-missing`, `fix/vuln-scan-outcome-guard`, plus `fix/bot-app-trigger-bypass` and `fix/apps-cve-gate-critical` (this session's PRs, now merged).
 
 Confirm before deleting any (the operator may use them as historical reference points).
+
+### 12. Upstream sync — PR #122 (this session)
+
+Merge of `home-operations/containers` main (behind auto-PR #121; #121 can't be conflict-resolved because its head is upstream's `main`). Landed on `chore/upstream-sync-2026-07-04` → PR #122 into the fork's main.
+
+**Conflict resolutions (23 files):**
+
+- App version bumps (11 `docker-bake.hcl`) + `go.mod`/`go.sum` → took upstream (`go build ./...` passes, `go mod tidy` no-op).
+- `apps/tqm` → accepted upstream deletion. `label-sync.yaml` → accepted deletion (no refs). `app-size-diff` action → **kept** (live dep of fork-only `distroless-build.yaml`).
+- `include/.dockerignore` → deleted with upstream (whole `include/` mechanism gone); dropped the now-dead include-rsync step from `app-builder.yaml` and the include rsync from the mise `local-build` task.
+- `app-builder.yaml` → kept fork version (CVE scan job, report-only gate, SARIF, sticky comment, `image_name`/FLAVOR naming, size-diff, bot fallback); only delta vs fork is the include-step removal. **Upstream's app-builder refactor (APP/REPO_OWNER env-vars, `type=docker` non-release builds) was NOT taken** — conflicts with fork jobs; cherry-pick later if wanted.
+- `labeler.yaml`, `retry-release.yaml` → kept neutered triggers (`workflow_dispatch` only). `pull-request.yaml` → kept fork perms + `secrets: inherit`. `vulnerability-scan.yaml` → kept `steps.scan.outcome` guard.
+- `.renovaterc.json5` → kept repology-disable + distroless-grouping + helm postUpgradeTasks; added upstream's golang-grouping rule.
+- `.mise.toml` → `.mise/config.toml` (upstream rename). Tool list unioned: upstream base + fork distroless toolchain (apko/melange/grype/cosign, kept as `aqua:` specs for the Renovate grouping rule) + tmux.
+- `apps/emby/Dockerfile` → took upstream `libexpat1`; fork's `libicu74`/`libssl3t64`/`liblttng-ust1t64` are Ubuntu 24.04 names, won't resolve on upstream's new `ubuntu:26.04` base.
+
+**CI fix (mise lockfile):** upstream's merge introduced `.mise/mise.lock` (the fork had none). CI runs `mise install --locked`, which strictly requires every config tool be pinned in the lock — the unioned `aqua:` tools weren't, so every mise-setup job failed (Go-Vet, Hadolint, all Plan jobs). Regenerated the lock with `mise lock` (all 16 tools, checksummed per-platform; `oxfmt` is npm-backend so version-pinned only). **Dropped `claude-code = "latest"`** from the committed mise config — dev-only tool, pinned to `latest`, and its lock entry had no checksum (google-storage backend). Operator can keep it in a local/global mise config instead.
+
+**Watch:** if future syncs re-add mise tools, re-run `mise lock` before pushing or `--locked` CI fails.
+
+### 13. Helm postUpgradeTasks fix — PR #120 (merged, this session)
+
+Upstream `home-operations/renovate-config` default preset extends `helmPostUpgradeTasks.json5` (runs `helm-docs`/`helm-schema`). Mend-hosted Cloud blocks these (admin-only `allowedCommands` allowlist), flagging an "Artifact update problem" on ~every PR. This repo has no charts. Fixed by overriding `postUpgradeTasks: { commands: [], fileFilters: [] }` in `.renovaterc.json5`.
 
 ## Recently closed (last 7 days)
 
