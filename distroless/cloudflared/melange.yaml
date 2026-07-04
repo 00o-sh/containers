@@ -1,7 +1,17 @@
 package:
   name: cloudflared
   version: "2026.6.1" # renovate: datasource=github-releases depName=cloudflare/cloudflared
-  epoch: 0
+  # Epoch 99, deliberately: scanners match this package against Wolfi's
+  # security advisories by name, and Wolfi expresses fixes as
+  # "<upstream>-rN" using THEIR build counter. Our source build of the
+  # same upstream version at -r0 would compare "older" than their
+  # advisory's -rN and false-positive the exact CVE the build fixes
+  # (seen live with CVE-2026-41178: our 2026.6.1-r0 vs their fixed-in
+  # 2026.6.1-r2). r99 outranks any plausible Wolfi rebuild of the same
+  # upstream version, while advisories against NEWER upstream versions
+  # still fire correctly — which is the real "Renovate should bump us"
+  # signal.
+  epoch: 99
   description: Cloudflare Tunnel client, built from source.
   copyright:
     - license: Apache-2.0
