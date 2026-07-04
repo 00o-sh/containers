@@ -1,0 +1,60 @@
+---
+# yaml-language-server: $schema=https://json.schemastore.org/github-workflow.json
+#
+# Closes the loop on the distroless floor-pin design (docs/
+# distroless-plan.md §2a): when Renovate bumps a floor to an upstream
+# version Wolfi hasn't packaged yet, the PR correctly sits red on apk
+# resolution ("visible lag"). But Wolfi publishing the apk later doesn't
+# generate any event on the PR branch — no push, no synchronize — so the
+# red check would never refresh and automerge would never fire.
+#
+# This workflow re-runs the failed Distroless Build jobs on open
+# Renovate distroless PRs once a day, an hour after the 02:00 Wolfi
+# CVE-rebuild cron. Re-running failed jobs re-evaluates apk resolution
+# against the *current* APKINDEX on the same commit: still-unpublished →
+# red again (no harm); published → green → automerge.
+#
+# Background: Wolfi ships in stages — the recipe bump and the security
+# advisory (the "fixed in X" data Grype quotes) go out before the built
+# apk lands in the APKINDEX, sometimes by hours to days. The advisory
+# feed saying a version exists does NOT mean apko can install it yet.
+name: Retry Renovate Distroless PRs
+
+on:
+  schedule:
+    - cron: "0 3 * * *"
+  workflow_dispatch: {}
+
+permissions:
+  actions: write
+  pull-requests: read
+
+jobs:
+  retry:
+    name: Re-run failed Distroless Builds on Renovate PRs
+    runs-on: ubuntu-latest
+    steps:
+      - name: Find and re-run
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+          prs=$(gh pr list --state open --json number,headRefName \
+            --jq '.[] | select(.headRefName | startswith("renovate/")) | select(.headRefName | contains("distroless")) | .number')
+          if [ -z "$prs" ]; then
+            echo "No open Renovate distroless PRs."
+            exit 0
+          fi
+          for pr in $prs; do
+            sha=$(gh pr view "$pr" --json headRefOid --jq .headRefOid)
+            run_id=$(gh api "repos/$GH_REPO/actions/runs?head_sha=$sha&status=failure" \
+              --jq '[.workflow_runs[] | select(.name == "Distroless Build")][0].id // empty')
+            if [ -n "$run_id" ]; then
+              echo "PR #$pr (@${sha:0:7}): re-running failed jobs of Distroless Build run $run_id"
+              gh api -X POST "repos/$GH_REPO/actions/runs/$run_id/rerun-failed-jobs" || true
+            else
+              echo "PR #$pr: no failed Distroless Build run — skipping"
+            fi
+          done

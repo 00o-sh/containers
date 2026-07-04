@@ -40,7 +40,7 @@ packages:
 
 - Renovate bumps the floor when upstream releases → PR → full gate → automerge on green.
 - The apk resolver still floats *upward* within the floor, so the daily cron keeps delivering Wolfi's `-rN` CVE rebuilds without a PR (test-gated, as today).
-- If Wolfi hasn't packaged the new upstream version yet, apk resolution fails → the Renovate PR sits red until Wolfi catches up, then goes green on the next CI run. Lag is *visible* instead of silent.
+- If Wolfi hasn't packaged the new upstream version yet, apk resolution fails → the Renovate PR sits red until Wolfi catches up. Lag is *visible* instead of silent. **Caveat learned live (PRs #126/#127):** Wolfi's advisory feed and recipe repo reference the new version *before* the apk lands in the APKINDEX — "Wolfi has it" per advisories ≠ installable. And since the apk landing generates no event on the PR branch, `retry-renovate-distroless.yaml` re-runs the failed builds daily (post-Wolfi-rebuild) so the PR self-greens and automerges when the package is actually pullable.
 - The exact shipped version continues to come from the SBOM at tag time — floor pins don't affect the tag scheme.
 
 Requires one new `matchStrings` entry (the existing one only matches `key: value` lines, not list items) — see §5, Wave 0.
