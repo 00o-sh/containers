@@ -24,6 +24,13 @@ Live working log. Future Claude: **read this first**, then update it as you go (
 
 **Next after merge**: verify Renovate Dependency Dashboard lists the four new anchors (cloudflared, k8s-sidecar floors; kopia, tqm versions); then wave 2 continuation (webhook, smartctl-exporter, stash, nzbget, transmission, postgres-init Go shim) one PR each per plan §5; cni-plugins deferred pending Go copy-shim design.
 
+### 16. First full distroless gate run — findings and fixes (PR #123, second iteration)
+
+First CI run with real (uncorrupted) scanner DBs. kopia: fully green both arches (melange path + web-UI smoke proven). Three images red, all diagnosed by local reproduction:
+
+- **tqm**: 20 Grype findings, all in upstream-pinned `golang.org/x/crypto v0.51.0` and `x/net v0.54.0`. Fixed by patch-level `go get` bumps in the melange build (verified locally: builds, runs, scans clean). This is the standing pattern for melange-built Go apps: bump flagged modules in-recipe, drop when upstream catches up.
+- **cloudflared** (Grype 2 / Trivy 1) and **k8s-sidecar** (Grype 2): both are *Wolfi advisory-ahead-of-package* — the advisory names a fixed apk (cloudflared 2026.6.1-r2, k8s-sidecar 2.7.3-r3) that isn't in the APKINDEX yet. Time-bounded ignores added (expire 2026-08-01) with a new "advisory-ahead-of-package" section in `.grype.yaml`/`.trivyignore.yaml`; the daily cron self-heals these the moment Wolfi publishes, after which the entries are prunable no-ops.
+
 ### 15. Poisoned trivy-action DB cache broke all distroless builds on main (fixed in #123)
 
 All Distroless Build runs on main went red starting 2026-07-04 ~05:10 (pushes f36076b, 1da6d4d; schedule b160f75): the Trivy step exits 1 within ~80 ms of "Running Trivy with options", no findings, no error output. Diagnosis: trivy-action's built-in DB cache uses a repo-wide per-UTC-day key (`cache-trivy-<date>`); the workflow runs with `cancel-in-progress: true`, and a run cancelled mid-DB-write saved a ~914 MB corrupt cache that every later run that day restored. Reproduced the exact scan locally (trivy v0.70.0, same flags/ignorefile/image, fresh DB) → exit 0, clean. Fix: `cache: "false"` on the trivy-action step in `distroless-build.yaml` (inline comment documents the incident). DB re-downloads from mirror.gcr.io in seconds. If the same signature ever reappears (instant Trivy exit 1, no output): suspect a shared cache first, and note the corrupt entry also self-expires at the next UTC day rollover.
