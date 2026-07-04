@@ -8,7 +8,7 @@ Live working log. Future Claude: **read this first**, then update it as you go (
 
 ## Current branch
 
-`claude/distroless-images-ci-plan-9ke00v` (PR #123) — the fleet-wide distroless plan (`docs/distroless-plan.md`) plus its Wave 0 groundwork and first three images, implemented in the same PR at the operator's request to take full lead. Rebased-by-merge on main after the upstream sync (#122, thread #12) landed mid-flight: tests ported to the renamed `tests` helper package, kopia bumped to 0.23.1, trivy-action cache disabled (thread #15).
+`claude/distroless-images-ci-plan-9ke00v`, restarted from main after **PR #123 merged** (2026-07-04 ~15:15Z; post-merge main Distroless Build green — cloudflared, kubectl, k8s-sidecar, kopia, tqm, smartctl-exporter all published with release tags). Now carrying Wave 2 continuation: postgres-init (Go shim). Still to verify post-merge: Renovate Dependency Dashboard lists the new anchors.
 
 ## Open threads
 

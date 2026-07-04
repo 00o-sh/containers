@@ -154,10 +154,20 @@ jobs:
       - name: melange build
         if: steps.melange.outputs.present == 'true'
         run: |
+          # Recipes that build repo-local sources (convention: a src/
+          # dir next to melange.yaml, e.g. postgres-init's Go shim) get
+          # the image directory mounted as the melange workspace via
+          # --source-dir. Recipes without src/ keep the default empty
+          # workspace so their git-checkout pipelines can clone into it.
+          extra_args=()
+          if [ -d "distroless/${{ matrix.image }}/src" ]; then
+            extra_args+=(--source-dir "distroless/${{ matrix.image }}")
+          fi
           melange build "distroless/${{ matrix.image }}/melange.yaml" \
             --arch "${{ matrix.arch }}" \
             --signing-key melange.rsa \
-            --out-dir packages
+            --out-dir packages \
+            "${extra_args[@]}"
 
       - name: melange test
         if: steps.melange.outputs.present == 'true'

@@ -138,7 +138,7 @@ Wolfi availability verified 2026-07-04. Runtimes confirmed present in Wolfi: `py
 | stash | Go, `stashapp/stash` (has JS asset build — needs nodejs in melange env) | `ffmpeg` + `python-3.14` (scrapers are stock functionality — no-functionality-loss rule) | HTTP smoke on `:9999` |
 | nzbget | C++, `nzbgetcom/nzbget` (autotools) | libxml2, openssl, `7zip`/`par2` extras — audit which Wolfi ships | HTTP smoke on `:6789` |
 | transmission | C, `transmission/transmission` (cmake) | openssl, curl libs | HTTP smoke on `:9091` |
-| postgres-init | small **Go rewrite of `entrypoint.sh`** (creates roles/DBs via `database/sql`) — removes both bash and the psql dependency | ca-certs | `TestCommandSucceeds --help`; full test needs a postgres testcontainer — add a helper or keep to flag-parse smoke |
+| postgres-init | ✅ **Done.** Repo-local Go shim (`src/`) that execs the same pg_isready/psql/createuser/createdb binaries as the bash entrypoint — exact flag/behavior parity incl. `INIT_POSTGRES_USER_FLAGS` and `/initdb/<dbname>.sql` seeding; command failures now fatal (deliberate improvement over the script's missing `set -e`). Runtime dep `postgresql-18-client` (per-major manual bump, kubectl-style). Tests: `--version` smoke + full two-container integration (real postgres, asserts role+db exist). Workflow gained a `--source-dir` convention for `src/` dirs. |
 | irqbalance | C, `irqbalance/irqbalance` | glib | ⚠️ must run as root to write `/proc/irq/*` → **conflicts with the non-root structure assertion**. Either add a per-image assertion override (explicit allowlist in the workflow step) or exempt. Decide before building; dormant app, low priority. |
 
 ### Wave 3 — .NET / JVM (blocked on the §2c checksum decision — prefer source builds)
