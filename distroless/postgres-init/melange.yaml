@@ -1,0 +1,67 @@
+package:
+  name: postgres-init
+  # Version of the repo-local Go shim (src/main.go), not of PostgreSQL —
+  # bump manually when the shim changes. No renovate annotation: there is
+  # no upstream to track. The client tools float with Wolfi (see
+  # runtime dependency below); the SBOM records their exact version.
+  version: "1.0.0"
+  epoch: 0
+  description: Env-driven PostgreSQL role/database initializer (shell-free rewrite of apps/postgres-init's entrypoint.sh).
+  copyright:
+    - license: Apache-2.0
+  dependencies:
+    runtime:
+      # The shim execs pg_isready/psql/createuser/createdb. Wolfi ships
+      # the client tools per-major (like kubectl) — bump to
+      # postgresql-19-client manually when the postgres major rolls;
+      # Renovate can't track package renames.
+      - postgresql-18-client
+
+environment:
+  contents:
+    repositories:
+      - https://packages.wolfi.dev/os
+    keyring:
+      - https://packages.wolfi.dev/os/wolfi-signing.rsa.pub
+    packages:
+      - busybox
+      - ca-certificates-bundle
+      - go-1.26
+
+pipeline:
+  # No git-checkout: the source lives in this repo at
+  # distroless/postgres-init/src. The workflow passes
+  # `--source-dir distroless/postgres-init` (convention: any image dir
+  # containing src/ gets mounted as the melange workspace), so src/ is
+  # available at the workspace root here.
+  - runs: |
+      cd src
+      CGO_ENABLED=0 go build \
+        -trimpath \
+        -ldflags "-s -w -X main.version=${{package.version}}" \
+        -o "${{targets.destdir}}/usr/bin/postgres-init" \
+        .
+
+  - uses: strip
+
+test:
+  environment:
+    contents:
+      repositories:
+        - https://packages.wolfi.dev/os
+      keyring:
+        - https://packages.wolfi.dev/os/wolfi-signing.rsa.pub
+      packages:
+        - busybox
+        - ca-certificates-bundle
+        - postgres-init
+  pipeline:
+    - runs: |
+        postgres-init --version
+        # Runtime dep must pull the client tools the shim execs.
+        psql --version
+        pg_isready --version
+        # Without config the shim must fail fast with the same message
+        # the bash entrypoint printed.
+        out=$(postgres-init 2>&1 || true)
+        echo "$out" | grep -q "Invalid configuration"
