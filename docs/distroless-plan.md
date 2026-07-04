@@ -119,7 +119,9 @@ Wolfi -rN CVE rebuild (daily cron, no PR)
 
 Wolfi availability verified 2026-07-04. Runtimes confirmed present in Wolfi: `python-3.13/3.14`, `nodejs-24/26`, `aspnet-8/9/10-runtime`, `openjdk-17`, `ffmpeg`, `postgresql-17/18-client`, `smartmontools`, `icu`, `sqlite-libs`, `tini`. Confirmed **absent**: `libtorrent-rasterbar`, `mono`, and every media-stack app itself.
 
-### Wave 1 — Wolfi ships the app: apko-only (like cloudflared/kubectl)
+### Wave 1 — Wolfi ships the app: apko-only (like kubectl)
+
+> **cloudflared moved off this track (2026-07-04).** Wolfi's cloudflared packaging lags upstream chronically (2026.6.1 with the CVE-2026-41178 fix was a month old with no apk published; their index also shows a 2025.10→2026.3 gap), so the §6 escape hatch was invoked: cloudflared is now a **melange source build** tracking upstream releases directly. Also noted for the record: Cloudflare's *official* image is itself distroless (`gcr.io/distroless/base-debian13:nonroot`) and satisfies the README's prefer-official criteria — keeping ours is an operator choice for the daily Wolfi base-CVE rebuilds, the PR gate on version bumps, and our provenance attestation; switching the cluster to `docker.io/cloudflare/cloudflared` remains a valid simplification at any time.
 
 | App | Wolfi pkg | Test | Notes |
 |---|---|---|---|
@@ -211,7 +213,7 @@ One image per PR (matches the changed-dir discovery, keeps sticky comments and s
 
 **Wave 0 — CI groundwork (before any new image):** ✅ **done**
 1. ✅ `.renovaterc.json5`: apko list-item floor-pin matchString + `extractVersion` support on the existing melange/apko matchString; distroless packageRules (§2d).
-2. ✅ Floor pin retro-fitted onto `distroless/cloudflared` (§2a pilot — verify the dep appears on the Dependency Dashboard after merge). `distroless/kubectl` stays per-minor/manual per its in-file comment.
+2. ✅ Floor pin retro-fitted onto `distroless/cloudflared` (§2a pilot; anchors verified live on the Dependency Dashboard 2026-07-04, incl. Renovate PRs #126/#127). Superseded for cloudflared by the source-build switch (see Wave 1 note); k8s-sidecar remains the §2a reference. `distroless/kubectl` stays per-minor/manual per its in-file comment.
 3. ~~digest-fixup workflow~~ — dropped; see §2b for why it can't work with `GITHUB_TOKEN`. §2c is the Wave-3 replacement decision.
 4. ✅ Boot-smoke warning → hard failure.
 5. ✅ Scheduled-run failure job files/updates an issue (was: silent 2 AM breaks).
