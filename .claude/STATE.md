@@ -2,15 +2,23 @@
 
 Live working log. Future Claude: **read this first**, then update it as you go (mark items resolved, add new threads, prune stale ones). If this file contradicts the repo, trust the repo and fix the file.
 
-**Last updated:** 2026-05-19 (session: apps/ CVE gate set to report-only on both Grype + Trivy)
+**Last updated:** 2026-07-04 (session: fleet-wide distroless migration plan authored)
 
 ---
 
 ## Current branch
 
-`chore/apps-cve-gate-report-only`. PRs #22 + #25 merged. PR #21 (kopia) rebased on top, MERGEABLE, CI running. This PR disables the apps/ CVE gate entirely (Grype `fail-build: false`, Trivy `exit-code: "0"`) — distroless gate stays strict.
+`claude/distroless-images-ci-plan-9ke00v` — adds `docs/distroless-plan.md`, the full plan for giving every apps/ image a distroless equivalent with Renovate-update validation in CI.
 
 ## Open threads
+
+### 12. Fleet-wide distroless migration plan (this PR)
+
+`docs/distroless-plan.md` is the source of truth. Summary: 36 apps audited against the live Wolfi APKINDEX (2026-07-04). 3 are Wolfi-shipped (apko-only), ~9 are single-binary melange source builds, 7 are .NET/JVM prebuilt-fetch, 8 are Python/Node venv-pattern recipes, 4 are hard cases needing spikes (qbittorrent×2, deluge, home-assistant), 6 are exempt with rationale (busybox, actions-runner, esphome, plex×2, emby).
+
+Update-validation design: floor pins (`pkg>=X # renovate:`) in apko.yaml for Wolfi-shipped apps; `git-checkout` + `expected-commit` with a digest-capturing Renovate regex for source builds; a sha256-fixup workflow for prebuilt fetches. All routes end in a PR gated by the existing build+assert+smoke+scan pipeline with automerge-on-green. Wave 0 (CI groundwork: renovate manager extensions, boot-smoke warn→fail flip, cron-failure issue alerting, templates) precedes any new image.
+
+Next action after this merges: Wave 0 PRs, then revive PR #21 (kopia) as the first melange image.
 
 ### 1. CVE gate softened to CRITICAL on apps/ (resolved in #13)
 
