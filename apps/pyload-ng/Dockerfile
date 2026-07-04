@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:1
 
-FROM docker.io/library/python:3.14-alpine3.23
+FROM docker.io/library/python:3.14-alpine3.24
 ARG VERSION
 
 ENV \
@@ -13,7 +13,7 @@ ENV \
     PYTHONUNBUFFERED=1 \
     UV_NO_CACHE=true \
     UV_SYSTEM_PYTHON=true \
-    UV_EXTRA_INDEX_URL="https://wheel-index.linuxserver.io/alpine-3.23/"
+    UV_EXTRA_INDEX_URL="https://wheel-index.linuxserver.io/alpine-3.24/"
 
 ENV HOME="/config"
 
@@ -34,7 +34,7 @@ RUN \
         sqlite \
         tesseract-ocr \
     && pip install --no-cache-dir uv \
-    && uv pip install --pre pyload-ng[all]=="${VERSION}" \
+    && uv pip install --pre "pyload-ng[all]==${VERSION}" \
     && mkdir -p /config && chown nobody:nogroup -R /config \
     && mkdir -p /downloads && chown nobody:nogroup -R /downloads \
     && apk del --purge build-dependencies \

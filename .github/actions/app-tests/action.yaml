@@ -1,7 +1,7 @@
 ---
 # yaml-language-server: $schema=https://json.schemastore.org/github-action.json
 name: App Tests
-description: Takes an app, app image and token then runs app tests
+description: Takes an app and image then runs tests
 
 inputs:
   app:
@@ -9,9 +9,6 @@ inputs:
     required: true
   image:
     description: Image
-    required: true
-  token:
-    description: GitHub Token
     required: true
 
 runs:
@@ -21,6 +18,7 @@ runs:
       uses: jdx/mise-action@e6a8b3978addb5a52f2b4cd9d91eafa7f0ab959d # v4.2.0
       with:
         experimental: true
+        install_args: --locked
 
     - name: Restore Go Modules
       uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
@@ -35,5 +33,5 @@ runs:
       env:
         APP: ${{ inputs.app }}
         TEST_IMAGE: ${{ inputs.image }}
-      run: |-
+      run: |
         go test -v ./apps/${APP}/...
