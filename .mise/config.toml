@@ -20,7 +20,7 @@ zizmor = "1.26.1"
 # anchore/grype, chainguard-dev/apko, chainguard-dev/melange, sigstore/cosign)
 # keeps grouping their updates.
 "aqua:anchore/grype" = "0.115.0"
-"aqua:chainguard-dev/apko" = "1.2.15"
+"aqua:chainguard-dev/apko" = "1.2.21"
 "aqua:chainguard-dev/melange" = "0.56.0"
 "aqua:sigstore/cosign" = "3.1.1"
 "aqua:tmux/tmux-builds" = "3.6a"
