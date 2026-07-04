@@ -5,6 +5,25 @@
   // them); the local repo config overrides any inherited preset value.
   forkProcessing: "enabled",
   extends: ["github>home-operations/renovate-config"],
+  // Clear the inherited helm-docs/helm-schema post-upgrade tasks.
+  //
+  // The upstream `home-operations/renovate-config` default preset extends
+  // `helmPostUpgradeTasks.json5`, which declares `postUpgradeTasks.commands`
+  // running `helm-docs` and `helm-schema`. Those are meant for the
+  // operator's Helm-chart repos — this is a container-image repo with no
+  // charts, so the tasks never do anything useful here.
+  //
+  // Worse, on the Mend-hosted Renovate Cloud, `allowedCommands` (formerly
+  // `allowedPostUpgradeCommands`) is an admin-only trusted-command allowlist
+  // that repos can't set, and these two commands are not on Mend's list. So
+  // Renovate flags an "Artifact update problem — command has not been added
+  // to the allowed list in allowedCommands" on essentially every PR that
+  // resolves this preset. Emptying the command list here (repo config
+  // replaces preset arrays) removes the tasks and clears the warning.
+  postUpgradeTasks: {
+    commands: [],
+    fileFilters: [],
+  },
   customManagers: [
     {
       customType: "regex",
