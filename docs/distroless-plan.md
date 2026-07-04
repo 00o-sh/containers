@@ -132,9 +132,9 @@ Wolfi availability verified 2026-07-04. Runtimes confirmed present in Wolfi: `py
 | App | Source build | Runtime pkgs | Test |
 |---|---|---|---|
 | kopia | Go, `kopia/kopia` | ca-certs, tzdata | ✅ **Done** (PR #21 revived). Web UI embedded via the `htmluibuild` Go module (no node toolchain; the `nohtmlui` shortcut from #21 violated the no-functionality-loss rule); default cmd is server mode on 51515 for parity with apps/kopia. Tests: `--version` + HTTP smoke on the UI. |
-| tqm | Go, `autobrr/tqm` | ca-certs | ✅ **Done.** `tqm version`; ldflags mirror upstream goreleaser. |
-| webhook | Go, `adnanh/webhook` | ca-certs | HTTP smoke on `:9000` with a static hooks file baked into the test |
-| smartctl-exporter | Go, `prometheus-community/smartctl_exporter` | `smartmontools` | HTTP smoke on `:9633` (metrics endpoint serves without devices) |
+| tqm | Go, `autobrr/tqm` | ca-certs | ✅ **Done.** `tqm version`; ldflags mirror upstream goreleaser; recipe carries x/crypto+x/net security bumps. Note: the 2026-07-04 upstream sync *removed* `apps/tqm` — the distroless image is now this repo's only tqm. |
+| ~~webhook~~ | — | — | **Dropped**: `apps/webhook` was removed by the 2026-07-04 upstream sync; nothing left to migrate. |
+| smartctl-exporter | Go, `prometheus-community/smartctl_exporter` | `smartmontools` | ✅ **Done.** HTTP smoke on `:9633` `/metrics` (serves 200 without device access — verified). Recipe carries x/crypto+x/net+x/oauth2 security bumps. |
 | stash | Go, `stashapp/stash` (has JS asset build — needs nodejs in melange env) | `ffmpeg` + `python-3.14` (scrapers are stock functionality — no-functionality-loss rule) | HTTP smoke on `:9999` |
 | nzbget | C++, `nzbgetcom/nzbget` (autotools) | libxml2, openssl, `7zip`/`par2` extras — audit which Wolfi ships | HTTP smoke on `:6789` |
 | transmission | C, `transmission/transmission` (cmake) | openssl, curl libs | HTTP smoke on `:9091` |
@@ -217,7 +217,7 @@ One image per PR (matches the changed-dir discovery, keeps sticky comments and s
 5. ✅ Scheduled-run failure job files/updates an issue (was: silent 2 AM breaks).
 6. ✅ `distroless/README.md`: conventions, templates, pinning rules, melange gotchas (PR #21's four lessons), exemption list.
 
-**Waves 1→5:** in table order. Wave 1: k8s-sidecar ✅, cni-plugins deferred, opentofu-runner pending. Wave 2: kopia ✅ + tqm ✅ (PR #21 revived; recipe lessons baked into README), remaining Go/C apps one PR each. Wave 3: build sonarr first after settling §2c (the other five servarr apps are copy-adapt). Wave 4: tautulli first as the venv-pattern pilot. Wave 5: spike, then decide build-vs-exempt per app.
+**Waves 1→5:** in table order. Wave 1: k8s-sidecar ✅, cni-plugins deferred, opentofu-runner pending. Wave 2: kopia ✅ + tqm ✅ (PR #21 revived; recipe lessons baked into README) + smartctl-exporter ✅; webhook dropped (removed upstream); remaining Go/C apps one PR each. Wave 3: build sonarr first after settling §2c (the other five servarr apps are copy-adapt). Wave 4: tautulli first as the venv-pattern pilot. Wave 5: spike, then decide build-vs-exempt per app.
 
 **Per-image acceptance criteria (definition of done):**
 - [ ] PR gate green on both arches: build, structure assertions, melange test (if recipe), boot/HTTP smoke, Grype+Trivy.
