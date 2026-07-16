@@ -186,7 +186,7 @@ jobs:
             --source-dir packages
 
       - name: apko build
-        uses: chainguard-images/actions/apko-build@ff45c3434429aff735fdda0b5afbb57b14002be5 # v1.0.34
+        uses: chainguard-images/actions/apko-build@12231d4e2bcb1a972f11683d576cdbd75a68d913 # v1.0.36
         with:
           apko-image: ${{ env.APKO_IMAGE }}
           config: distroless/${{ matrix.image }}/apko.yaml
