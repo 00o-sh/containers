@@ -566,7 +566,7 @@ jobs:
         # GitHub-native attest action used elsewhere in this repo. The
         # attestation is verifiable via `gh attestation verify` and is
         # pushed alongside the image in the registry.
-        uses: actions/attest@a1948c3f048ba23858d222213b7c278aabede763 # v4.1.1
+        uses: actions/attest@f7c74d28b9d84cb8768d0b8ca14a4bac6ef463e6 # v4.2.0
         with:
           push-to-registry: true
           subject-name: ${{ steps.manifest.outputs.namespace }}
