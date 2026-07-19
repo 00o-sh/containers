@@ -1,6 +1,6 @@
 package:
   name: cloudflared
-  version: "2026.6.1" # renovate: datasource=github-releases depName=cloudflare/cloudflared
+  version: "2026.7.2" # renovate: datasource=github-releases depName=cloudflare/cloudflared
   # Epoch 99, deliberately: scanners match this package against Wolfi's
   # security advisories by name, and Wolfi expresses fixes as
   # "<upstream>-rN" using THEIR build counter. Our source build of the
