@@ -19,7 +19,7 @@ zizmor = "1.26.1"
 # so the .renovaterc.json5 distroless-grouping packageRule (which matches
 # anchore/grype, chainguard-dev/apko, chainguard-dev/melange, sigstore/cosign)
 # keeps grouping their updates.
-"aqua:anchore/grype" = "0.115.0"
+"aqua:anchore/grype" = "0.116.0"
 "aqua:chainguard-dev/apko" = "1.2.22"
 "aqua:chainguard-dev/melange" = "0.56.1"
 "aqua:sigstore/cosign" = "3.1.1"
