@@ -13,7 +13,7 @@ contents:
     # the daily cron still delivers Wolfi -rN CVE rebuilds without a PR.
     # If Wolfi lags upstream, the bump PR fails apk resolution and sits
     # red until Wolfi catches up — visible lag instead of silent drift.
-    - k8s-sidecar>=2.7.3 # renovate: datasource=docker depName=ghcr.io/kiwigrid/k8s-sidecar
+    - k8s-sidecar>=2.8.1 # renovate: datasource=docker depName=ghcr.io/kiwigrid/k8s-sidecar
 
 accounts:
   groups:
