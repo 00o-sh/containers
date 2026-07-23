@@ -13,7 +13,7 @@ oxfmt = "0.57.0"
 regctl = "0.11.5"
 shellcheck = "0.11.0"
 yq = "4.53.3"
-zizmor = "1.26.1"
+zizmor = "1.28.0"
 # Fork additions — the distroless toolchain (apko/melange build Wolfi images,
 # grype scans, cosign signs) plus local-dev conveniences. Kept as aqua: specs
 # so the .renovaterc.json5 distroless-grouping packageRule (which matches
