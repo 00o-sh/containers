@@ -402,7 +402,7 @@ jobs:
         # Now logs in for both PR and main runs — PRs push :verify-<arch>
         # intermediates so the manifest job can combine them into :sandbox
         # for pre-merge testing.
-        uses: docker/login-action@af1e73f918a031802d376d3c8bbc3fe56130a9b0 # v4.4.0
+        uses: docker/login-action@06fb636fac595d6fb4b28a5dfcb21a6f5091859c # v4.5.0
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
@@ -514,7 +514,7 @@ jobs:
             type=raw,value=sandbox,enable=${{ github.event_name == 'pull_request' }}
 
       - name: Log in to GHCR
-        uses: docker/login-action@af1e73f918a031802d376d3c8bbc3fe56130a9b0 # v4.4.0
+        uses: docker/login-action@06fb636fac595d6fb4b28a5dfcb21a6f5091859c # v4.5.0
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
