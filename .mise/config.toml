@@ -3,17 +3,17 @@ experimental = true
 unix_default_inline_shell_args = "bash -c -o errexit -o pipefail -o nounset"
 
 [tools]
-gh = "2.96.0"
+gh = "2.97.0"
 go = "1.26.4"
-hadolint = "2.14.0"
+hadolint = "2.15.1"
 jq = "1.8.2"
-lefthook = "2.1.9"
+lefthook = "2.1.10"
 node = "26.4.0"
 oxfmt = "0.57.0"
 regctl = "0.11.5"
 shellcheck = "0.11.0"
 yq = "4.53.3"
-zizmor = "1.26.1"
+zizmor = "1.29.0"
 # Fork additions — the distroless toolchain (apko/melange build Wolfi images,
 # grype scans, cosign signs) plus local-dev conveniences. Kept as aqua: specs
 # so the .renovaterc.json5 distroless-grouping packageRule (which matches
