@@ -74,38 +74,38 @@ url = "https://github.com/chainguard-dev/apko/releases/download/v1.2.22/apko_1.2
 url_api = "https://api.github.com/repos/chainguard-dev/apko/releases/assets/467568072"
 
 [[tools."aqua:chainguard-dev/melange"]]
-version = "0.56.1"
+version = "0.59.3"
 backend = "aqua:chainguard-dev/melange"
 
 [tools."aqua:chainguard-dev/melange"."platforms.linux-arm64"]
-checksum = "sha256:d39db5397ef425f0a487454a9622b0e983ce36205944f0973bdbe39541ec3172"
-url = "https://github.com/chainguard-dev/melange/releases/download/v0.56.1/melange_0.56.1_linux_arm64.tar.gz"
-url_api = "https://api.github.com/repos/chainguard-dev/melange/releases/assets/467563290"
+checksum = "sha256:713ab41051d767d4745ec28d67e415eddb3cb41f0b2ef16a98c52e7a12654836"
+url = "https://github.com/chainguard-dev/melange/releases/download/v0.59.3/melange_0.59.3_linux_arm64.tar.gz"
+url_api = "https://api.github.com/repos/chainguard-dev/melange/releases/assets/537234949"
 
 [tools."aqua:chainguard-dev/melange"."platforms.linux-arm64-musl"]
-checksum = "sha256:d39db5397ef425f0a487454a9622b0e983ce36205944f0973bdbe39541ec3172"
-url = "https://github.com/chainguard-dev/melange/releases/download/v0.56.1/melange_0.56.1_linux_arm64.tar.gz"
-url_api = "https://api.github.com/repos/chainguard-dev/melange/releases/assets/467563290"
+checksum = "sha256:713ab41051d767d4745ec28d67e415eddb3cb41f0b2ef16a98c52e7a12654836"
+url = "https://github.com/chainguard-dev/melange/releases/download/v0.59.3/melange_0.59.3_linux_arm64.tar.gz"
+url_api = "https://api.github.com/repos/chainguard-dev/melange/releases/assets/537234949"
 
 [tools."aqua:chainguard-dev/melange"."platforms.linux-x64"]
-checksum = "sha256:052e1f8610ac3ca7287d4ba0642efb90e48b308d85a439dd9b9b6577f9de6b61"
-url = "https://github.com/chainguard-dev/melange/releases/download/v0.56.1/melange_0.56.1_linux_amd64.tar.gz"
-url_api = "https://api.github.com/repos/chainguard-dev/melange/releases/assets/467563291"
+checksum = "sha256:a03c98e5a17a41a288f2aac50c20e01265141c7489a21d0648dd0727d8b979dd"
+url = "https://github.com/chainguard-dev/melange/releases/download/v0.59.3/melange_0.59.3_linux_amd64.tar.gz"
+url_api = "https://api.github.com/repos/chainguard-dev/melange/releases/assets/537234986"
 
 [tools."aqua:chainguard-dev/melange"."platforms.linux-x64-musl"]
-checksum = "sha256:052e1f8610ac3ca7287d4ba0642efb90e48b308d85a439dd9b9b6577f9de6b61"
-url = "https://github.com/chainguard-dev/melange/releases/download/v0.56.1/melange_0.56.1_linux_amd64.tar.gz"
-url_api = "https://api.github.com/repos/chainguard-dev/melange/releases/assets/467563291"
+checksum = "sha256:a03c98e5a17a41a288f2aac50c20e01265141c7489a21d0648dd0727d8b979dd"
+url = "https://github.com/chainguard-dev/melange/releases/download/v0.59.3/melange_0.59.3_linux_amd64.tar.gz"
+url_api = "https://api.github.com/repos/chainguard-dev/melange/releases/assets/537234986"
 
 [tools."aqua:chainguard-dev/melange"."platforms.macos-arm64"]
-checksum = "sha256:242821099ec36935a21c33dad6a10d82b4315229d25bcbdcc621acc08ca45b1b"
-url = "https://github.com/chainguard-dev/melange/releases/download/v0.56.1/melange_0.56.1_darwin_arm64.tar.gz"
-url_api = "https://api.github.com/repos/chainguard-dev/melange/releases/assets/467563293"
+checksum = "sha256:ef612215f4b3c73ed8be9924ab22356bfb7267ebc7ccb27772346c4b835a68c5"
+url = "https://github.com/chainguard-dev/melange/releases/download/v0.59.3/melange_0.59.3_darwin_arm64.tar.gz"
+url_api = "https://api.github.com/repos/chainguard-dev/melange/releases/assets/537234951"
 
 [tools."aqua:chainguard-dev/melange"."platforms.macos-x64"]
-checksum = "sha256:564c19576f0613a5ebc43a96ee262c5d94527e2ea3b8ea9eb840cf07d396b478"
-url = "https://github.com/chainguard-dev/melange/releases/download/v0.56.1/melange_0.56.1_darwin_amd64.tar.gz"
-url_api = "https://api.github.com/repos/chainguard-dev/melange/releases/assets/467563292"
+checksum = "sha256:c46ca87f8363fd93475f121b1e623781f5050ce8155b93d8776b79a0f5e17354"
+url = "https://github.com/chainguard-dev/melange/releases/download/v0.59.3/melange_0.59.3_darwin_amd64.tar.gz"
+url_api = "https://api.github.com/repos/chainguard-dev/melange/releases/assets/537234952"
 
 [[tools."aqua:sigstore/cosign"]]
 version = "3.1.1"
