@@ -40,38 +40,38 @@ url = "https://github.com/anchore/grype/releases/download/v0.115.0/grype_0.115.0
 url_api = "https://api.github.com/repos/anchore/grype/releases/assets/458590940"
 
 [[tools."aqua:chainguard-dev/apko"]]
-version = "1.4.4"
+version = "1.4.5"
 backend = "aqua:chainguard-dev/apko"
 
 [tools."aqua:chainguard-dev/apko"."platforms.linux-arm64"]
-checksum = "sha256:0b4fb47d3b0622e69407d1e5c2db6dc4eca174feced596f0101c62c845e9b0cd"
-url = "https://github.com/chainguard-dev/apko/releases/download/v1.4.4/apko_1.4.4_linux_arm64.tar.gz"
-url_api = "https://api.github.com/repos/chainguard-dev/apko/releases/assets/577882754"
+checksum = "sha256:82be1104509fc80aef44a498a828195799aec2a03bfd9d5b4375c94b7be99140"
+url = "https://github.com/chainguard-dev/apko/releases/download/v1.4.5/apko_1.4.5_linux_arm64.tar.gz"
+url_api = "https://api.github.com/repos/chainguard-dev/apko/releases/assets/594116493"
 
 [tools."aqua:chainguard-dev/apko"."platforms.linux-arm64-musl"]
-checksum = "sha256:0b4fb47d3b0622e69407d1e5c2db6dc4eca174feced596f0101c62c845e9b0cd"
-url = "https://github.com/chainguard-dev/apko/releases/download/v1.4.4/apko_1.4.4_linux_arm64.tar.gz"
-url_api = "https://api.github.com/repos/chainguard-dev/apko/releases/assets/577882754"
+checksum = "sha256:82be1104509fc80aef44a498a828195799aec2a03bfd9d5b4375c94b7be99140"
+url = "https://github.com/chainguard-dev/apko/releases/download/v1.4.5/apko_1.4.5_linux_arm64.tar.gz"
+url_api = "https://api.github.com/repos/chainguard-dev/apko/releases/assets/594116493"
 
 [tools."aqua:chainguard-dev/apko"."platforms.linux-x64"]
-checksum = "sha256:dbd9e8f416903b2d896497c51f3217259d03ecb45c997254cedca5274e8671db"
-url = "https://github.com/chainguard-dev/apko/releases/download/v1.4.4/apko_1.4.4_linux_amd64.tar.gz"
-url_api = "https://api.github.com/repos/chainguard-dev/apko/releases/assets/577882722"
+checksum = "sha256:d3393e89c7d5230a3f93eac13f3e9462ef41f5ae4673023f297583bc9c913762"
+url = "https://github.com/chainguard-dev/apko/releases/download/v1.4.5/apko_1.4.5_linux_amd64.tar.gz"
+url_api = "https://api.github.com/repos/chainguard-dev/apko/releases/assets/594116454"
 
 [tools."aqua:chainguard-dev/apko"."platforms.linux-x64-musl"]
-checksum = "sha256:dbd9e8f416903b2d896497c51f3217259d03ecb45c997254cedca5274e8671db"
-url = "https://github.com/chainguard-dev/apko/releases/download/v1.4.4/apko_1.4.4_linux_amd64.tar.gz"
-url_api = "https://api.github.com/repos/chainguard-dev/apko/releases/assets/577882722"
+checksum = "sha256:d3393e89c7d5230a3f93eac13f3e9462ef41f5ae4673023f297583bc9c913762"
+url = "https://github.com/chainguard-dev/apko/releases/download/v1.4.5/apko_1.4.5_linux_amd64.tar.gz"
+url_api = "https://api.github.com/repos/chainguard-dev/apko/releases/assets/594116454"
 
 [tools."aqua:chainguard-dev/apko"."platforms.macos-arm64"]
-checksum = "sha256:1ee6e9d0d9686038ddcac3fd9ae4c5e013cd9a80f89b891a0513e9c3a5ef5da1"
-url = "https://github.com/chainguard-dev/apko/releases/download/v1.4.4/apko_1.4.4_darwin_arm64.tar.gz"
-url_api = "https://api.github.com/repos/chainguard-dev/apko/releases/assets/577882757"
+checksum = "sha256:3ccda5fd563f3727d8cafaeaeb1ffdd015c9f727c35a1b4d4f786a2e4bc303cb"
+url = "https://github.com/chainguard-dev/apko/releases/download/v1.4.5/apko_1.4.5_darwin_arm64.tar.gz"
+url_api = "https://api.github.com/repos/chainguard-dev/apko/releases/assets/594116455"
 
 [tools."aqua:chainguard-dev/apko"."platforms.macos-x64"]
-checksum = "sha256:9042fea0f6190f84b88b624a86fa583734fe6d4fa03cacc22cb8d2a77b935407"
-url = "https://github.com/chainguard-dev/apko/releases/download/v1.4.4/apko_1.4.4_darwin_amd64.tar.gz"
-url_api = "https://api.github.com/repos/chainguard-dev/apko/releases/assets/577882753"
+checksum = "sha256:c7cddaf734a54ba05433df0ab1a150a145ef1ef29693f877ddbc050420ddd174"
+url = "https://github.com/chainguard-dev/apko/releases/download/v1.4.5/apko_1.4.5_darwin_amd64.tar.gz"
+url_api = "https://api.github.com/repos/chainguard-dev/apko/releases/assets/594116497"
 
 [[tools."aqua:chainguard-dev/melange"]]
 version = "0.56.1"
