@@ -1,6 +1,6 @@
 package:
   name: smartctl-exporter
-  version: "0.14.0" # renovate: datasource=github-releases depName=prometheus-community/smartctl_exporter extractVersion=^v(?<version>.*)$
+  version: "0.15.0" # renovate: datasource=github-releases depName=prometheus-community/smartctl_exporter extractVersion=^v(?<version>.*)$
   epoch: 0
   description: Prometheus exporter for S.M.A.R.T. disk metrics via smartctl.
   copyright:
