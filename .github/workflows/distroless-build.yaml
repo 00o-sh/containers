@@ -58,7 +58,7 @@ jobs:
       # rebuilt regardless of git diff. Mirrors apps/'s release.yaml.
       - name: Get changed distroless dirs
         if: github.event_name == 'pull_request' || github.event_name == 'push'
-        uses: bjw-s-labs/action-changed-files@a9a36fb08ce06db9b02fbd8026cc2c0945eb9841 # v0.6.0
+        uses: bjw-s-labs/action-changed-files@147be9638332cf68fd60714a610509d7a9360d60 # v0.7.0
         id: changed-files
         with:
           path: distroless
@@ -249,7 +249,7 @@ jobs:
         # installs Go (which is all the boot-smoke test needs) and has
         # its own caching.
         if: hashFiles(format('distroless/{0}/container_test.go', matrix.image)) != ''
-        uses: actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16 # v6.5.0
+        uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
         with:
           go-version-file: go.mod
           cache: true
